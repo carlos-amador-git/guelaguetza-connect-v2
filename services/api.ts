@@ -93,3 +93,75 @@ export async function fetchConversation(id: string): Promise<Conversation> {
   if (!res.ok) throw new Error('Failed to fetch conversation');
   return res.json();
 }
+
+// Story interactions
+export interface Comment {
+  id: string;
+  text: string;
+  createdAt: string;
+  user: {
+    id: string;
+    nombre: string;
+    avatar: string | null;
+  };
+}
+
+export interface StoryWithDetails extends Story {
+  isLiked?: boolean;
+  comments?: Comment[];
+}
+
+export async function likeStory(storyId: string, token: string): Promise<{ liked: boolean; likesCount: number }> {
+  const res = await fetch(`${API_BASE}/stories/${storyId}/like`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  if (!res.ok) throw new Error('Failed to like story');
+  return res.json();
+}
+
+export async function addComment(
+  storyId: string,
+  text: string,
+  token: string
+): Promise<Comment> {
+  const res = await fetch(`${API_BASE}/stories/${storyId}/comment`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({ text }),
+  });
+  if (!res.ok) throw new Error('Failed to add comment');
+  return res.json();
+}
+
+export async function createStory(
+  data: { description: string; mediaUrl: string; location: string },
+  token: string
+): Promise<Story> {
+  const res = await fetch(`${API_BASE}/stories`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error('Failed to create story');
+  return res.json();
+}
+
+export async function deleteStory(storyId: string, token: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/stories/${storyId}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  if (!res.ok) throw new Error('Failed to delete story');
+}
