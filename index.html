@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+    <title>Guelaguetza Connect 2025</title>
+    <meta name="description" content="Experiencia digital inmersiva para la máxima fiesta de los Oaxaqueños." />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              oaxaca: {
+                pink: '#D9006C',     // Rosa Mexicano
+                yellow: '#FFD100',   // Amarillo Festivo
+                purple: '#6A0F49',   // Morado Textil
+                sky: '#00AEEF',      // Azul Cielo
+                stone: '#F5F5F4',    // Piedra Cantera
+                dark: '#1C1917',     // Texto Oscuro
+              }
+            },
+            fontFamily: {
+              sans: ['Inter', 'system-ui', 'sans-serif'],
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      /* Hide scrollbar for stories */
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+      }
+    </style>
+  <link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-oaxaca-stone text-oaxaca-dark antialiased overflow-hidden">
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>

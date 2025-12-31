@@ -1,0 +1,135 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  nombre    String
+  apellido  String?
+  avatar    String?
+  region    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  stories       Story[]
+  likes         Like[]
+  comments      Comment[]
+  conversations Conversation[]
+}
+
+model Story {
+  id          String   @id @default(cuid())
+  description String
+  mediaUrl    String
+  location    String
+  views       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId   String
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes    Like[]
+  comments Comment[]
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  userId  String
+  storyId String
+  user    User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  story   Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, storyId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  text      String
+  createdAt DateTime @default(now())
+
+  userId  String
+  storyId String
+  user    User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  story   Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
+}
+
+model BusRoute {
+  id          String    @id @default(cuid())
+  routeCode   String    @unique
+  name        String
+  color       String
+  type        RouteType
+  description String?
+  startTime   String?
+  endTime     String?
+  frequency   Int?
+
+  stops Stop[]
+  buses Bus[]
+}
+
+enum RouteType {
+  TRONCAL
+  ESPECIAL
+  PEATONAL
+}
+
+model Stop {
+  id        String @id @default(cuid())
+  name      String
+  latitude  Float
+  longitude Float
+  sequence  Int
+
+  routeId String
+  route   BusRoute @relation(fields: [routeId], references: [id], onDelete: Cascade)
+}
+
+model Bus {
+  id            String  @id @default(cuid())
+  busCode       String  @unique
+  latitude      Float?
+  longitude     Float?
+  heading       Float?
+  speed         Float?
+  capacity      Int     @default(40)
+  occupied      Int     @default(0)
+  currentStopId String?
+
+  routeId String
+  route   BusRoute @relation(fields: [routeId], references: [id], onDelete: Cascade)
+}
+
+model Conversation {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId   String
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages Message[]
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  role      Role
+  text      String
+  createdAt DateTime @default(now())
+
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  user
+  model
+}

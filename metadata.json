@@ -1,0 +1,9 @@
+{
+  "name": "Guelaguetza Connect",
+  "description": "The official digital companion for the Guelaguetza 2025 festival. Features real-time transport tracking (BinniBus), AR cultural experiences, and social stories.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}
