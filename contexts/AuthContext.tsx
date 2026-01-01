@@ -90,41 +90,86 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       return true;
     } catch (error) {
       console.error('Login error:', error);
+
+      // Demo mode: Check local registered users when backend unavailable
+      const savedUsers = localStorage.getItem('demo_users');
+      if (savedUsers) {
+        const users = JSON.parse(savedUsers);
+        const foundUser = users.find((u: { email: string; password: string }) =>
+          u.email === email && u.password === password
+        );
+        if (foundUser) {
+          const demoToken = 'demo_token_' + Date.now();
+          setToken(demoToken);
+          setUser({
+            id: foundUser.id,
+            email: foundUser.email,
+            nombre: foundUser.nombre,
+            apellido: foundUser.apellido,
+            region: foundUser.region,
+            faceData: foundUser.faceData,
+          });
+          return true;
+        }
+      }
+
       return false;
     }
   };
 
   const loginWithFace = async (faceImage: string): Promise<boolean> => {
     // Get all users with face data from local storage (demo mode)
-    // In production, this would be a backend endpoint with proper face matching
-    const savedUsers = localStorage.getItem('registered_faces');
-    if (!savedUsers) return false;
+    const savedFaces = localStorage.getItem('registered_faces');
+    if (!savedFaces) return false;
 
     try {
-      const faces: Array<{ email: string; faceData: string }> = JSON.parse(savedUsers);
+      const faces: Array<{ email: string; faceData: string }> = JSON.parse(savedFaces);
 
       // Simple demo: find user with face data
       // In production, use face-api.js or backend ML service for real matching
-      const matchedUser = faces.find(f => f.faceData);
+      const matchedFace = faces.find(f => f.faceData);
 
-      if (matchedUser) {
-        // Try to login with the matched email
-        // For demo, we'll simulate successful face match
-        const res = await fetch(`${API_BASE}/auth/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: matchedUser.email,
-            password: 'face_auth_bypass',
-            faceAuth: true
-          }),
-        });
+      if (matchedFace) {
+        // Try backend first
+        try {
+          const res = await fetch(`${API_BASE}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: matchedFace.email,
+              password: 'face_auth_bypass',
+              faceAuth: true
+            }),
+          });
 
-        if (res.ok) {
-          const data = await res.json();
-          setToken(data.token);
-          setUser({ ...data.user, faceData: matchedUser.faceData });
-          return true;
+          if (res.ok) {
+            const data = await res.json();
+            setToken(data.token);
+            setUser({ ...data.user, faceData: matchedFace.faceData });
+            return true;
+          }
+        } catch {
+          // Backend unavailable, use demo mode
+        }
+
+        // Demo mode: find user in local storage
+        const savedUsers = localStorage.getItem('demo_users');
+        if (savedUsers) {
+          const users = JSON.parse(savedUsers);
+          const foundUser = users.find((u: { email: string }) => u.email === matchedFace.email);
+          if (foundUser) {
+            const demoToken = 'demo_token_' + Date.now();
+            setToken(demoToken);
+            setUser({
+              id: foundUser.id,
+              email: foundUser.email,
+              nombre: foundUser.nombre,
+              apellido: foundUser.apellido,
+              region: foundUser.region,
+              faceData: matchedFace.faceData,
+            });
+            return true;
+          }
         }
       }
 
@@ -168,7 +213,49 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       return true;
     } catch (error) {
       console.error('Register error:', error);
-      return false;
+
+      // Demo mode: Save user locally when backend unavailable
+      const newUser = {
+        id: 'demo_' + Date.now(),
+        email: data.email,
+        password: data.password,
+        nombre: data.nombre,
+        apellido: data.apellido,
+        region: data.region,
+        faceData: data.faceData,
+      };
+
+      // Save to demo users
+      const savedUsers = localStorage.getItem('demo_users');
+      const users = savedUsers ? JSON.parse(savedUsers) : [];
+
+      // Check if email already exists
+      if (users.some((u: { email: string }) => u.email === data.email)) {
+        return false;
+      }
+
+      users.push(newUser);
+      localStorage.setItem('demo_users', JSON.stringify(users));
+
+      // Save face data for Face ID
+      if (data.faceData) {
+        const savedFaces = localStorage.getItem('registered_faces');
+        const faces = savedFaces ? JSON.parse(savedFaces) : [];
+        faces.push({ email: data.email, faceData: data.faceData });
+        localStorage.setItem('registered_faces', JSON.stringify(faces));
+      }
+
+      const demoToken = 'demo_token_' + Date.now();
+      setToken(demoToken);
+      setUser({
+        id: newUser.id,
+        email: newUser.email,
+        nombre: newUser.nombre,
+        apellido: newUser.apellido,
+        region: newUser.region,
+        faceData: newUser.faceData,
+      });
+      return true;
     }
   };
 
