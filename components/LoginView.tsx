@@ -8,7 +8,7 @@ interface LoginViewProps {
 }
 
 const LoginView: React.FC<LoginViewProps> = ({ setView }) => {
-  const { login, loginWithFace } = useAuth();
+  const { login, loginWithFace, loginAsDemo } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -290,13 +290,52 @@ const LoginView: React.FC<LoginViewProps> = ({ setView }) => {
           </button>
         </p>
 
-        {/* Skip for demo */}
-        <button
-          onClick={() => setView(ViewState.HOME)}
-          className="w-full mt-4 text-gray-400 text-sm hover:text-gray-600"
-        >
-          Continuar como invitado
-        </button>
+        {/* Demo Mode Section */}
+        <div className="mt-6 pt-4 border-t border-gray-200">
+          <p className="text-center text-gray-500 text-sm mb-3">Modo Demo - Acceso rapido</p>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={async () => {
+                setIsLoading(true);
+                await loginAsDemo('user');
+                setView(ViewState.HOME);
+              }}
+              className="py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl text-sm font-medium hover:opacity-90 transition"
+            >
+              Usuario Demo
+            </button>
+            <button
+              onClick={async () => {
+                setIsLoading(true);
+                await loginAsDemo('seller');
+                setView(ViewState.HOME);
+              }}
+              className="py-3 px-4 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl text-sm font-medium hover:opacity-90 transition"
+            >
+              Vendedor Demo
+            </button>
+            <button
+              onClick={async () => {
+                setIsLoading(true);
+                await loginAsDemo('host');
+                setView(ViewState.HOME);
+              }}
+              className="py-3 px-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl text-sm font-medium hover:opacity-90 transition"
+            >
+              Guia Demo
+            </button>
+            <button
+              onClick={async () => {
+                setIsLoading(true);
+                await loginAsDemo('admin');
+                setView(ViewState.HOME);
+              }}
+              className="py-3 px-4 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl text-sm font-medium hover:opacity-90 transition"
+            >
+              Admin Demo
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

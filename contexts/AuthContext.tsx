@@ -18,8 +18,10 @@ interface AuthContextType {
   token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  isDemoMode: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   loginWithFace: (faceImage: string) => Promise<boolean>;
+  loginAsDemo: (userType?: 'user' | 'seller' | 'admin' | 'host') => Promise<boolean>;
   register: (data: RegisterData) => Promise<boolean>;
   logout: () => void;
   updateProfile: (data: Partial<User>) => Promise<boolean>;
@@ -36,6 +38,42 @@ interface RegisterData {
 
 const API_BASE = 'http://localhost:3005/api';
 
+// Demo users for testing without login
+const DEMO_USERS = {
+  user: {
+    email: 'demo@guelaguetza.mx',
+    password: 'password123',
+    nombre: 'Usuario Demo',
+    apellido: 'Oaxaca',
+    region: 'Valles Centrales',
+    role: 'USER' as UserRole,
+  },
+  seller: {
+    email: 'artesano@guelaguetza.mx',
+    password: 'password123',
+    nombre: 'Maria',
+    apellido: 'Gonzalez',
+    region: 'Valles Centrales',
+    role: 'USER' as UserRole,
+  },
+  host: {
+    email: 'guia@guelaguetza.mx',
+    password: 'password123',
+    nombre: 'Roberto',
+    apellido: 'Hernandez',
+    region: 'Valles Centrales',
+    role: 'USER' as UserRole,
+  },
+  admin: {
+    email: 'admin@guelaguetza.mx',
+    password: 'admin123',
+    nombre: 'Admin',
+    apellido: 'Guelaguetza',
+    region: 'Valles Centrales',
+    role: 'ADMIN' as UserRole,
+  },
+};
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
@@ -50,18 +88,66 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDemoMode, setIsDemoMode] = useState(false);
 
-  // Load saved auth on mount
+  // Load saved auth on mount OR auto-login as demo user
   useEffect(() => {
     const savedToken = localStorage.getItem('auth_token');
     const savedUser = localStorage.getItem('auth_user');
+    const autoDemo = localStorage.getItem('auto_demo_mode');
 
     if (savedToken && savedUser) {
       setToken(savedToken);
       setUser(JSON.parse(savedUser));
+      setIsDemoMode(savedToken.startsWith('demo_'));
+    } else if (autoDemo === 'true') {
+      // Auto-login as demo user
+      loginAsDemo('user');
     }
     setIsLoading(false);
   }, []);
+
+  // Function to login as demo user
+  const loginAsDemo = async (userType: 'user' | 'seller' | 'admin' | 'host' = 'user'): Promise<boolean> => {
+    const demoUser = DEMO_USERS[userType];
+
+    try {
+      // Try backend first
+      const res = await fetch(`${API_BASE}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: demoUser.email, password: demoUser.password }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setToken(data.token);
+        setUser(data.user);
+        setIsDemoMode(true);
+        localStorage.setItem('auto_demo_mode', 'true');
+        return true;
+      }
+    } catch {
+      // Backend unavailable, use local demo mode
+    }
+
+    // Fallback to local demo mode
+    const demoToken = `demo_${userType}_${Date.now()}`;
+    const demoUserData: User = {
+      id: `demo_${userType}_id`,
+      email: demoUser.email,
+      nombre: demoUser.nombre,
+      apellido: demoUser.apellido,
+      region: demoUser.region,
+      role: demoUser.role,
+    };
+
+    setToken(demoToken);
+    setUser(demoUserData);
+    setIsDemoMode(true);
+    localStorage.setItem('auto_demo_mode', 'true');
+    return true;
+  };
 
   // Save auth changes
   useEffect(() => {
@@ -265,6 +351,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const logout = () => {
     setToken(null);
     setUser(null);
+    setIsDemoMode(false);
+    localStorage.removeItem('auto_demo_mode');
   };
 
   const updateProfile = async (data: Partial<User>): Promise<boolean> => {
@@ -297,8 +385,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         token,
         isLoading,
         isAuthenticated: !!user && !!token,
+        isDemoMode,
         login,
         loginWithFace,
+        loginAsDemo,
         register,
         logout,
         updateProfile,

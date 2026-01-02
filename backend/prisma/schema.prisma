@@ -65,6 +65,26 @@ model User {
   createdCommunities Community[]       @relation("CommunityCreator")
   communityMembers   CommunityMember[]
   communityPosts     CommunityPost[]
+
+  // Marketplace relations
+  sellerProfile   SellerProfile?
+  cart            Cart?
+  orders          Order[]
+  productReviews  ProductReview[]
+
+  // Streaming relations
+  streams         LiveStream[]
+  streamMessages  StreamMessage[]
+
+  // AR Map relations
+  poiReviews      POIReview[]
+  poiFavorites    POIFavorite[]
+  poiCheckIns     POICheckIn[]
+
+  // Reservations relations
+  hostedExperiences   Experience[]
+  bookings            Booking[]
+  experienceReviews   ExperienceReview[]
 }
 
 model Story {
@@ -464,4 +484,383 @@ model CommunityPost {
   author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   @@index([communityId, createdAt])
+}
+
+// ============================================
+// MARKETPLACE: E-commerce System
+// ============================================
+enum ProductCategory {
+  ARTESANIA
+  MEZCAL
+  TEXTIL
+  CERAMICA
+  JOYERIA
+  GASTRONOMIA
+  OTRO
+}
+
+enum ProductStatus {
+  DRAFT
+  ACTIVE
+  SOLD_OUT
+  ARCHIVED
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+model SellerProfile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  businessName    String
+  description     String?
+  bannerUrl       String?
+  location        String?
+  rating          Float    @default(0)
+  reviewCount     Int      @default(0)
+  verified        Boolean  @default(false)
+  stripeAccountId String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  products Product[]
+  orders   Order[]
+
+  @@index([userId])
+}
+
+model Product {
+  id          String          @id @default(cuid())
+  sellerId    String
+  name        String
+  description String
+  price       Decimal         @db.Decimal(10, 2)
+  category    ProductCategory
+  status      ProductStatus   @default(DRAFT)
+  stock       Int             @default(0)
+  images      String[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  seller     SellerProfile   @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+  reviews    ProductReview[]
+
+  @@index([sellerId])
+  @@index([category, status])
+}
+
+model Cart {
+  id        String     @id @default(cuid())
+  userId    String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items CartItem[]
+}
+
+model CartItem {
+  id        String @id @default(cuid())
+  cartId    String
+  productId String
+  quantity  Int    @default(1)
+
+  cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([cartId, productId])
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  userId          String
+  sellerId        String
+  status          OrderStatus @default(PENDING)
+  total           Decimal     @db.Decimal(10, 2)
+  shippingAddress Json
+  stripePaymentId String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  user   User          @relation(fields: [userId], references: [id])
+  seller SellerProfile @relation(fields: [sellerId], references: [id])
+  items  OrderItem[]
+
+  @@index([userId])
+  @@index([sellerId])
+  @@index([status])
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int
+  price     Decimal @db.Decimal(10, 2)
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model ProductReview {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+}
+
+// ============================================
+// STREAMING: Live Video System
+// ============================================
+enum StreamStatus {
+  SCHEDULED
+  LIVE
+  ENDED
+}
+
+enum StreamCategory {
+  DANZA
+  MUSICA
+  ARTESANIA
+  COCINA
+  CHARLA
+  OTRO
+}
+
+model LiveStream {
+  id           String         @id @default(cuid())
+  userId       String
+  title        String
+  description  String?
+  thumbnailUrl String?
+  category     StreamCategory
+  status       StreamStatus   @default(SCHEDULED)
+  scheduledAt  DateTime?
+  startedAt    DateTime?
+  endedAt      DateTime?
+  viewerCount  Int            @default(0)
+  peakViewers  Int            @default(0)
+  streamKey    String         @unique @default(cuid())
+  playbackUrl  String?
+  vodUrl       String?
+  createdAt    DateTime       @default(now())
+
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages StreamMessage[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([category])
+}
+
+model StreamMessage {
+  id        String   @id @default(cuid())
+  streamId  String
+  userId    String
+  content   String
+  createdAt DateTime @default(now())
+
+  stream LiveStream @relation(fields: [streamId], references: [id], onDelete: Cascade)
+  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([streamId, createdAt])
+}
+
+// ============================================
+// AR MAP: Points of Interest
+// ============================================
+enum POICategory {
+  CULTURAL
+  GASTRONOMIA
+  ARTESANIA
+  EVENTO
+  TRANSPORTE
+  NATURALEZA
+}
+
+model PointOfInterest {
+  id          String      @id @default(cuid())
+  name        String
+  description String
+  imageUrl    String?
+  arModelUrl  String?
+  category    POICategory
+  latitude    Float
+  longitude   Float
+  address     String?
+  rating      Float       @default(0)
+  reviewCount Int         @default(0)
+  isVerified  Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  reviews   POIReview[]
+  favorites POIFavorite[]
+  checkIns  POICheckIn[]
+
+  @@index([category])
+  @@index([latitude, longitude])
+}
+
+model POIReview {
+  id        String   @id @default(cuid())
+  userId    String
+  poiId     String
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+
+  user User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  poi  PointOfInterest @relation(fields: [poiId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, poiId])
+}
+
+model POIFavorite {
+  id        String   @id @default(cuid())
+  userId    String
+  poiId     String
+  createdAt DateTime @default(now())
+
+  user User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  poi  PointOfInterest @relation(fields: [poiId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, poiId])
+}
+
+model POICheckIn {
+  id        String   @id @default(cuid())
+  userId    String
+  poiId     String
+  createdAt DateTime @default(now())
+
+  user User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  poi  PointOfInterest @relation(fields: [poiId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([poiId])
+}
+
+// ============================================
+// RESERVATIONS: Tours & Experiences
+// ============================================
+enum ExperienceCategory {
+  TOUR
+  TALLER
+  DEGUSTACION
+  CLASE
+  VISITA
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+model Experience {
+  id          String             @id @default(cuid())
+  hostId      String
+  title       String
+  description String
+  imageUrl    String?
+  images      String[]
+  category    ExperienceCategory
+  price       Decimal            @db.Decimal(10, 2)
+  duration    Int                // Duration in minutes
+  maxCapacity Int
+  location    String
+  latitude    Float?
+  longitude   Float?
+  includes    String[]
+  languages   String[]
+  isActive    Boolean            @default(true)
+  rating      Float              @default(0)
+  reviewCount Int                @default(0)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  host      User                 @relation(fields: [hostId], references: [id])
+  timeSlots ExperienceTimeSlot[]
+  bookings  Booking[]
+  reviews   ExperienceReview[]
+
+  @@index([hostId])
+  @@index([category])
+  @@index([isActive])
+}
+
+model ExperienceTimeSlot {
+  id           String   @id @default(cuid())
+  experienceId String
+  date         DateTime @db.Date
+  startTime    String   // "HH:mm" format
+  endTime      String
+  capacity     Int
+  bookedCount  Int      @default(0)
+  isAvailable  Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  experience Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+  bookings   Booking[]
+
+  @@index([experienceId, date])
+  @@index([date, isAvailable])
+}
+
+model Booking {
+  id              String        @id @default(cuid())
+  userId          String
+  experienceId    String
+  timeSlotId      String
+  status          BookingStatus @default(PENDING)
+  guestCount      Int           @default(1)
+  totalPrice      Decimal       @db.Decimal(10, 2)
+  specialRequests String?
+  stripePaymentId String?
+  confirmedAt     DateTime?
+  cancelledAt     DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  user       User               @relation(fields: [userId], references: [id])
+  experience Experience         @relation(fields: [experienceId], references: [id])
+  timeSlot   ExperienceTimeSlot @relation(fields: [timeSlotId], references: [id])
+
+  @@index([userId])
+  @@index([experienceId])
+  @@index([timeSlotId])
+  @@index([status])
+}
+
+model ExperienceReview {
+  id           String   @id @default(cuid())
+  userId       String
+  experienceId String
+  rating       Int
+  comment      String?
+  createdAt    DateTime @default(now())
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  experience Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, experienceId])
 }

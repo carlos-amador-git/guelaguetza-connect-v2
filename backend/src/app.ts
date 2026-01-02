@@ -22,6 +22,10 @@ import eventsRoutes from './routes/events.js';
 import analyticsRoutes from './routes/analytics.js';
 import adminRoutes from './routes/admin.js';
 import communitiesRoutes from './routes/communities.js';
+import bookingsRoutes from './routes/bookings.js';
+import poiRoutes from './routes/poi.js';
+import marketplaceRoutes from './routes/marketplace.js';
+import streamsRoutes from './routes/streams.js';
 import { ZodError } from 'zod';
 
 export async function buildApp(): Promise<FastifyInstance> {
@@ -69,6 +73,10 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(analyticsRoutes, { prefix: '/api/analytics' });
   await app.register(adminRoutes, { prefix: '/api/admin' });
   await app.register(communitiesRoutes, { prefix: '/api/communities' });
+  await app.register(bookingsRoutes, { prefix: '/api/bookings' });
+  await app.register(poiRoutes, { prefix: '/api/poi' });
+  await app.register(marketplaceRoutes, { prefix: '/api/marketplace' });
+  await app.register(streamsRoutes, { prefix: '/api/streams' });
 
   // Health check
   app.get('/health', async () => {
@@ -95,6 +103,10 @@ export async function buildApp(): Promise<FastifyInstance> {
         analytics: '/api/analytics',
         admin: '/api/admin',
         communities: '/api/communities',
+        bookings: '/api/bookings',
+        poi: '/api/poi',
+        marketplace: '/api/marketplace',
+        streams: '/api/streams',
       },
     };
   });
