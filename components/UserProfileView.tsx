@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, MapPin, Calendar, Grid3X3, Users, Loader2 } from 'lucide-react';
+import { ArrowLeft, MapPin, Calendar, Grid3X3, Users, Loader2, MessageCircle } from 'lucide-react';
 import { getUserProfile, getUserStories, UserProfile, FeedStory } from '../services/social';
+import { createConversation, Participant } from '../services/dm';
 import { useAuth } from '../contexts/AuthContext';
 import FollowButton from './ui/FollowButton';
 import Skeleton from './ui/Skeleton';
@@ -9,21 +10,43 @@ interface UserProfileViewProps {
   userId: string;
   onBack: () => void;
   onStoryClick?: (storyId: string) => void;
+  onOpenChat?: (conversationId: string, participant: Participant) => void;
 }
 
 const UserProfileView: React.FC<UserProfileViewProps> = ({
   userId,
   onBack,
   onStoryClick,
+  onOpenChat,
 }) => {
-  const { token, user: currentUser } = useAuth();
+  const { token, user: currentUser, isAuthenticated } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [stories, setStories] = useState<FeedStory[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingStories, setLoadingStories] = useState(true);
   const [activeTab, setActiveTab] = useState<'posts' | 'followers' | 'following'>('posts');
+  const [startingChat, setStartingChat] = useState(false);
 
   const isOwnProfile = currentUser?.id === userId;
+
+  const handleStartChat = async () => {
+    if (!token || !profile || !onOpenChat) return;
+
+    setStartingChat(true);
+    try {
+      const conversation = await createConversation(userId, token);
+      onOpenChat(conversation.id, {
+        id: userId,
+        nombre: profile.nombre,
+        apellido: profile.apellido,
+        avatar: profile.avatar,
+      });
+    } catch (error) {
+      console.error('Error starting chat:', error);
+    } finally {
+      setStartingChat(false);
+    }
+  };
 
   useEffect(() => {
     loadProfile();
@@ -153,12 +176,28 @@ const UserProfileView: React.FC<UserProfileViewProps> = ({
                 </div>
 
                 {!isOwnProfile && (
-                  <FollowButton
-                    userId={userId}
-                    isFollowing={profile.isFollowing || false}
-                    onFollowChange={handleFollowChange}
-                    size="sm"
-                  />
+                  <div className="flex gap-2">
+                    <FollowButton
+                      userId={userId}
+                      isFollowing={profile.isFollowing || false}
+                      onFollowChange={handleFollowChange}
+                      size="sm"
+                    />
+                    {isAuthenticated && onOpenChat && (
+                      <button
+                        onClick={handleStartChat}
+                        disabled={startingChat}
+                        className="p-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
+                        title="Enviar mensaje"
+                      >
+                        {startingChat ? (
+                          <Loader2 size={18} className="animate-spin" />
+                        ) : (
+                          <MessageCircle size={18} />
+                        )}
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
 

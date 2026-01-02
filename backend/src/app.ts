@@ -11,6 +11,9 @@ import pushRoutes from './routes/push.js';
 import socialRoutes from './routes/social.js';
 import gamificationRoutes from './routes/gamification.js';
 import notificationsRoutes from './routes/notifications.js';
+import dmRoutes from './routes/dm.js';
+import searchRoutes from './routes/search.js';
+import eventsRoutes from './routes/events.js';
 import { ZodError } from 'zod';
 
 export async function buildApp(): Promise<FastifyInstance> {
@@ -48,6 +51,9 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(socialRoutes, { prefix: '/api' });
   await app.register(gamificationRoutes, { prefix: '/api/gamification' });
   await app.register(notificationsRoutes, { prefix: '/api/notifications' });
+  await app.register(dmRoutes, { prefix: '/api/dm' });
+  await app.register(searchRoutes, { prefix: '/api/search' });
+  await app.register(eventsRoutes, { prefix: '/api/events' });
 
   // Health check
   app.get('/health', async () => {
@@ -68,6 +74,9 @@ export async function buildApp(): Promise<FastifyInstance> {
         social: '/api/users, /api/feed',
         gamification: '/api/gamification',
         notifications: '/api/notifications',
+        dm: '/api/dm',
+        search: '/api/search',
+        events: '/api/events',
       },
     };
   });

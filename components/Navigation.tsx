@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Home, Bus, Camera, Compass, User } from 'lucide-react';
+import { Home, Bus, Camera, Search, User } from 'lucide-react';
 import { ViewState } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import haptics from '../services/haptics';
@@ -20,7 +20,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, setView, onUserPro
     { view: ViewState.HOME, icon: Home, label: 'Inicio' },
     { view: ViewState.TRANSPORT, icon: Bus, label: 'BinniBus' },
     { view: ViewState.AR_SCANNER, icon: Camera, label: 'AR' },
-    { view: ViewState.STORIES, icon: Compass, label: 'Historias' },
+    { view: ViewState.SEARCH, icon: Search, label: 'Buscar' },
     { view: ViewState.PROFILE, icon: User, label: 'Perfil' },
   ];
 

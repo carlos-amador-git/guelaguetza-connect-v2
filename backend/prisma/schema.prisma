@@ -36,6 +36,15 @@ model User {
 
   // Notification relations
   notifications Notification[]
+
+  // Direct Messages relations
+  conversationsAsParticipant1 DirectConversation[] @relation("ConversationParticipant1")
+  conversationsAsParticipant2 DirectConversation[] @relation("ConversationParticipant2")
+  directMessages              DirectMessage[]
+
+  // Event relations
+  eventRSVPs     EventRSVP[]
+  eventReminders EventReminder[]
 }
 
 model Story {
@@ -260,5 +269,102 @@ enum NotificationType {
   COMMENT
   BADGE_UNLOCKED
   LEVEL_UP
+  DIRECT_MESSAGE
+  EVENT_REMINDER
   SYSTEM
+}
+
+// ============================================
+// DIRECT MESSAGES: User-to-User Chat
+// ============================================
+model DirectConversation {
+  id             String    @id @default(cuid())
+  participant1Id String
+  participant2Id String
+  lastMessageAt  DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  participant1 User            @relation("ConversationParticipant1", fields: [participant1Id], references: [id], onDelete: Cascade)
+  participant2 User            @relation("ConversationParticipant2", fields: [participant2Id], references: [id], onDelete: Cascade)
+  messages     DirectMessage[]
+
+  @@unique([participant1Id, participant2Id])
+  @@index([participant1Id])
+  @@index([participant2Id])
+}
+
+model DirectMessage {
+  id             String   @id @default(cuid())
+  conversationId String
+  senderId       String
+  content        String
+  read           Boolean  @default(false)
+  createdAt      DateTime @default(now())
+
+  conversation DirectConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User               @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+}
+
+// ============================================
+// EVENTS: Guelaguetza Calendar & RSVP
+// ============================================
+model Event {
+  id          String        @id @default(cuid())
+  title       String
+  description String
+  imageUrl    String?
+  location    String
+  latitude    Float?
+  longitude   Float?
+  startDate   DateTime
+  endDate     DateTime?
+  category    EventCategory
+  isOfficial  Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  rsvps     EventRSVP[]
+  reminders EventReminder[]
+
+  @@index([startDate])
+  @@index([category])
+}
+
+enum EventCategory {
+  DANZA
+  MUSICA
+  GASTRONOMIA
+  ARTESANIA
+  CEREMONIA
+  DESFILE
+  OTRO
+}
+
+model EventRSVP {
+  id        String   @id @default(cuid())
+  userId    String
+  eventId   String
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+}
+
+model EventReminder {
+  id        String   @id @default(cuid())
+  userId    String
+  eventId   String
+  remindAt  DateTime
+  sent      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
 }
