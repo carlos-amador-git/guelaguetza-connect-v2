@@ -1,3 +1,5 @@
+import { MOCK_STORIES } from './mockData';
+
 const API_BASE = 'http://localhost:3005/api';
 
 // Token management (synced with AuthContext)
@@ -141,10 +143,28 @@ export interface Conversation {
 
 // API Functions
 export async function fetchStories(): Promise<Story[]> {
-  const res = await fetch(`${API_BASE}/stories`);
-  if (!res.ok) throw new Error('Failed to fetch stories');
-  const data = await res.json();
-  return data.stories;
+  try {
+    const res = await fetch(`${API_BASE}/stories`);
+    if (!res.ok) throw new Error('Failed to fetch stories');
+    const data = await res.json();
+    return data.stories;
+  } catch {
+    // Return mock data when backend is unavailable
+    return MOCK_STORIES.map(s => ({
+      id: s.id,
+      description: s.description,
+      mediaUrl: s.mediaUrl,
+      location: s.location,
+      views: s.views,
+      createdAt: s.createdAt,
+      user: {
+        id: s.user.id,
+        nombre: s.user.nombre,
+        avatar: s.user.avatar,
+      },
+      _count: s._count,
+    }));
+  }
 }
 
 export async function fetchRoutes(): Promise<BusRoute[]> {

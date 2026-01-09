@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Home, Bus, Camera, Search, User, ShoppingBag, Radio, Map, Ticket, MessageCircle, Users } from 'lucide-react';
+import { Home, Bus, Camera, Search, User, ShoppingBag, Radio, Map, Ticket, MessageCircle, Users, CalendarDays, MoreHorizontal, X } from 'lucide-react';
 import { ViewState } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import haptics from '../services/haptics';
@@ -16,22 +16,40 @@ interface NavigationProps {
 const Navigation: React.FC<NavigationProps> = ({ currentView, setView, onUserProfile, variant = 'bottom' }) => {
   const { isAuthenticated, user } = useAuth();
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
 
+  // Main nav items for mobile (4 items + More button)
+  const mobileNavItems = [
+    { view: ViewState.HOME, icon: Home, label: 'Inicio' },
+    { view: ViewState.PROGRAM, icon: CalendarDays, label: 'Programa' },
+    { view: ViewState.TIENDA, icon: ShoppingBag, label: 'Tienda' },
+    { view: ViewState.PROFILE, icon: User, label: 'Perfil' },
+  ];
+
+  // Items shown in desktop sidebar - all main items
   const mainNavItems = [
     { view: ViewState.HOME, icon: Home, label: 'Inicio' },
-    { view: ViewState.TRANSPORT, icon: Bus, label: 'BinniBus' },
-    { view: ViewState.AR_SCANNER, icon: Camera, label: 'AR' },
+    { view: ViewState.PROGRAM, icon: CalendarDays, label: 'Programa' },
+    { view: ViewState.TIENDA, icon: ShoppingBag, label: 'Tienda' },
     { view: ViewState.SEARCH, icon: Search, label: 'Buscar' },
     { view: ViewState.PROFILE, icon: User, label: 'Perfil' },
   ];
 
+  // Extra items for sidebar "Explorar" section
   const extraNavItems = [
-    { view: ViewState.TIENDA, icon: ShoppingBag, label: 'Tienda' },
+    { view: ViewState.TRANSPORT, icon: Bus, label: 'BinniBus' },
     { view: ViewState.STREAMS, icon: Radio, label: 'En Vivo' },
-    { view: ViewState.AR_MAP, icon: Map, label: 'Mapa' },
+    { view: ViewState.SMART_MAP, icon: Map, label: 'Mapa' },
     { view: ViewState.EXPERIENCES, icon: Ticket, label: 'Tours' },
     { view: ViewState.COMMUNITIES, icon: Users, label: 'Comunidad' },
+    { view: ViewState.AR_SCANNER, icon: Camera, label: 'AR Scanner' },
     { view: ViewState.CHAT, icon: MessageCircle, label: 'GuelaBot' },
+  ];
+
+  // All extra items for mobile "More" menu (includes Search)
+  const moreMenuItems = [
+    { view: ViewState.SEARCH, icon: Search, label: 'Buscar' },
+    ...extraNavItems,
   ];
 
   const handleNavClick = (view: ViewState) => {
@@ -43,7 +61,11 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, setView, onUserPro
   if (variant === 'sidebar') {
     return (
       <>
-        <aside className="hidden md:flex flex-col w-64 lg:w-72 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 h-full">
+        <aside
+          className="hidden md:flex flex-col w-64 lg:w-72 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 h-full"
+          role="complementary"
+          aria-label="Barra lateral de navegación"
+        >
           {/* Logo/Brand */}
           <div className="p-6 border-b border-gray-100 dark:border-gray-800">
             <h1 className="text-xl font-bold text-oaxaca-pink">Guelaguetza</h1>
@@ -51,8 +73,8 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, setView, onUserPro
           </div>
 
           {/* Main Navigation */}
-          <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-3">Principal</p>
+          <nav className="flex-1 p-4 space-y-1 overflow-y-auto" role="navigation" aria-label="Navegación principal">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-3" aria-hidden="true">Principal</p>
             {mainNavItems.map((item) => {
               const isActive = currentView === item.view;
               const isProfile = item.view === ViewState.PROFILE;
@@ -61,6 +83,8 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, setView, onUserPro
                 <button
                   key={item.view}
                   onClick={() => handleNavClick(item.view)}
+                  aria-label={item.label}
+                  aria-current={isActive ? 'page' : undefined}
                   className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl transition-all ${
                     isActive
                       ? 'bg-oaxaca-pink/10 text-oaxaca-pink font-medium'
@@ -74,16 +98,16 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, setView, onUserPro
                       className={`w-5 h-5 rounded-full object-cover ${isActive ? 'ring-2 ring-oaxaca-pink' : ''}`}
                     />
                   ) : (
-                    <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+                    <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} aria-hidden="true" />
                   )}
                   <span className="text-sm">{item.label}</span>
                 </button>
               );
             })}
 
-            <div className="my-4 border-t border-gray-100 dark:border-gray-800" />
+            <div className="my-4 border-t border-gray-100 dark:border-gray-800" aria-hidden="true" />
 
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-3">Explorar</p>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-3" aria-hidden="true">Explorar</p>
             {extraNavItems.map((item) => {
               const isActive = currentView === item.view;
 
@@ -91,13 +115,15 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, setView, onUserPro
                 <button
                   key={item.view}
                   onClick={() => handleNavClick(item.view)}
+                  aria-label={item.label}
+                  aria-current={isActive ? 'page' : undefined}
                   className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl transition-all ${
                     isActive
                       ? 'bg-oaxaca-pink/10 text-oaxaca-pink font-medium'
                       : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
                   }`}
                 >
-                  <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+                  <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} aria-hidden="true" />
                   <span className="text-sm">{item.label}</span>
                 </button>
               );
@@ -139,12 +165,86 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, setView, onUserPro
     );
   }
 
+  // Check if current view is in the "More" menu
+  const isMoreActive = moreMenuItems.some(item => item.view === currentView);
+
   // Bottom variant for mobile
   return (
     <>
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 pb-safe z-50 transition-colors">
+      {/* More Menu Bottom Sheet */}
+      {showMoreMenu && (
+        <div
+          className="md:hidden fixed inset-0 z-[60]"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Menú de exploración"
+        >
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
+            onClick={() => setShowMoreMenu(false)}
+            aria-hidden="true"
+          />
+
+          {/* Bottom Sheet */}
+          <div className="absolute bottom-0 left-0 right-0 bg-white dark:bg-gray-900 rounded-t-3xl pb-safe animate-slide-up">
+            {/* Handle */}
+            <div className="flex justify-center pt-3 pb-2" aria-hidden="true">
+              <div className="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full" />
+            </div>
+
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 pb-4 border-b border-gray-100 dark:border-gray-800">
+              <h3 id="more-menu-title" className="text-lg font-semibold text-gray-900 dark:text-white">Explorar</h3>
+              <button
+                onClick={() => setShowMoreMenu(false)}
+                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                aria-label="Cerrar menú"
+              >
+                <X size={20} className="text-gray-500" />
+              </button>
+            </div>
+
+            {/* Menu Grid */}
+            <div className="grid grid-cols-4 gap-2 p-4">
+              {moreMenuItems.map((item) => {
+                const isActive = currentView === item.view;
+                return (
+                  <button
+                    key={item.view}
+                    onClick={() => {
+                      handleNavClick(item.view);
+                      setShowMoreMenu(false);
+                    }}
+                    className={`flex flex-col items-center justify-center p-3 rounded-2xl transition-all ${
+                      isActive
+                        ? 'bg-oaxaca-pink/10 text-oaxaca-pink'
+                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                    }`}
+                  >
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-2 ${
+                      isActive
+                        ? 'bg-oaxaca-pink/20'
+                        : 'bg-gray-100 dark:bg-gray-800'
+                    }`}>
+                      <item.icon size={24} strokeWidth={isActive ? 2.5 : 2} />
+                    </div>
+                    <span className="text-xs font-medium text-center leading-tight">{item.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <nav
+        className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 pb-safe z-50 transition-colors"
+        role="navigation"
+        aria-label="Navegación principal"
+      >
         <div className="flex justify-around items-center h-16">
-          {mainNavItems.map((item) => {
+          {mobileNavItems.map((item) => {
             const isActive = currentView === item.view;
             const isProfile = item.view === ViewState.PROFILE;
 
@@ -152,6 +252,8 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, setView, onUserPro
               <button
                 key={item.view}
                 onClick={() => handleNavClick(item.view)}
+                aria-label={item.label}
+                aria-current={isActive ? 'page' : undefined}
                 className={`flex flex-col items-center justify-center w-full h-full transition-colors duration-200 ${
                   isActive ? 'text-oaxaca-pink' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
                 }`}
@@ -175,6 +277,23 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, setView, onUserPro
               </button>
             );
           })}
+
+          {/* More Button */}
+          <button
+            onClick={() => {
+              haptics.tap();
+              setShowMoreMenu(true);
+            }}
+            aria-label="Más opciones"
+            aria-expanded={showMoreMenu}
+            aria-haspopup="dialog"
+            className={`flex flex-col items-center justify-center w-full h-full transition-colors duration-200 ${
+              isMoreActive ? 'text-oaxaca-pink' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
+            }`}
+          >
+            <MoreHorizontal size={24} strokeWidth={isMoreActive ? 2.5 : 2} aria-hidden="true" />
+            <span className="text-[10px] font-medium mt-1">Más</span>
+          </button>
         </div>
 
         {/* Notification Bell - floating above nav */}

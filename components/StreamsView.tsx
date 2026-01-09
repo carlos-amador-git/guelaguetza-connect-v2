@@ -8,6 +8,8 @@ import {
   Play,
   Filter,
 } from 'lucide-react';
+import EmptyState from './ui/EmptyState';
+import { SkeletonGrid } from './ui/LoadingSpinner';
 import {
   getLiveStreams,
   getUpcomingStreams,
@@ -89,7 +91,7 @@ export default function StreamsView({ onNavigate, onBack }: StreamsViewProps) {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <button onClick={onBack} className="p-2 hover:bg-white/20 rounded-full md:hidden">
+              <button onClick={onBack} className="p-2 hover:bg-white/20 rounded-full transition">
                 <ChevronLeft className="w-6 h-6" />
               </button>
               <div>
@@ -168,20 +170,25 @@ export default function StreamsView({ onNavigate, onBack }: StreamsViewProps) {
       <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto">
           {loading ? (
-            <div className="flex justify-center py-8">
-              <div className="w-8 h-8 border-4 border-red-500 border-t-transparent rounded-full animate-spin" />
-            </div>
+            <SkeletonGrid type="stream" count={6} />
           ) : displayedStreams.length === 0 ? (
-            <div className="text-center py-12">
-              <Radio className="w-16 h-16 mx-auto text-gray-600 mb-4" />
-              <p className="text-gray-400">
-                {activeTab === 'live'
-                  ? 'No hay streams en vivo ahora'
+            <EmptyState
+              type="streams"
+              title={
+                activeTab === 'live'
+                  ? 'No hay streams en vivo'
                   : activeTab === 'upcoming'
                   ? 'No hay streams programados'
-                  : 'No hay streams anteriores'}
-              </p>
-            </div>
+                  : 'No hay streams anteriores'
+              }
+              description={
+                activeTab === 'live'
+                  ? 'Vuelve pronto para ver transmisiones en vivo'
+                  : activeTab === 'upcoming'
+                  ? 'No hay transmisiones programadas por ahora'
+                  : 'No hay grabaciones disponibles'
+              }
+            />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {displayedStreams.map((stream) => (

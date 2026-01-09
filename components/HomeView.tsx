@@ -1,6 +1,13 @@
-import React, { useState } from 'react';
-import { MapPin, Calendar, PlayCircle, Camera, X, ChevronRight, Utensils, Wine, Coffee, IceCream, MessageCircle, Sparkles, ShoppingBag, Radio, Ticket, Map } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { MapPin, Calendar, PlayCircle, Camera, X, ChevronRight, Utensils, Wine, Coffee, IceCream, MessageCircle, Sparkles, ShoppingBag, Radio, Ticket, Map, Search, Users, CalendarDays, User, Heart, ChevronLeft } from 'lucide-react';
 import { ViewState } from '../types';
+import { getWishlistCount } from '../services/marketplace';
+
+const HERO_IMAGES = [
+  '/images/guelaguetza-dancers.png',
+  '/images/guelaguetza-pineapple.png',
+  '/images/guelaguetza-stage.png',
+];
 
 interface HomeViewProps {
   setView: (view: ViewState) => void;
@@ -15,21 +22,117 @@ const GASTRO_ITEMS = [
 
 const HomeView: React.FC<HomeViewProps> = ({ setView }) => {
   const [showGastroModal, setShowGastroModal] = useState(false);
+  const [heroIndex, setHeroIndex] = useState(0);
+  const [wishlistCount, setWishlistCount] = useState(0);
+
+  useEffect(() => {
+    // Auto-advance hero carousel
+    const interval = setInterval(() => {
+      setHeroIndex((prev) => (prev + 1) % HERO_IMAGES.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    // Load wishlist count
+    getWishlistCount().then(setWishlistCount).catch(() => {});
+  }, []);
+
+  const nextHero = () => setHeroIndex((prev) => (prev + 1) % HERO_IMAGES.length);
+  const prevHero = () => setHeroIndex((prev) => (prev - 1 + HERO_IMAGES.length) % HERO_IMAGES.length);
 
   return (
     <div className="pb-24 md:pb-8 animate-fade-in">
-      {/* Hero Header - Responsive */}
-      <div className="relative h-64 md:h-80 lg:h-96 bg-oaxaca-pink md:rounded-b-[2rem] lg:rounded-b-[3rem] overflow-hidden shadow-lg">
-        <img
-          src="https://picsum.photos/1200/600?grayscale&blur=2"
-          alt="Guelaguetza Texture"
-          className="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-multiply"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-oaxaca-pink/90"></div>
+      {/* Hero Header - Responsive with Carousel */}
+      <div className="relative h-72 md:h-96 lg:h-[28rem] md:rounded-b-[2rem] lg:rounded-b-[3rem] overflow-hidden shadow-lg">
+        {/* Hero Image Carousel */}
+        {HERO_IMAGES.map((img, index) => (
+          <img
+            key={img}
+            src={img}
+            alt={`Guelaguetza ${index + 1}`}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
+              index === heroIndex ? 'opacity-100' : 'opacity-0'
+            }`}
+          />
+        ))}
+
+        {/* Overlay gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/70"></div>
+
+        {/* Carousel Controls */}
+        <button
+          onClick={prevHero}
+          className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-black/30 hover:bg-black/50 rounded-full text-white transition z-10 hidden md:block"
+        >
+          <ChevronLeft size={24} />
+        </button>
+        <button
+          onClick={nextHero}
+          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-black/30 hover:bg-black/50 rounded-full text-white transition z-10 hidden md:block"
+        >
+          <ChevronRight size={24} />
+        </button>
+
+        {/* Carousel Indicators */}
+        <div className="absolute bottom-20 md:bottom-24 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+          {HERO_IMAGES.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setHeroIndex(index)}
+              className={`w-2 h-2 rounded-full transition-all ${
+                index === heroIndex ? 'bg-white w-6' : 'bg-white/50 hover:bg-white/70'
+              }`}
+            />
+          ))}
+        </div>
+
+        {/* Top Navigation Bar */}
+        <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-4 py-3 md:px-6">
+          <div className="text-white font-bold text-lg drop-shadow-lg">GC</div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setView(ViewState.SEARCH)}
+              className="p-2 rounded-full bg-black/20 hover:bg-black/40 transition text-white backdrop-blur-sm"
+              aria-label="Buscar"
+            >
+              <Search size={20} />
+            </button>
+            <button
+              onClick={() => setView(ViewState.WISHLIST)}
+              className="p-2 rounded-full bg-black/20 hover:bg-black/40 transition text-white backdrop-blur-sm relative"
+              aria-label="Lista de deseos"
+            >
+              <Heart size={20} />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-pink-500 text-white text-[10px] rounded-full flex items-center justify-center font-bold border border-white">
+                  {wishlistCount}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setView(ViewState.EVENTS)}
+              className="p-2 rounded-full bg-black/20 hover:bg-black/40 transition text-white backdrop-blur-sm relative"
+              aria-label="Eventos"
+            >
+              <CalendarDays size={20} />
+              <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-oaxaca-yellow rounded-full border border-white"></span>
+            </button>
+            <button
+              onClick={() => setView(ViewState.PROFILE)}
+              className="p-2 rounded-full bg-black/20 hover:bg-black/40 transition text-white backdrop-blur-sm"
+              aria-label="Perfil"
+            >
+              <User size={20} />
+            </button>
+          </div>
+        </div>
+
+        {/* Hero Content */}
         <div className="absolute bottom-6 left-6 right-6 md:bottom-10 md:left-10 text-white">
-          <p className="text-sm md:text-base font-semibold uppercase tracking-wider mb-1 text-oaxaca-yellow">Julio 21-28, 2025</p>
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">Guelaguetza Connect</h1>
-          <p className="text-white/90 text-sm md:text-base lg:text-lg mt-2 max-w-xl">La máxima fiesta de los Oaxaqueños en tu bolsillo.</p>
+          <p className="text-sm md:text-base font-semibold uppercase tracking-wider mb-1 text-oaxaca-yellow drop-shadow-lg">Julio 21-28, 2025</p>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight drop-shadow-lg">Guelaguetza Connect</h1>
+          <p className="text-white/90 text-sm md:text-base lg:text-lg mt-2 max-w-xl drop-shadow">La maxima fiesta de los Oaxaquenos en tu bolsillo.</p>
         </div>
       </div>
 
@@ -137,13 +240,41 @@ const HomeView: React.FC<HomeViewProps> = ({ setView }) => {
                 </div>
 
                 <div
-                  onClick={() => setView(ViewState.AR_MAP)}
+                  onClick={() => setView(ViewState.SMART_MAP)}
                   className="flex flex-col items-center p-3 md:p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl cursor-pointer hover:bg-emerald-100 transition active:scale-95"
                 >
                   <div className="bg-emerald-500 p-2.5 md:p-3 rounded-full text-white mb-2">
                     <Map size={18} className="md:w-5 md:h-5" />
                   </div>
-                  <span className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">Mapa</span>
+                  <span className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">Planificar</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Community Features - Events & Communities */}
+            <div className="mt-6 md:mt-8">
+              <h2 className="font-bold text-lg md:text-xl mb-4 text-gray-800 dark:text-gray-100">Comunidad</h2>
+              <div className="grid grid-cols-2 gap-4">
+                <div
+                  onClick={() => setView(ViewState.EVENTS)}
+                  className="bg-gradient-to-br from-rose-500 to-pink-600 p-4 md:p-5 rounded-xl shadow-md cursor-pointer hover:shadow-lg transition active:scale-[0.98] text-white"
+                >
+                  <div className="bg-white/20 w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center mb-3">
+                    <CalendarDays size={20} className="md:w-6 md:h-6" />
+                  </div>
+                  <h3 className="font-bold">Eventos</h3>
+                  <p className="text-xs md:text-sm text-white/80 mt-1">Calendario completo</p>
+                </div>
+
+                <div
+                  onClick={() => setView(ViewState.COMMUNITIES)}
+                  className="bg-gradient-to-br from-indigo-500 to-purple-600 p-4 md:p-5 rounded-xl shadow-md cursor-pointer hover:shadow-lg transition active:scale-[0.98] text-white"
+                >
+                  <div className="bg-white/20 w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center mb-3">
+                    <Users size={20} className="md:w-6 md:h-6" />
+                  </div>
+                  <h3 className="font-bold">Comunidades</h3>
+                  <p className="text-xs md:text-sm text-white/80 mt-1">Grupos y foros</p>
                 </div>
               </div>
             </div>

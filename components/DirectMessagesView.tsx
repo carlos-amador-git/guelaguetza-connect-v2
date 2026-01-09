@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowLeft, MessageCircle, Loader2 } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { ArrowLeft, MessageCircle, Archive, Trash2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import {
   getConversations,
@@ -10,7 +10,12 @@ import {
   onMessage,
   onDMUnreadCount,
 } from '../services/dm';
-import { ViewState } from '../types';
+import PullToRefresh from './ui/PullToRefresh';
+import { SkeletonGrid } from './ui/LoadingSpinner';
+import SwipeAction from './ui/SwipeAction';
+import EmptyState from './ui/EmptyState';
+import { Avatar } from './ui/LazyImage';
+import { SlideUp } from './ui/PageTransition';
 
 interface DirectMessagesViewProps {
   onBack: () => void;
@@ -73,7 +78,7 @@ const DirectMessagesView: React.FC<DirectMessagesViewProps> = ({
     };
   }, [isAuthenticated, token]);
 
-  const loadConversations = async () => {
+  const loadConversations = useCallback(async () => {
     if (!token) return;
 
     setLoading(true);
@@ -85,7 +90,7 @@ const DirectMessagesView: React.FC<DirectMessagesViewProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
 
   return (
     <div className="h-full flex flex-col bg-gray-50 dark:bg-gray-900">
@@ -108,82 +113,107 @@ const DirectMessagesView: React.FC<DirectMessagesViewProps> = ({
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto">
-        {loading ? (
-          <div className="flex items-center justify-center py-16">
-            <Loader2 className="animate-spin text-oaxaca-pink" size={32} />
-          </div>
-        ) : conversations.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
-            <MessageCircle size={64} className="text-gray-300 dark:text-gray-600 mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              No tienes conversaciones
-            </h3>
-            <p className="text-gray-500 dark:text-gray-400 text-sm">
-              Inicia una conversación desde el perfil de otro usuario
-            </p>
-          </div>
-        ) : (
-          <div className="divide-y divide-gray-100 dark:divide-gray-800">
-            {conversations.map((conv) => (
-              <button
-                key={conv.id}
-                onClick={() => onOpenChat(conv.id, conv.otherParticipant)}
-                className="w-full flex items-center gap-3 p-4 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              >
-                {/* Avatar */}
-                <div className="relative">
-                  <img
-                    src={
-                      conv.otherParticipant.avatar ||
-                      `https://ui-avatars.com/api/?name=${conv.otherParticipant.nombre}&background=random`
-                    }
-                    alt={conv.otherParticipant.nombre}
-                    className="w-14 h-14 rounded-full object-cover"
-                  />
-                  {conv.unreadCount > 0 && (
-                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-oaxaca-pink text-white text-xs font-bold rounded-full flex items-center justify-center">
-                      {conv.unreadCount > 9 ? '9+' : conv.unreadCount}
-                    </div>
-                  )}
-                </div>
+      <PullToRefresh onRefresh={loadConversations} className="flex-1">
+        <div className="h-full">
+          {loading ? (
+            <div className="p-4">
+              <SkeletonGrid type="message" count={6} columns={1} />
+            </div>
+          ) : conversations.length === 0 ? (
+            <EmptyState
+              type="messages"
+              title="Sin conversaciones"
+              description="Inicia una conversación desde el perfil de otro usuario"
+            />
+          ) : (
+            <div className="divide-y divide-gray-100 dark:divide-gray-800">
+              {conversations.map((conv, index) => (
+                <SlideUp key={conv.id} delay={index * 50}>
+                  <SwipeAction
+                    leftActions={[
+                      {
+                        icon: <Archive size={20} />,
+                        color: 'white',
+                        bgColor: 'bg-blue-500',
+                        label: 'Archivar',
+                        onClick: () => {
+                          // Archive conversation
+                          setConversations(prev => prev.filter(c => c.id !== conv.id));
+                        },
+                      },
+                    ]}
+                    rightActions={[
+                      {
+                        icon: <Trash2 size={20} />,
+                        color: 'white',
+                        bgColor: 'bg-red-500',
+                        label: 'Eliminar',
+                        onClick: () => {
+                          // Delete conversation
+                          if (window.confirm('¿Eliminar esta conversación?')) {
+                            setConversations(prev => prev.filter(c => c.id !== conv.id));
+                          }
+                        },
+                      },
+                    ]}
+                  >
+                    <button
+                      onClick={() => onOpenChat(conv.id, conv.otherParticipant)}
+                      className="w-full flex items-center gap-3 p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                    >
+                      {/* Avatar */}
+                      <div className="relative">
+                        <Avatar
+                          src={conv.otherParticipant.avatar}
+                          name={`${conv.otherParticipant.nombre} ${conv.otherParticipant.apellido || ''}`}
+                          size="lg"
+                        />
+                        {conv.unreadCount > 0 && (
+                          <div className="absolute -top-1 -right-1 w-5 h-5 bg-oaxaca-pink text-white text-xs font-bold rounded-full flex items-center justify-center">
+                            {conv.unreadCount > 9 ? '9+' : conv.unreadCount}
+                          </div>
+                        )}
+                      </div>
 
-                {/* Info */}
-                <div className="flex-1 min-w-0 text-left">
-                  <div className="flex items-center justify-between">
-                    <h3
-                      className={`font-semibold truncate ${
-                        conv.unreadCount > 0
-                          ? 'text-gray-900 dark:text-white'
-                          : 'text-gray-700 dark:text-gray-300'
-                      }`}
-                    >
-                      {conv.otherParticipant.nombre}{' '}
-                      {conv.otherParticipant.apellido && conv.otherParticipant.apellido}
-                    </h3>
-                    {conv.lastMessage && (
-                      <span className="text-xs text-gray-400 ml-2">
-                        {timeAgo(conv.lastMessage.createdAt)}
-                      </span>
-                    )}
-                  </div>
-                  {conv.lastMessage && (
-                    <p
-                      className={`text-sm truncate mt-1 ${
-                        conv.unreadCount > 0
-                          ? 'text-gray-900 dark:text-white font-medium'
-                          : 'text-gray-500 dark:text-gray-400'
-                      }`}
-                    >
-                      {conv.lastMessage.content}
-                    </p>
-                  )}
-                </div>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+                      {/* Info */}
+                      <div className="flex-1 min-w-0 text-left">
+                        <div className="flex items-center justify-between">
+                          <h3
+                            className={`font-semibold truncate ${
+                              conv.unreadCount > 0
+                                ? 'text-gray-900 dark:text-white'
+                                : 'text-gray-700 dark:text-gray-300'
+                            }`}
+                          >
+                            {conv.otherParticipant.nombre}{' '}
+                            {conv.otherParticipant.apellido && conv.otherParticipant.apellido}
+                          </h3>
+                          {conv.lastMessage && (
+                            <span className="text-xs text-gray-400 ml-2">
+                              {timeAgo(conv.lastMessage.createdAt)}
+                            </span>
+                          )}
+                        </div>
+                        {conv.lastMessage && (
+                          <p
+                            className={`text-sm truncate mt-1 ${
+                              conv.unreadCount > 0
+                                ? 'text-gray-900 dark:text-white font-medium'
+                                : 'text-gray-500 dark:text-gray-400'
+                            }`}
+                          >
+                            {conv.lastMessage.content}
+                          </p>
+                        )}
+                      </div>
+                    </button>
+                  </SwipeAction>
+                </SlideUp>
+              ))}
+            </div>
+          )}
+        </div>
+      </PullToRefresh>
     </div>
   );
 };

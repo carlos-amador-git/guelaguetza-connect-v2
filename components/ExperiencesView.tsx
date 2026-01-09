@@ -9,6 +9,9 @@ import {
   ChevronLeft,
   Ticket,
 } from 'lucide-react';
+import EmptyState from './ui/EmptyState';
+import { SkeletonGrid } from './ui/LoadingSpinner';
+import { useToast } from './ui/Toast';
 import {
   getExperiences,
   Experience,
@@ -27,6 +30,7 @@ interface ExperiencesViewProps {
 const CATEGORIES: ExperienceCategory[] = ['TOUR', 'TALLER', 'DEGUSTACION', 'CLASE', 'VISITA'];
 
 export default function ExperiencesView({ onNavigate, onBack }: ExperiencesViewProps) {
+  const toast = useToast();
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -60,6 +64,7 @@ export default function ExperiencesView({ onNavigate, onBack }: ExperiencesViewP
       setHasMore(currentPage < result.pagination.totalPages);
     } catch (error) {
       console.error('Error loading experiences:', error);
+      toast.error('Error al cargar', 'No se pudieron cargar las experiencias');
     } finally {
       setLoading(false);
     }
@@ -80,7 +85,7 @@ export default function ExperiencesView({ onNavigate, onBack }: ExperiencesViewP
       <div className="bg-gradient-to-r from-pink-600 to-purple-600 text-white p-4 pt-8 md:pt-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-3 mb-4">
-            <button onClick={onBack} className="p-2 hover:bg-white/20 rounded-full md:hidden">
+            <button onClick={onBack} className="p-2 hover:bg-white/20 rounded-full transition">
               <ChevronLeft className="w-6 h-6" />
             </button>
             <div>
@@ -141,14 +146,21 @@ export default function ExperiencesView({ onNavigate, onBack }: ExperiencesViewP
       <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto">
           {loading && experiences.length === 0 ? (
-            <div className="flex justify-center py-8">
-              <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin" />
-            </div>
+            <SkeletonGrid type="experience" count={6} />
           ) : experiences.length === 0 ? (
-            <div className="text-center py-12">
-              <Ticket className="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600 mb-4" />
-              <p className="text-gray-500 dark:text-gray-400">No se encontraron experiencias</p>
-            </div>
+            <EmptyState
+              type="bookings"
+              title="Sin experiencias"
+              description="No se encontraron experiencias con los filtros seleccionados"
+              action={{
+                label: 'Ver todas',
+                onClick: () => {
+                  setSelectedCategory(null);
+                  setSearchQuery('');
+                },
+                variant: 'secondary',
+              }}
+            />
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">

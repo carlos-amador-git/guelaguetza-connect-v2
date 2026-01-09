@@ -15,6 +15,7 @@ import {
   Minus,
   Plus,
 } from 'lucide-react';
+import LoadingSpinner from './ui/LoadingSpinner';
 import {
   getExperience,
   getTimeSlots,
@@ -127,8 +128,8 @@ export default function ExperienceDetailView({
 
   if (loading || !experience) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin" />
+      <div className="flex items-center justify-center h-full bg-white dark:bg-gray-900">
+        <LoadingSpinner size="lg" text="Cargando experiencia..." />
       </div>
     );
   }

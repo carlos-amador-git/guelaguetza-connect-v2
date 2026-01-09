@@ -18,8 +18,24 @@ export default defineConfig(({ mode }) => {
           includeAssets: ['favicon-32.png', 'apple-touch-icon.png', 'icons/*.png'],
           manifest: false,
           workbox: {
-            globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+            globPatterns: ['**/*.{js,css,html,ico,svg,woff,woff2}'],
+            // Exclude large images from precache, they'll be cached at runtime
+            globIgnores: ['**/images/guelaguetza-*.png'],
+            // Allow larger files if needed (default is 2MB)
+            maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
             runtimeCaching: [
+              {
+                // Cache large hero images at runtime
+                urlPattern: /\/images\/guelaguetza-.*\.png$/,
+                handler: 'CacheFirst',
+                options: {
+                  cacheName: 'hero-images-cache',
+                  expiration: {
+                    maxEntries: 10,
+                    maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+                  },
+                },
+              },
               {
                 urlPattern: /^https?:\/\/localhost:3005\/api\/stories/,
                 handler: 'NetworkFirst',

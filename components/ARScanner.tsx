@@ -50,7 +50,11 @@ const MARKERS_DATA: MarkerData[] = [
   }
 ];
 
-const ARScanner: React.FC = () => {
+interface ARScannerProps {
+  onBack?: () => void;
+}
+
+const ARScanner: React.FC<ARScannerProps> = ({ onBack }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [isScanning, setIsScanning] = useState(false);
@@ -132,11 +136,13 @@ const ARScanner: React.FC = () => {
       <div className="h-full bg-gradient-to-br from-gray-900 via-purple-900/30 to-black flex flex-col">
         {/* Header */}
         <div className="p-4 flex items-center justify-between">
-          <button onClick={() => setShowGallery(false)} className="text-white p-2 rounded-full bg-white/10">
+          <button onClick={onBack || (() => setShowGallery(false))} className="text-white p-2 rounded-full bg-white/10">
             <X size={24} />
           </button>
           <h2 className="text-white font-bold">Museo Virtual</h2>
-          <div className="w-10" />
+          <button onClick={() => setShowGallery(false)} className="text-white p-2 rounded-full bg-white/10">
+            <Camera size={20} />
+          </button>
         </div>
 
         {/* Content */}
@@ -214,8 +220,15 @@ const ARScanner: React.FC = () => {
         <>
           {/* Header */}
           <div className="absolute top-4 left-4 right-4 z-20 flex justify-between items-center">
-            <div className="bg-black/50 backdrop-blur-md px-4 py-2 rounded-full">
-              <p className="text-white text-sm font-medium">Museo Invisible AR</p>
+            <div className="flex items-center gap-2">
+              {onBack && (
+                <button onClick={onBack} className="bg-black/50 backdrop-blur-md p-2 rounded-full text-white">
+                  <X size={20} />
+                </button>
+              )}
+              <div className="bg-black/50 backdrop-blur-md px-4 py-2 rounded-full">
+                <p className="text-white text-sm font-medium">Museo Invisible AR</p>
+              </div>
             </div>
             <button onClick={handleGallery} className="bg-white/20 backdrop-blur-md p-2 rounded-full text-white">
               <Sparkles size={20} />

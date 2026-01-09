@@ -206,36 +206,36 @@ const LoginView: React.FC<LoginViewProps> = ({ setView }) => {
       </div>
 
       {/* Login Form */}
-      <div className="bg-white rounded-t-[2.5rem] px-6 py-8 shadow-2xl">
+      <div className="bg-white dark:bg-gray-900 rounded-t-[2.5rem] px-6 py-8 shadow-2xl">
         <form onSubmit={handleEmailLogin} className="space-y-4">
           {/* Email */}
           <div className="relative">
-            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={20} />
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Correo electrónico"
-              className="w-full pl-12 pr-4 py-4 bg-gray-100 rounded-xl focus:ring-2 focus:ring-oaxaca-pink outline-none transition"
+              className="w-full pl-12 pr-4 py-4 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 rounded-xl focus:ring-2 focus:ring-oaxaca-pink outline-none transition"
               required
             />
           </div>
 
           {/* Password */}
           <div className="relative">
-            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={20} />
             <input
               type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Contraseña"
-              className="w-full pl-12 pr-12 py-4 bg-gray-100 rounded-xl focus:ring-2 focus:ring-oaxaca-pink outline-none transition"
+              className="w-full pl-12 pr-12 py-4 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 rounded-xl focus:ring-2 focus:ring-oaxaca-pink outline-none transition"
               required
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
             >
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
@@ -243,7 +243,7 @@ const LoginView: React.FC<LoginViewProps> = ({ setView }) => {
 
           {/* Error */}
           {error && (
-            <p className="text-red-500 text-sm text-center">{error}</p>
+            <p className="text-red-500 dark:text-red-400 text-sm text-center">{error}</p>
           )}
 
           {/* Submit */}
@@ -265,22 +265,22 @@ const LoginView: React.FC<LoginViewProps> = ({ setView }) => {
 
         {/* Divider */}
         <div className="flex items-center gap-4 my-6">
-          <div className="flex-1 h-px bg-gray-200" />
-          <span className="text-gray-400 text-sm">o continúa con</span>
-          <div className="flex-1 h-px bg-gray-200" />
+          <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+          <span className="text-gray-400 dark:text-gray-500 text-sm">o continúa con</span>
+          <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
         </div>
 
         {/* Face ID Button */}
         <button
           onClick={() => setShowFaceAuth(true)}
-          className="w-full bg-gray-900 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-gray-800 transition"
+          className="w-full bg-gray-900 dark:bg-gray-700 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-gray-800 dark:hover:bg-gray-600 transition"
         >
           <Scan size={24} />
           Face ID
         </button>
 
         {/* Register Link */}
-        <p className="text-center mt-6 text-gray-600">
+        <p className="text-center mt-6 text-gray-600 dark:text-gray-400">
           ¿No tienes cuenta?{' '}
           <button
             onClick={() => setView(ViewState.REGISTER)}
@@ -291,8 +291,8 @@ const LoginView: React.FC<LoginViewProps> = ({ setView }) => {
         </p>
 
         {/* Demo Mode Section */}
-        <div className="mt-6 pt-4 border-t border-gray-200">
-          <p className="text-center text-gray-500 text-sm mb-3">Modo Demo - Acceso rapido</p>
+        <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <p className="text-center text-gray-500 dark:text-gray-400 text-sm mb-3">Modo Demo - Acceso rapido</p>
           <div className="grid grid-cols-2 gap-2">
             <button
               onClick={async () => {

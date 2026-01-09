@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Search,
   Plus,
   Users,
-  Loader2,
   X,
   Lock,
   Globe,
+  ArrowLeft,
 } from 'lucide-react';
+import EmptyState from './ui/EmptyState';
+import { useToast } from './ui/Toast';
 import { useAuth } from '../contexts/AuthContext';
 import {
   getCommunities,
@@ -16,13 +18,18 @@ import {
   Community,
 } from '../services/communities';
 import CommunityCard from './ui/CommunityCard';
+import PullToRefresh from './ui/PullToRefresh';
+import LoadingButton from './ui/LoadingButton';
+import { SkeletonGrid } from './ui/LoadingSpinner';
 
 interface CommunitiesViewProps {
   onCommunityClick: (communityId: string) => void;
+  onBack?: () => void;
 }
 
-const CommunitiesView: React.FC<CommunitiesViewProps> = ({ onCommunityClick }) => {
+const CommunitiesView: React.FC<CommunitiesViewProps> = ({ onCommunityClick, onBack }) => {
   const { token, isAuthenticated } = useAuth();
+  const toast = useToast();
   const [communities, setCommunities] = useState<Community[]>([]);
   const [myCommunities, setMyCommunities] = useState<Community[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,17 +53,26 @@ const CommunitiesView: React.FC<CommunitiesViewProps> = ({ onCommunityClick }) =
     }
   }, [activeTab, token]);
 
-  const loadCommunities = async () => {
+  const loadCommunities = useCallback(async () => {
     setLoading(true);
     try {
       const data = await getCommunities(1, 50, search || undefined, token || undefined);
       setCommunities(data.communities);
     } catch (error) {
       console.error('Error loading communities:', error);
+      toast.error('Error al cargar', 'No se pudieron cargar las comunidades');
     } finally {
       setLoading(false);
     }
-  };
+  }, [search, token, toast]);
+
+  const handleRefresh = useCallback(async () => {
+    if (activeTab === 'my') {
+      await loadMyCommunities();
+    } else {
+      await loadCommunities();
+    }
+  }, [activeTab, loadCommunities]);
 
   const loadMyCommunities = async () => {
     if (!token) return;
@@ -66,6 +82,7 @@ const CommunitiesView: React.FC<CommunitiesViewProps> = ({ onCommunityClick }) =
       setMyCommunities(data.communities);
     } catch (error) {
       console.error('Error loading my communities:', error);
+      toast.error('Error al cargar', 'No se pudieron cargar tus comunidades');
     }
   };
 
@@ -82,9 +99,11 @@ const CommunitiesView: React.FC<CommunitiesViewProps> = ({ onCommunityClick }) =
       );
       setShowCreateModal(false);
       setNewCommunity({ name: '', description: '', isPublic: true });
+      toast.success('Comunidad creada', 'Tu comunidad ha sido creada exitosamente');
       onCommunityClick(created.id);
     } catch (error) {
       console.error('Error creating community:', error);
+      toast.error('Error al crear', 'No se pudo crear la comunidad');
     } finally {
       setCreating(false);
     }
@@ -95,13 +114,19 @@ const CommunitiesView: React.FC<CommunitiesViewProps> = ({ onCommunityClick }) =
   return (
     <div className="h-full bg-gray-50 dark:bg-gray-950 pb-20 overflow-y-auto transition-colors">
       {/* Header */}
-      <div className="bg-gradient-to-br from-oaxaca-purple to-oaxaca-pink p-6 pt-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-white font-bold text-2xl">Comunidades</h1>
-            <p className="text-white/70 text-sm">
-              Conecta con personas con intereses similares
-            </p>
+      <div className="bg-gradient-to-br from-oaxaca-purple to-oaxaca-pink p-6 pt-4">
+        {/* Navigation Row */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            {onBack && (
+              <button
+                onClick={onBack}
+                className="p-2 bg-white/20 hover:bg-white/30 rounded-full text-white transition-colors"
+                aria-label="Volver"
+              >
+                <ArrowLeft size={20} />
+              </button>
+            )}
           </div>
           {isAuthenticated && (
             <button
@@ -111,6 +136,14 @@ const CommunitiesView: React.FC<CommunitiesViewProps> = ({ onCommunityClick }) =
               <Plus size={24} />
             </button>
           )}
+        </div>
+
+        {/* Title */}
+        <div>
+          <h1 className="text-white font-bold text-2xl">Comunidades</h1>
+          <p className="text-white/70 text-sm">
+            Conecta con personas con intereses similares
+          </p>
         </div>
 
         {/* Search */}
@@ -156,42 +189,49 @@ const CommunitiesView: React.FC<CommunitiesViewProps> = ({ onCommunityClick }) =
       </div>
 
       {/* Communities List */}
-      <div className="p-4">
-        {loading ? (
-          <div className="flex justify-center py-12">
-            <Loader2 className="animate-spin text-oaxaca-pink" size={32} />
-          </div>
-        ) : displayedCommunities.length === 0 ? (
-          <div className="text-center py-12">
-            <Users size={48} className="mx-auto text-gray-300 dark:text-gray-600 mb-4" />
-            <p className="text-gray-500 dark:text-gray-400">
-              {activeTab === 'my'
-                ? 'Aun no te has unido a ninguna comunidad'
-                : search
-                ? 'No se encontraron comunidades'
-                : 'No hay comunidades disponibles'}
-            </p>
-            {isAuthenticated && activeTab === 'discover' && (
-              <button
-                onClick={() => setShowCreateModal(true)}
-                className="mt-4 px-4 py-2 bg-oaxaca-pink text-white rounded-full font-medium"
-              >
-                Crear la primera
-              </button>
-            )}
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {displayedCommunities.map((community) => (
-              <CommunityCard
-                key={community.id}
-                community={community}
-                onClick={() => onCommunityClick(community.id)}
-              />
-            ))}
-          </div>
-        )}
-      </div>
+      <PullToRefresh onRefresh={handleRefresh} className="flex-1">
+        <div className="p-4">
+          {loading ? (
+            <SkeletonGrid type="community" count={6} columns={1} />
+          ) : displayedCommunities.length === 0 ? (
+            <EmptyState
+              type="communities"
+              title={activeTab === 'my' ? 'Sin comunidades' : 'Sin resultados'}
+              description={
+                activeTab === 'my'
+                  ? 'Aun no te has unido a ninguna comunidad'
+                  : search
+                  ? 'No se encontraron comunidades con ese nombre'
+                  : 'No hay comunidades disponibles'
+              }
+              action={
+                isAuthenticated && activeTab === 'discover'
+                  ? {
+                      label: 'Crear comunidad',
+                      onClick: () => setShowCreateModal(true),
+                    }
+                  : activeTab === 'my'
+                  ? {
+                      label: 'Explorar comunidades',
+                      onClick: () => setActiveTab('discover'),
+                      variant: 'secondary',
+                    }
+                  : undefined
+              }
+            />
+          ) : (
+            <div className="space-y-3">
+              {displayedCommunities.map((community) => (
+                <CommunityCard
+                  key={community.id}
+                  community={community}
+                  onClick={() => onCommunityClick(community.id)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </PullToRefresh>
 
       {/* Create Modal */}
       {showCreateModal && (
@@ -272,17 +312,16 @@ const CommunitiesView: React.FC<CommunitiesViewProps> = ({ onCommunityClick }) =
                 </div>
               </div>
 
-              <button
+              <LoadingButton
                 onClick={handleCreate}
-                disabled={creating || !newCommunity.name.trim()}
-                className="w-full py-3 bg-oaxaca-pink text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!newCommunity.name.trim()}
+                loading={creating}
+                loadingText="Creando..."
+                fullWidth
+                size="lg"
               >
-                {creating ? (
-                  <Loader2 className="animate-spin mx-auto" size={20} />
-                ) : (
-                  'Crear comunidad'
-                )}
-              </button>
+                Crear comunidad
+              </LoadingButton>
             </div>
           </div>
         </div>

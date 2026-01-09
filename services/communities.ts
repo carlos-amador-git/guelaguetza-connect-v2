@@ -1,4 +1,5 @@
 // Communities Service - API calls
+import { MOCK_COMMUNITIES, MOCK_USERS } from './mockData';
 
 const API_BASE = (import.meta as { env: { VITE_API_URL?: string } }).env.VITE_API_URL || 'http://localhost:3000/api';
 
@@ -55,26 +56,57 @@ export async function getCommunities(
   search?: string,
   token?: string
 ): Promise<CommunitiesResponse> {
-  const params = new URLSearchParams({
-    page: page.toString(),
-    limit: limit.toString(),
-  });
+  try {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    });
 
-  if (search) params.append('search', search);
+    if (search) params.append('search', search);
 
-  const headers: HeadersInit = {};
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+    const headers: HeadersInit = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${API_BASE}/communities?${params}`, { headers });
+
+    if (!response.ok) {
+      throw new Error('Error al obtener comunidades');
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch {
+    // Return mock data when backend is unavailable
+    let filtered = MOCK_COMMUNITIES.map(c => ({
+      ...c,
+      slug: c.name.toLowerCase().replace(/\s+/g, '-'),
+      coverUrl: null,
+      isPublic: !c.isPrivate,
+      postsCount: Math.floor(Math.random() * 50),
+      createdAt: new Date().toISOString(),
+      createdBy: MOCK_USERS[0],
+      memberRole: c.isMember ? 'MEMBER' as const : undefined,
+    }));
+
+    if (search) {
+      const s = search.toLowerCase();
+      filtered = filtered.filter(c =>
+        c.name.toLowerCase().includes(s) ||
+        c.description.toLowerCase().includes(s)
+      );
+    }
+
+    const start = (page - 1) * limit;
+    const paginated = filtered.slice(start, start + limit);
+
+    return {
+      communities: paginated,
+      total: filtered.length,
+      hasMore: start + limit < filtered.length,
+    };
   }
-
-  const response = await fetch(`${API_BASE}/communities?${params}`, { headers });
-
-  if (!response.ok) {
-    throw new Error('Error al obtener comunidades');
-  }
-
-  const data = await response.json();
-  return data.data;
 }
 
 // Get my communities

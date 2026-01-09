@@ -1,5 +1,6 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, lazy, Suspense, useRef } from 'react';
 import Navigation from './components/Navigation';
+import PageTransition from './components/ui/PageTransition';
 import HomeView from './components/HomeView';
 import TransportView from './components/TransportView';
 import StoriesView from './components/StoriesView';
@@ -18,6 +19,7 @@ import EventsView from './components/EventsView';
 import EventDetailView from './components/EventDetailView';
 import AnalyticsDashboard from './components/AnalyticsDashboard';
 import AdminDashboard from './components/admin/AdminDashboard';
+import MetricsDashboard from './components/admin/MetricsDashboard';
 import CommunitiesView from './components/CommunitiesView';
 import CommunityDetailView from './components/CommunityDetailView';
 // Phase 6 components
@@ -29,12 +31,19 @@ import POIDetailView from './components/POIDetailView';
 import TiendaView from './components/TiendaView';
 import ProductDetailView from './components/ProductDetailView';
 import CartView from './components/CartView';
+import CheckoutView from './components/CheckoutView';
+import WishlistView from './components/WishlistView';
 import StreamsView from './components/StreamsView';
 import StreamWatchView from './components/StreamWatchView';
 import OfflineIndicator from './components/OfflineIndicator';
 import UpdatePrompt from './components/UpdatePrompt';
 import NotificationPrompt from './components/NotificationPrompt';
 import Onboarding from './components/Onboarding';
+import DemoUserSelector from './components/DemoUserSelector';
+// Landing and role-specific views
+import LandingView from './components/LandingView';
+import GuideDashboard from './components/GuideDashboard';
+import SmartMapView from './components/SmartMapView';
 import { ViewState } from './types';
 import { Participant } from './services/dm';
 import { useAuth } from './contexts/AuthContext';
@@ -43,12 +52,12 @@ import { useAuth } from './contexts/AuthContext';
 const ARScanner = lazy(() => import('./components/ARScanner'));
 
 const App: React.FC = () => {
-  const { isAuthenticated, isDemoMode, loginAsDemo, user } = useAuth();
+  const { isAuthenticated, isDemoMode, user } = useAuth();
   const [currentView, setCurrentView] = useState<ViewState>(ViewState.HOME);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [previousView, setPreviousView] = useState<ViewState>(ViewState.HOME);
-  const [autoLoginAttempted, setAutoLoginAttempted] = useState(false);
+  const [showLanding, setShowLanding] = useState(true);
 
   // DM state
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
@@ -66,13 +75,21 @@ const App: React.FC = () => {
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
   const [selectedStreamId, setSelectedStreamId] = useState<string | null>(null);
 
-  // Auto-login as demo user on first load
-  useEffect(() => {
-    if (!isAuthenticated && !autoLoginAttempted) {
-      setAutoLoginAttempted(true);
-      loginAsDemo('user');
+  // Handle user selection from landing - receives role directly to avoid race condition
+  const handleUserSelected = (selectedRole?: string) => {
+    setShowLanding(false);
+    // Set initial view based on selected role
+    const role = selectedRole || user?.role;
+    if (role === 'ADMIN') {
+      setCurrentView(ViewState.ADMIN);
+    } else if (role === 'HOST') {
+      setCurrentView(ViewState.GUIDE_DASHBOARD);
+    } else if (role === 'SELLER') {
+      setCurrentView(ViewState.TIENDA);
+    } else {
+      setCurrentView(ViewState.HOME);
     }
-  }, [isAuthenticated, autoLoginAttempted, loginAsDemo]);
+  };
 
   const handleViewUserProfile = (userId: string) => {
     setSelectedUserId(userId);
@@ -119,15 +136,15 @@ const App: React.FC = () => {
       case ViewState.HOME:
         return <HomeView setView={setCurrentView} />;
       case ViewState.TRANSPORT:
-        return <TransportView />;
+        return <TransportView onBack={() => setCurrentView(ViewState.HOME)} />;
       case ViewState.AR_SCANNER:
         return (
           <Suspense fallback={<div className="flex items-center justify-center h-full">Cargando AR...</div>}>
-            <ARScanner />
+            <ARScanner onBack={() => setCurrentView(ViewState.HOME)} />
           </Suspense>
         );
       case ViewState.STORIES:
-        return <StoriesView onUserProfile={handleViewUserProfile} />;
+        return <StoriesView onUserProfile={handleViewUserProfile} onBack={() => setCurrentView(ViewState.HOME)} />;
       case ViewState.USER_PROFILE:
         return selectedUserId ? (
           <UserProfileView
@@ -139,9 +156,9 @@ const App: React.FC = () => {
           <StoriesView onUserProfile={handleViewUserProfile} />
         );
       case ViewState.CHAT:
-        return <ChatAssistant />;
+        return <ChatAssistant onBack={() => setCurrentView(ViewState.HOME)} />;
       case ViewState.PROGRAM:
-        return <ProgramView />;
+        return <ProgramView onBack={() => setCurrentView(ViewState.HOME)} />;
       case ViewState.LOGIN:
         return <LoginView setView={setCurrentView} />;
       case ViewState.REGISTER:
@@ -212,14 +229,23 @@ const App: React.FC = () => {
         );
       case ViewState.ADMIN:
         return (
-          <AdminDashboard
-            onBack={() => setCurrentView(ViewState.PROFILE)}
+          <MetricsDashboard
+            onBack={() => setShowLanding(true)}
+            onNavigate={(view: ViewState) => setCurrentView(view)}
+          />
+        );
+      case ViewState.GUIDE_DASHBOARD:
+        return (
+          <GuideDashboard
+            onBack={() => setShowLanding(true)}
+            onNavigate={(view: ViewState) => setCurrentView(view)}
           />
         );
       case ViewState.COMMUNITIES:
         return (
           <CommunitiesView
             onCommunityClick={handleCommunityDetail}
+            onBack={() => setCurrentView(ViewState.HOME)}
           />
         );
       case ViewState.COMMUNITY_DETAIL:
@@ -283,6 +309,12 @@ const App: React.FC = () => {
             onBack={() => setCurrentView(ViewState.HOME)}
           />
         );
+      case ViewState.SMART_MAP:
+        return (
+          <SmartMapView
+            onBack={() => setCurrentView(ViewState.HOME)}
+          />
+        );
       // Phase 6: Marketplace
       case ViewState.TIENDA:
         return (
@@ -311,11 +343,25 @@ const App: React.FC = () => {
             onBack={() => setCurrentView(ViewState.TIENDA)}
           />
         );
+      case ViewState.CHECKOUT:
+        return (
+          <CheckoutView
+            onNavigate={handleNavigate}
+            onBack={() => setCurrentView(ViewState.CART)}
+          />
+        );
       case ViewState.ORDERS:
         return (
           <CartView
             onNavigate={handleNavigate}
             onBack={() => setCurrentView(ViewState.TIENDA)}
+          />
+        );
+      case ViewState.WISHLIST:
+        return (
+          <WishlistView
+            onNavigate={handleNavigate}
+            onBack={() => setCurrentView(ViewState.HOME)}
           />
         );
       // Phase 6: Streaming
@@ -358,6 +404,8 @@ const App: React.FC = () => {
     ViewState.EVENT_DETAIL,
     ViewState.ANALYTICS,
     ViewState.ADMIN,
+    ViewState.GUIDE_DASHBOARD,
+    ViewState.SELLER_DASHBOARD,
     ViewState.COMMUNITIES,
     ViewState.COMMUNITY_DETAIL,
     // Phase 6 views
@@ -366,6 +414,7 @@ const App: React.FC = () => {
     ViewState.MY_BOOKINGS,
     ViewState.AR_MAP,
     ViewState.POI_DETAIL,
+    ViewState.SMART_MAP,
     ViewState.TIENDA,
     ViewState.PRODUCT_DETAIL,
     ViewState.CART,
@@ -375,12 +424,19 @@ const App: React.FC = () => {
     ViewState.STREAM_WATCH,
   ].includes(currentView);
 
+  // Show landing page if not authenticated or showLanding is true
+  if (showLanding) {
+    return <LandingView onUserSelected={handleUserSelected} />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-950 font-sans transition-colors">
       {/* Demo Mode Indicator */}
       {isDemoMode && (
-        <div className="fixed top-0 left-0 right-0 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs text-center py-1 z-50">
-          Modo Demo: {user?.nombre} ({user?.email})
+        <div className="fixed top-0 left-0 right-0 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs py-1.5 px-4 z-50 flex items-center justify-between">
+          <span className="hidden sm:inline">Modo Demo: {user?.nombre}</span>
+          <span className="sm:hidden">Demo</span>
+          <DemoUserSelector compact />
         </div>
       )}
 
@@ -396,7 +452,7 @@ const App: React.FC = () => {
         )}
 
         {/* Main Content */}
-        <main className="flex-1 flex flex-col max-w-full lg:max-w-none overflow-hidden">
+        <main className="flex-1 flex flex-col overflow-hidden">
           {/* Onboarding */}
           {showOnboarding && <Onboarding onComplete={() => setShowOnboarding(false)} />}
 
@@ -404,9 +460,9 @@ const App: React.FC = () => {
           <OfflineIndicator />
 
           <div className="flex-1 overflow-y-auto no-scrollbar scroll-smooth bg-white dark:bg-gray-900 lg:rounded-tl-2xl">
-            <div className="max-w-7xl mx-auto">
+            <PageTransition key={currentView} type="fade" duration={200}>
               {renderView()}
-            </div>
+            </PageTransition>
           </div>
 
           {/* Bottom Navigation - Mobile Only */}

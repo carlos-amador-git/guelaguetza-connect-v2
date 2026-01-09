@@ -1,21 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
-  ChevronLeft,
+  ArrowLeft,
   Search,
   Filter,
   ShoppingCart,
   Star,
   Package,
+  Heart,
 } from 'lucide-react';
 import {
   getProducts,
   getCart,
+  getWishlistCount,
   Product,
   ProductCategory,
   CATEGORY_LABELS,
   formatPrice,
 } from '../services/marketplace';
 import { ViewState } from '../types';
+import EmptyState from './ui/EmptyState';
+import { SkeletonGrid } from './ui/LoadingSpinner';
+import PullToRefresh from './ui/PullToRefresh';
+import LoadingButton from './ui/LoadingButton';
 
 interface TiendaViewProps {
   onNavigate: (view: ViewState, data?: unknown) => void;
@@ -31,12 +37,14 @@ export default function TiendaView({ onNavigate, onBack }: TiendaViewProps) {
   const [category, setCategory] = useState<ProductCategory | ''>('');
   const [showFilters, setShowFilters] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const [wishlistCount, setWishlistCount] = useState(0);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
     loadProducts();
     loadCartCount();
+    loadWishlistCount();
   }, [category]);
 
   const loadProducts = async (append = false) => {
@@ -74,10 +82,26 @@ export default function TiendaView({ onNavigate, onBack }: TiendaViewProps) {
     }
   };
 
+  const loadWishlistCount = async () => {
+    try {
+      const count = await getWishlistCount();
+      setWishlistCount(count);
+    } catch {
+      // Error loading wishlist
+    }
+  };
+
   const handleSearch = () => {
     setPage(1);
     loadProducts();
   };
+
+  const handleRefresh = useCallback(async () => {
+    setPage(1);
+    await loadProducts();
+    await loadCartCount();
+    await loadWishlistCount();
+  }, [category, search]);
 
   const handleProductClick = (product: Product) => {
     onNavigate(ViewState.PRODUCT_DETAIL, { productId: product.id });
@@ -90,25 +114,38 @@ export default function TiendaView({ onNavigate, onBack }: TiendaViewProps) {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <button onClick={onBack} className="p-2 hover:bg-white/20 rounded-full md:hidden">
-                <ChevronLeft className="w-6 h-6" />
+              <button onClick={onBack} className="p-2 hover:bg-white/20 rounded-full transition">
+                <ArrowLeft className="w-6 h-6" />
               </button>
               <div>
                 <h1 className="text-xl md:text-2xl font-bold">Tienda</h1>
                 <p className="text-sm md:text-base text-white/80">Artesanias y productos oaxaquenos</p>
               </div>
             </div>
-            <button
-              onClick={() => onNavigate(ViewState.CART)}
-              className="relative p-2 md:p-3 bg-white/20 rounded-full hover:bg-white/30 transition"
-            >
-              <ShoppingCart className="w-6 h-6" />
-              {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                  {cartCount}
-                </span>
-              )}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => onNavigate(ViewState.WISHLIST)}
+                className="relative p-2 md:p-3 bg-white/20 rounded-full hover:bg-white/30 transition"
+              >
+                <Heart className="w-6 h-6" />
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-pink-500 text-white text-xs rounded-full flex items-center justify-center">
+                    {wishlistCount}
+                  </span>
+                )}
+              </button>
+              <button
+                onClick={() => onNavigate(ViewState.CART)}
+                className="relative p-2 md:p-3 bg-white/20 rounded-full hover:bg-white/30 transition"
+              >
+                <ShoppingCart className="w-6 h-6" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </button>
+            </div>
           </div>
 
           {/* Search */}
@@ -160,42 +197,54 @@ export default function TiendaView({ onNavigate, onBack }: TiendaViewProps) {
       </div>
 
       {/* Products Grid */}
-      <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
-        <div className="max-w-7xl mx-auto">
-          {loading && products.length === 0 ? (
-            <div className="flex justify-center py-8">
-              <div className="w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full animate-spin" />
-            </div>
-          ) : products.length === 0 ? (
-            <div className="text-center py-12">
-              <Package className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500 dark:text-gray-400">No se encontraron productos</p>
-            </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4 lg:gap-6">
-                {products.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    onClick={() => handleProductClick(product)}
-                  />
-                ))}
-              </div>
+      <PullToRefresh onRefresh={handleRefresh} className="flex-1">
+        <div className="p-4 md:p-6 lg:p-8">
+          <div className="max-w-7xl mx-auto">
+            {loading && products.length === 0 ? (
+              <SkeletonGrid count={8} type="product" />
+            ) : products.length === 0 ? (
+              <EmptyState
+                type="products"
+                title={search ? 'Sin resultados' : 'Sin productos'}
+                description={search ? `No encontramos productos para "${search}"` : 'No hay productos disponibles en esta categoria.'}
+                action={{
+                  label: 'Ver todos',
+                  onClick: () => {
+                    setSearch('');
+                    setCategory('');
+                    loadProducts();
+                  },
+                }}
+              />
+            ) : (
+              <>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4 lg:gap-6">
+                  {products.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      onClick={() => handleProductClick(product)}
+                    />
+                  ))}
+                </div>
 
-              {hasMore && (
-                <button
-                  onClick={() => loadProducts(true)}
-                  disabled={loading}
-                  className="w-full md:w-auto md:px-8 py-3 mt-6 text-amber-600 font-medium hover:bg-amber-50 rounded-lg transition mx-auto block"
-                >
-                  {loading ? 'Cargando...' : 'Cargar mas productos'}
-                </button>
-              )}
-            </>
-          )}
+                {hasMore && (
+                  <div className="mt-6 flex justify-center">
+                    <LoadingButton
+                      onClick={() => loadProducts(true)}
+                      loading={loading}
+                      loadingText="Cargando..."
+                      variant="outline"
+                    >
+                      Cargar mas productos
+                    </LoadingButton>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         </div>
-      </div>
+      </PullToRefresh>
 
       {/* Orders Button */}
       <div className="p-4 bg-white dark:bg-gray-800 border-t dark:border-gray-700 md:hidden">

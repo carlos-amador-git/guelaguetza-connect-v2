@@ -16,6 +16,7 @@ import {
   StreamMessage,
   CATEGORY_LABELS,
 } from '../services/streams';
+import LoadingSpinner from './ui/LoadingSpinner';
 import { ViewState } from '../types';
 
 interface StreamWatchViewProps {
@@ -126,7 +127,7 @@ export default function StreamWatchView({
   if (loading || !stream) {
     return (
       <div className="flex items-center justify-center h-full bg-gray-900">
-        <div className="w-8 h-8 border-4 border-red-500 border-t-transparent rounded-full animate-spin" />
+        <LoadingSpinner size="lg" color="white" text="Conectando al stream..." />
       </div>
     );
   }

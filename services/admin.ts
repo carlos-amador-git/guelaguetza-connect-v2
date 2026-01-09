@@ -1,4 +1,5 @@
 // Admin Service - API calls
+import { MOCK_ADMIN_STATS, MOCK_USERS, MOCK_STORIES } from './mockData';
 
 const API_BASE = (import.meta as { env: { VITE_API_URL?: string } }).env.VITE_API_URL || 'http://localhost:3000/api';
 
@@ -50,18 +51,23 @@ export interface ReportsData {
 
 // Get dashboard stats
 export async function getDashboardStats(token: string): Promise<DashboardStats> {
-  const response = await fetch(`${API_BASE}/admin/dashboard`, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-    },
-  });
+  try {
+    const response = await fetch(`${API_BASE}/admin/dashboard`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
 
-  if (!response.ok) {
-    throw new Error('Error al obtener dashboard');
+    if (!response.ok) {
+      throw new Error('Error al obtener dashboard');
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch {
+    // Return mock data when backend is unavailable
+    return MOCK_ADMIN_STATS;
   }
-
-  const data = await response.json();
-  return data.data;
 }
 
 // Get users
@@ -75,27 +81,52 @@ export async function getUsers(
     banned?: boolean;
   } = {}
 ): Promise<{ users: AdminUser[]; total: number }> {
-  const params = new URLSearchParams({
-    page: page.toString(),
-    limit: limit.toString(),
-  });
+  try {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    });
 
-  if (filters.search) params.append('search', filters.search);
-  if (filters.role) params.append('role', filters.role);
-  if (filters.banned !== undefined) params.append('banned', filters.banned.toString());
+    if (filters.search) params.append('search', filters.search);
+    if (filters.role) params.append('role', filters.role);
+    if (filters.banned !== undefined) params.append('banned', filters.banned.toString());
 
-  const response = await fetch(`${API_BASE}/admin/users?${params}`, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-    },
-  });
+    const response = await fetch(`${API_BASE}/admin/users?${params}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
 
-  if (!response.ok) {
-    throw new Error('Error al obtener usuarios');
+    if (!response.ok) {
+      throw new Error('Error al obtener usuarios');
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch {
+    // Return mock data when backend is unavailable
+    let filteredUsers = MOCK_USERS.map(u => ({
+      ...u,
+      bannedAt: null,
+      bannedReason: null,
+    }));
+
+    if (filters.search) {
+      const search = filters.search.toLowerCase();
+      filteredUsers = filteredUsers.filter(u =>
+        u.nombre.toLowerCase().includes(search) ||
+        u.email.toLowerCase().includes(search)
+      );
+    }
+    if (filters.role) {
+      filteredUsers = filteredUsers.filter(u => u.role === filters.role);
+    }
+
+    const start = (page - 1) * limit;
+    const paginatedUsers = filteredUsers.slice(start, start + limit);
+
+    return { users: paginatedUsers, total: filteredUsers.length };
   }
-
-  const data = await response.json();
-  return data.data;
 }
 
 // Change user role

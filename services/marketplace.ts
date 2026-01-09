@@ -1,4 +1,5 @@
 import { api } from './api';
+import { MOCK_PRODUCTS, MOCK_USERS } from './mockData';
 
 // Types
 export type ProductCategory = 'ARTESANIA' | 'MEZCAL' | 'TEXTIL' | 'CERAMICA' | 'JOYERIA' | 'GASTRONOMIA' | 'OTRO';
@@ -131,52 +132,302 @@ export interface OrderQuery {
 
 // Products
 export async function getProducts(query: ProductQuery = {}) {
-  const params = new URLSearchParams();
-  Object.entries(query).forEach(([key, value]) => {
-    if (value !== undefined) params.append(key, String(value));
-  });
+  try {
+    const params = new URLSearchParams();
+    Object.entries(query).forEach(([key, value]) => {
+      if (value !== undefined) params.append(key, String(value));
+    });
 
-  const response = await api.get<{
-    products: Product[];
-    pagination: {
-      page: number;
-      limit: number;
-      total: number;
-      totalPages: number;
+    const response = await api.get<{
+      products: Product[];
+      pagination: {
+        page: number;
+        limit: number;
+        total: number;
+        totalPages: number;
+      };
+    }>(`/marketplace/products?${params}`);
+    return response;
+  } catch {
+    // Return mock data when backend is unavailable
+    const { page = 1, limit = 20, category, search } = query;
+    let filtered = MOCK_PRODUCTS.map(p => ({
+      id: p.id,
+      sellerId: p.seller.id,
+      name: p.name,
+      description: p.description,
+      price: String(p.price),
+      category: p.category as ProductCategory,
+      status: 'ACTIVE' as ProductStatus,
+      stock: p.stock,
+      images: [p.imageUrl],
+      createdAt: new Date().toISOString(),
+      seller: {
+        id: p.seller.id,
+        userId: p.seller.id,
+        businessName: p.seller.nombre + ' Artesanias',
+        description: p.seller.bio || null,
+        bannerUrl: null,
+        location: p.seller.region || null,
+        rating: 4.5,
+        reviewCount: 12,
+        verified: true,
+        user: {
+          id: p.seller.id,
+          nombre: p.seller.nombre,
+          apellido: p.seller.apellido,
+          avatar: p.seller.avatar,
+        },
+      },
+    }));
+
+    if (category) {
+      filtered = filtered.filter(p => p.category === category);
+    }
+    if (search) {
+      const s = search.toLowerCase();
+      filtered = filtered.filter(p =>
+        p.name.toLowerCase().includes(s) ||
+        p.description.toLowerCase().includes(s)
+      );
+    }
+
+    const start = (page - 1) * limit;
+    const paginated = filtered.slice(start, start + limit);
+
+    return {
+      products: paginated,
+      pagination: {
+        page,
+        limit,
+        total: filtered.length,
+        totalPages: Math.ceil(filtered.length / limit),
+      },
     };
-  }>(`/marketplace/products?${params}`);
-  return response;
+  }
 }
 
 export async function getProduct(id: string) {
-  const response = await api.get<Product & { reviews: ProductReview[] }>(`/marketplace/products/${id}`);
-  return response;
+  try {
+    const response = await api.get<Product & { reviews: ProductReview[] }>(`/marketplace/products/${id}`);
+    return response;
+  } catch {
+    // Return mock data when backend is unavailable
+    const mockProduct = MOCK_PRODUCTS.find(p => p.id === id);
+    if (!mockProduct) {
+      throw new Error('Product not found');
+    }
+
+    return {
+      id: mockProduct.id,
+      sellerId: mockProduct.seller.id,
+      name: mockProduct.name,
+      description: mockProduct.description,
+      price: String(mockProduct.price),
+      category: mockProduct.category as ProductCategory,
+      status: 'ACTIVE' as ProductStatus,
+      stock: mockProduct.stock,
+      images: [mockProduct.imageUrl],
+      createdAt: new Date().toISOString(),
+      seller: {
+        id: mockProduct.seller.id,
+        userId: mockProduct.seller.id,
+        businessName: mockProduct.seller.nombre + ' Artesanías',
+        description: mockProduct.seller.bio || null,
+        bannerUrl: null,
+        location: mockProduct.seller.region || null,
+        rating: 4.5,
+        reviewCount: 12,
+        verified: true,
+        user: {
+          id: mockProduct.seller.id,
+          nombre: mockProduct.seller.nombre,
+          apellido: mockProduct.seller.apellido,
+          avatar: mockProduct.seller.avatar,
+        },
+      },
+      reviews: [
+        {
+          id: 'review_1',
+          userId: MOCK_USERS[0].id,
+          productId: mockProduct.id,
+          rating: 5,
+          comment: '¡Excelente producto! La calidad es impresionante.',
+          createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+          user: {
+            id: MOCK_USERS[0].id,
+            nombre: MOCK_USERS[0].nombre,
+            avatar: MOCK_USERS[0].avatar,
+          },
+        },
+        {
+          id: 'review_2',
+          userId: MOCK_USERS[1].id,
+          productId: mockProduct.id,
+          rating: 4,
+          comment: 'Muy bonito, llegó bien empacado.',
+          createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
+          user: {
+            id: MOCK_USERS[1].id,
+            nombre: MOCK_USERS[1].nombre,
+            avatar: MOCK_USERS[1].avatar,
+          },
+        },
+      ],
+    };
+  }
 }
 
-// Cart
+// Cart (with localStorage fallback for demo mode)
+const CART_STORAGE_KEY = 'guelaguetza_cart';
+
+interface MockCartItem {
+  productId: string;
+  quantity: number;
+}
+
+function getMockCart(): MockCartItem[] {
+  try {
+    const stored = localStorage.getItem(CART_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveMockCart(items: MockCartItem[]) {
+  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+}
+
+function buildCartResponse(mockCartItems: MockCartItem[]): Cart {
+  const items: CartItem[] = mockCartItems.map((item, index) => {
+    const mockProduct = MOCK_PRODUCTS.find(p => p.id === item.productId);
+    return {
+      id: `cart_item_${index}`,
+      cartId: 'mock_cart',
+      productId: item.productId,
+      quantity: item.quantity,
+      product: mockProduct ? {
+        id: mockProduct.id,
+        sellerId: mockProduct.seller.id,
+        name: mockProduct.name,
+        description: mockProduct.description,
+        price: String(mockProduct.price),
+        category: mockProduct.category as ProductCategory,
+        status: 'ACTIVE' as ProductStatus,
+        stock: mockProduct.stock,
+        images: [mockProduct.imageUrl],
+        createdAt: new Date().toISOString(),
+        seller: {
+          id: mockProduct.seller.id,
+          userId: mockProduct.seller.id,
+          businessName: mockProduct.seller.nombre + ' Artesanías',
+          description: mockProduct.seller.bio || null,
+          bannerUrl: null,
+          location: mockProduct.seller.region || null,
+          rating: 4.5,
+          reviewCount: 12,
+          verified: true,
+          user: {
+            id: mockProduct.seller.id,
+            nombre: mockProduct.seller.nombre,
+            apellido: mockProduct.seller.apellido,
+            avatar: mockProduct.seller.avatar,
+          },
+        },
+      } : {} as Product,
+    };
+  }).filter(item => item.product.id);
+
+  const subtotal = items.reduce((sum, item) => {
+    return sum + (parseFloat(item.product.price) * item.quantity);
+  }, 0);
+
+  return {
+    id: 'mock_cart',
+    userId: 'mock_user',
+    items,
+    subtotal,
+    itemCount: items.reduce((sum, item) => sum + item.quantity, 0),
+  };
+}
+
 export async function getCart() {
-  const response = await api.get<Cart>('/marketplace/cart');
-  return response;
+  try {
+    const response = await api.get<Cart>('/marketplace/cart');
+    return response;
+  } catch {
+    // Return mock cart from localStorage
+    const mockCartItems = getMockCart();
+    return buildCartResponse(mockCartItems);
+  }
 }
 
 export async function addToCart(productId: string, quantity: number = 1) {
-  const response = await api.post<Cart>('/marketplace/cart/items', { productId, quantity });
-  return response;
+  try {
+    const response = await api.post<Cart>('/marketplace/cart/items', { productId, quantity });
+    return response;
+  } catch {
+    // Add to mock cart in localStorage
+    const mockCartItems = getMockCart();
+    const existingIndex = mockCartItems.findIndex(item => item.productId === productId);
+
+    if (existingIndex >= 0) {
+      mockCartItems[existingIndex].quantity += quantity;
+    } else {
+      mockCartItems.push({ productId, quantity });
+    }
+
+    saveMockCart(mockCartItems);
+    return buildCartResponse(mockCartItems);
+  }
 }
 
 export async function updateCartItem(itemId: string, quantity: number) {
-  const response = await api.put<Cart>(`/marketplace/cart/items/${itemId}`, { quantity });
-  return response;
+  try {
+    const response = await api.put<Cart>(`/marketplace/cart/items/${itemId}`, { quantity });
+    return response;
+  } catch {
+    // Update mock cart in localStorage
+    const mockCartItems = getMockCart();
+    const index = parseInt(itemId.replace('cart_item_', ''));
+
+    if (mockCartItems[index]) {
+      mockCartItems[index].quantity = quantity;
+    }
+
+    saveMockCart(mockCartItems);
+    return buildCartResponse(mockCartItems);
+  }
 }
 
 export async function removeFromCart(itemId: string) {
-  const response = await api.delete<Cart>(`/marketplace/cart/items/${itemId}`);
-  return response;
+  try {
+    const response = await api.delete<Cart>(`/marketplace/cart/items/${itemId}`);
+    return response;
+  } catch {
+    // Remove from mock cart in localStorage
+    const mockCartItems = getMockCart();
+    const index = parseInt(itemId.replace('cart_item_', ''));
+
+    if (index >= 0 && index < mockCartItems.length) {
+      mockCartItems.splice(index, 1);
+    }
+
+    saveMockCart(mockCartItems);
+    return buildCartResponse(mockCartItems);
+  }
 }
 
 export async function clearCart() {
-  const response = await api.delete<{ message: string }>('/marketplace/cart');
-  return response;
+  try {
+    const response = await api.delete<{ message: string }>('/marketplace/cart');
+    return response;
+  } catch {
+    // Clear mock cart in localStorage
+    saveMockCart([]);
+    return { message: 'Cart cleared' };
+  }
 }
 
 // Orders
@@ -268,4 +519,102 @@ export function formatPrice(price: string | number): string {
     style: 'currency',
     currency: 'MXN',
   }).format(numPrice);
+}
+
+// Wishlist (Lista de Deseos)
+const WISHLIST_STORAGE_KEY = 'guelaguetza_wishlist';
+
+export interface WishlistItem {
+  productId: string;
+  addedAt: string;
+}
+
+function getStoredWishlist(): WishlistItem[] {
+  try {
+    const stored = localStorage.getItem(WISHLIST_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveWishlist(items: WishlistItem[]) {
+  localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(items));
+}
+
+export async function getWishlist(): Promise<Product[]> {
+  const wishlistItems = getStoredWishlist();
+  const products: Product[] = [];
+
+  for (const item of wishlistItems) {
+    const mockProduct = MOCK_PRODUCTS.find(p => p.id === item.productId);
+    if (mockProduct) {
+      products.push({
+        id: mockProduct.id,
+        sellerId: mockProduct.seller.id,
+        name: mockProduct.name,
+        description: mockProduct.description,
+        price: String(mockProduct.price),
+        category: mockProduct.category as ProductCategory,
+        status: 'ACTIVE' as ProductStatus,
+        stock: mockProduct.stock,
+        images: [mockProduct.imageUrl],
+        createdAt: item.addedAt,
+        seller: {
+          id: mockProduct.seller.id,
+          userId: mockProduct.seller.id,
+          businessName: mockProduct.seller.nombre + ' Artesanías',
+          description: mockProduct.seller.bio || null,
+          bannerUrl: null,
+          location: mockProduct.seller.region || null,
+          rating: 4.5,
+          reviewCount: 12,
+          verified: true,
+          user: {
+            id: mockProduct.seller.id,
+            nombre: mockProduct.seller.nombre,
+            apellido: mockProduct.seller.apellido,
+            avatar: mockProduct.seller.avatar,
+          },
+        },
+      });
+    }
+  }
+
+  return products;
+}
+
+export async function addToWishlist(productId: string): Promise<boolean> {
+  const wishlist = getStoredWishlist();
+  const exists = wishlist.some(item => item.productId === productId);
+
+  if (!exists) {
+    wishlist.push({ productId, addedAt: new Date().toISOString() });
+    saveWishlist(wishlist);
+    return true;
+  }
+
+  return false;
+}
+
+export async function removeFromWishlist(productId: string): Promise<boolean> {
+  const wishlist = getStoredWishlist();
+  const index = wishlist.findIndex(item => item.productId === productId);
+
+  if (index >= 0) {
+    wishlist.splice(index, 1);
+    saveWishlist(wishlist);
+    return true;
+  }
+
+  return false;
+}
+
+export async function isInWishlist(productId: string): Promise<boolean> {
+  const wishlist = getStoredWishlist();
+  return wishlist.some(item => item.productId === productId);
+}
+
+export async function getWishlistCount(): Promise<number> {
+  return getStoredWishlist().length;
 }

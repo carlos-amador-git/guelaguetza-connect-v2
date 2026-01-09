@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Heart, MessageCircle, Share2, MoreVertical, MapPin, X, Send,
-  Camera, Image, Loader2, Copy, Check, Plus, Trash2, RefreshCw, Video
+  Camera, Image, Loader2, Copy, Check, Plus, Trash2, RefreshCw, Video, ArrowLeft
 } from 'lucide-react';
 import { fetchStories, likeStory, addComment, createStory, Story, Comment } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
@@ -35,9 +35,10 @@ interface LocalStory {
 
 interface StoriesViewProps {
   onUserProfile?: (userId: string) => void;
+  onBack?: () => void;
 }
 
-const StoriesView: React.FC<StoriesViewProps> = ({ onUserProfile }) => {
+const StoriesView: React.FC<StoriesViewProps> = ({ onUserProfile, onBack }) => {
   const { isAuthenticated, token, user } = useAuth();
   const [stories, setStories] = useState<LocalStory[]>([]);
   const [loading, setLoading] = useState(true);
@@ -403,7 +404,14 @@ const StoriesView: React.FC<StoriesViewProps> = ({ onUserProfile }) => {
     <div className="bg-black min-h-screen pb-20">
       {/* Header */}
       <div className="sticky top-0 z-20 bg-black/80 backdrop-blur-md px-4 py-3 flex justify-between items-center text-white border-b border-white/10">
-        <h2 className="font-bold text-xl">Historias</h2>
+        <div className="flex items-center gap-3">
+          {onBack && (
+            <button onClick={onBack} className="p-2 rounded-full hover:bg-white/10 transition">
+              <ArrowLeft size={20} />
+            </button>
+          )}
+          <h2 className="font-bold text-xl">Historias</h2>
+        </div>
         <div className="flex items-center gap-2">
           <button
             onClick={handleRefresh}

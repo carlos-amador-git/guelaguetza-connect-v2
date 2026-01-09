@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Calendar, Clock, MapPin, Star, ChevronRight, Ticket, Music, Users, Utensils, RefreshCw } from 'lucide-react';
+import { Calendar, Clock, MapPin, Star, ChevronRight, Ticket, Music, Users, Utensils, RefreshCw, ArrowLeft } from 'lucide-react';
 import PullToRefreshWrapper from './PullToRefreshWrapper';
 
 interface Event {
@@ -111,7 +111,11 @@ const typeConfig = {
   music: { icon: Music, color: 'bg-oaxaca-sky', label: 'Música' },
 };
 
-const ProgramView: React.FC = () => {
+interface ProgramViewProps {
+  onBack?: () => void;
+}
+
+const ProgramView: React.FC<ProgramViewProps> = ({ onBack }) => {
   const [selectedDay, setSelectedDay] = useState(0);
   const [filter, setFilter] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -136,6 +140,11 @@ const ProgramView: React.FC = () => {
       <div className="bg-oaxaca-purple p-4 pt-6 text-white">
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2">
+            {onBack && (
+              <button onClick={onBack} className="p-2 -ml-2 rounded-full hover:bg-white/10 transition">
+                <ArrowLeft size={20} />
+              </button>
+            )}
             <Calendar size={20} className="text-oaxaca-yellow" />
             <h2 className="text-xl font-bold">Programa Guelaguetza 2025</h2>
           </div>

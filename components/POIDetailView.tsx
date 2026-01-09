@@ -12,6 +12,7 @@ import {
   MessageSquare,
   ExternalLink,
 } from 'lucide-react';
+import LoadingSpinner from './ui/LoadingSpinner';
 import {
   getPOI,
   toggleFavorite,
@@ -123,8 +124,8 @@ export default function POIDetailView({ poiId, onNavigate, onBack }: POIDetailVi
 
   if (loading || !poi) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <div className="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin" />
+      <div className="flex items-center justify-center h-full bg-white dark:bg-gray-900">
+        <LoadingSpinner size="lg" text="Cargando lugar..." />
       </div>
     );
   }

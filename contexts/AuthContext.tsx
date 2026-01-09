@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-type UserRole = 'USER' | 'MODERATOR' | 'ADMIN';
+type UserRole = 'USER' | 'MODERATOR' | 'ADMIN' | 'HOST' | 'SELLER';
 
 interface User {
   id: string;
@@ -54,7 +54,7 @@ const DEMO_USERS = {
     nombre: 'Maria',
     apellido: 'Gonzalez',
     region: 'Valles Centrales',
-    role: 'USER' as UserRole,
+    role: 'SELLER' as UserRole,
   },
   host: {
     email: 'guia@guelaguetza.mx',
@@ -62,7 +62,7 @@ const DEMO_USERS = {
     nombre: 'Roberto',
     apellido: 'Hernandez',
     region: 'Valles Centrales',
-    role: 'USER' as UserRole,
+    role: 'HOST' as UserRole,
   },
   admin: {
     email: 'admin@guelaguetza.mx',

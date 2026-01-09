@@ -11,6 +11,8 @@ import {
   XCircle,
   Star,
 } from 'lucide-react';
+import LoadingSpinner from './ui/LoadingSpinner';
+import { useToast } from './ui/Toast';
 import {
   getMyBookings,
   cancelBooking,
@@ -32,6 +34,7 @@ interface MyBookingsViewProps {
 type TabStatus = 'all' | BookingStatus;
 
 export default function MyBookingsView({ onNavigate, onBack }: MyBookingsViewProps) {
+  const toast = useToast();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabStatus>('all');
@@ -55,6 +58,7 @@ export default function MyBookingsView({ onNavigate, onBack }: MyBookingsViewPro
       setBookings(result.bookings);
     } catch (error) {
       console.error('Error loading bookings:', error);
+      toast.error('Error al cargar', 'No se pudieron cargar tus reservaciones');
     } finally {
       setLoading(false);
     }
@@ -65,10 +69,11 @@ export default function MyBookingsView({ onNavigate, onBack }: MyBookingsViewPro
 
     try {
       await cancelBooking(booking.id);
+      toast.success('Reservación cancelada', 'Tu reservación ha sido cancelada');
       loadBookings();
     } catch (error) {
       console.error('Error cancelling booking:', error);
-      alert('Error al cancelar la reservacion');
+      toast.error('Error al cancelar', 'No se pudo cancelar la reservación');
     }
   };
 
@@ -85,10 +90,10 @@ export default function MyBookingsView({ onNavigate, onBack }: MyBookingsViewPro
       setSelectedBooking(null);
       setReviewRating(5);
       setReviewComment('');
-      alert('Resena enviada!');
+      toast.success('Reseña enviada', 'Gracias por compartir tu experiencia');
     } catch (error) {
       console.error('Error creating review:', error);
-      alert('Error al enviar la resena');
+      toast.error('Error al enviar', 'No se pudo enviar la reseña');
     } finally {
       setReviewLoading(false);
     }
@@ -148,16 +153,15 @@ export default function MyBookingsView({ onNavigate, onBack }: MyBookingsViewPro
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-4">
         {loading ? (
-          <div className="flex justify-center py-8">
-            <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin" />
-          </div>
+          <LoadingSpinner text="Cargando reservaciones..." />
         ) : bookings.length === 0 ? (
           <div className="text-center py-12">
-            <Ticket className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-            <p className="text-gray-500">No tienes reservaciones</p>
+            <Ticket className="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600 mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Sin reservaciones</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4">Aún no has reservado ninguna experiencia</p>
             <button
               onClick={() => onNavigate(ViewState.EXPERIENCES)}
-              className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg"
+              className="px-6 py-3 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 transition"
             >
               Explorar experiencias
             </button>

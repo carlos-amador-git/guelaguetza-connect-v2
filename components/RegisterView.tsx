@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Mail, Lock, User, MapPin, Camera, X, Loader2, ArrowRight, ArrowLeft, Check, Scan } from 'lucide-react';
+import { Mail, Lock, User, MapPin, Camera, ArrowRight, ArrowLeft, Check, Scan } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { ViewState } from '../types';
+import FormInput from './ui/FormInput';
+import LoadingButton from './ui/LoadingButton';
 
 interface RegisterViewProps {
   setView: (view: ViewState) => void;
@@ -15,13 +17,13 @@ const REGIONS = [
   'Costa',
   'Istmo',
   'Papaloapan',
-  'Cañada',
+  'Canada',
   'Fuera de Oaxaca',
 ];
 
 const RegisterView: React.FC<RegisterViewProps> = ({ setView }) => {
   const { register } = useAuth();
-  const [step, setStep] = useState(1); // 1: Info, 2: Face ID
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -29,6 +31,12 @@ const RegisterView: React.FC<RegisterViewProps> = ({ setView }) => {
     nombre: '',
     apellido: '',
     region: '',
+  });
+  const [formValid, setFormValid] = useState({
+    nombre: false,
+    email: false,
+    password: false,
+    confirmPassword: false,
   });
   const [faceData, setFaceData] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -39,7 +47,8 @@ const RegisterView: React.FC<RegisterViewProps> = ({ setView }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // Camera setup
+  const isStep1Valid = formValid.nombre && formValid.email && formValid.password && formValid.confirmPassword;
+
   useEffect(() => {
     if (!showCamera) return;
 
@@ -53,7 +62,7 @@ const RegisterView: React.FC<RegisterViewProps> = ({ setView }) => {
         }
       } catch (err) {
         console.error('Camera error:', err);
-        setError('No se pudo acceder a la cámara');
+        setError('No se pudo acceder a la camara');
         setShowCamera(false);
       }
     };
@@ -67,33 +76,13 @@ const RegisterView: React.FC<RegisterViewProps> = ({ setView }) => {
     };
   }, [showCamera]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleFieldChange = (field: keyof typeof formData) => (value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
     setError('');
   };
 
-  const validateStep1 = () => {
-    if (!formData.nombre.trim()) {
-      setError('Ingresa tu nombre');
-      return false;
-    }
-    if (!formData.email.trim() || !formData.email.includes('@')) {
-      setError('Ingresa un correo válido');
-      return false;
-    }
-    if (formData.password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres');
-      return false;
-    }
-    if (formData.password !== formData.confirmPassword) {
-      setError('Las contraseñas no coinciden');
-      return false;
-    }
-    return true;
-  };
-
   const handleNextStep = () => {
-    if (validateStep1()) {
+    if (isStep1Valid) {
       setStep(2);
       setError('');
     }
@@ -111,7 +100,6 @@ const RegisterView: React.FC<RegisterViewProps> = ({ setView }) => {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
 
-    // Mirror the image
     ctx.translate(canvas.width, 0);
     ctx.scale(-1, 1);
     ctx.drawImage(video, 0, 0);
@@ -121,7 +109,6 @@ const RegisterView: React.FC<RegisterViewProps> = ({ setView }) => {
     setPhotoTaken(true);
     setShowCamera(false);
 
-    // Stop camera
     if (videoRef.current?.srcObject) {
       (videoRef.current.srcObject as MediaStream).getTracks().forEach(t => t.stop());
     }
@@ -161,8 +148,7 @@ const RegisterView: React.FC<RegisterViewProps> = ({ setView }) => {
   // Step 2: Face ID Setup
   if (step === 2) {
     return (
-      <div className="h-full flex flex-col bg-white">
-        {/* Header */}
+      <div className="h-full flex flex-col bg-white dark:bg-gray-900">
         <div className="bg-oaxaca-purple p-4 flex items-center gap-4">
           <button onClick={() => setStep(1)} className="text-white p-2 rounded-full hover:bg-white/10">
             <ArrowLeft size={24} />
@@ -175,7 +161,6 @@ const RegisterView: React.FC<RegisterViewProps> = ({ setView }) => {
 
         <div className="flex-1 flex flex-col items-center justify-center px-6 pb-24">
           {showCamera ? (
-            // Camera View
             <>
               <div className="relative w-64 h-64 rounded-full overflow-hidden border-4 border-oaxaca-purple mb-6">
                 <video
@@ -191,20 +176,15 @@ const RegisterView: React.FC<RegisterViewProps> = ({ setView }) => {
               </div>
               <canvas ref={canvasRef} className="hidden" />
 
-              <p className="text-gray-600 text-sm text-center mb-6">
-                Coloca tu rostro dentro del círculo
+              <p className="text-gray-600 dark:text-gray-400 text-sm text-center mb-6">
+                Coloca tu rostro dentro del circulo
               </p>
 
-              <button
-                onClick={capturePhoto}
-                className="bg-oaxaca-pink text-white px-8 py-4 rounded-full font-bold flex items-center gap-2"
-              >
-                <Camera size={20} />
+              <LoadingButton onClick={capturePhoto} icon={Camera}>
                 Tomar Foto
-              </button>
+              </LoadingButton>
             </>
           ) : photoTaken && faceData ? (
-            // Photo Taken
             <>
               <div className="relative w-64 h-64 rounded-full overflow-hidden border-4 border-green-500 mb-6">
                 <img src={faceData} alt="Tu foto" className="w-full h-full object-cover" />
@@ -213,48 +193,46 @@ const RegisterView: React.FC<RegisterViewProps> = ({ setView }) => {
                 </div>
               </div>
 
-              <p className="text-green-600 font-medium mb-6">¡Foto capturada!</p>
+              <p className="text-green-600 font-medium mb-6">Foto capturada!</p>
 
               <div className="flex gap-3 w-full max-w-xs">
-                <button
-                  onClick={retakePhoto}
-                  className="flex-1 py-3 border-2 border-gray-300 rounded-xl font-medium text-gray-700"
-                >
+                <LoadingButton variant="outline" onClick={retakePhoto} fullWidth>
                   Repetir
-                </button>
-                <button
+                </LoadingButton>
+                <LoadingButton
                   onClick={handleRegister}
-                  disabled={isLoading}
-                  className="flex-1 py-3 bg-oaxaca-pink text-white rounded-xl font-bold flex items-center justify-center gap-2"
+                  loading={isLoading}
+                  loadingText="Creando..."
+                  fullWidth
                 >
-                  {isLoading ? <Loader2 className="animate-spin" size={20} /> : 'Continuar'}
-                </button>
+                  Continuar
+                </LoadingButton>
               </div>
             </>
           ) : (
-            // Initial State
             <>
-              <div className="w-32 h-32 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+              <div className="w-32 h-32 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-6">
                 <Scan className="w-16 h-16 text-gray-400" />
               </div>
 
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Face ID</h3>
-              <p className="text-gray-500 text-center text-sm mb-8 max-w-xs">
-                Configura Face ID para iniciar sesión más rápido solo con tu rostro
+              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Face ID</h3>
+              <p className="text-gray-500 dark:text-gray-400 text-center text-sm mb-8 max-w-xs">
+                Configura Face ID para iniciar sesion mas rapido solo con tu rostro
               </p>
 
-              <button
+              <LoadingButton
                 onClick={() => setShowCamera(true)}
-                className="w-full max-w-xs bg-gray-900 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 mb-4"
+                icon={Camera}
+                fullWidth
+                className="max-w-xs"
               >
-                <Camera size={20} />
                 Configurar Face ID
-              </button>
+              </LoadingButton>
 
               <button
                 onClick={skipFaceId}
                 disabled={isLoading}
-                className="text-gray-400 text-sm hover:text-gray-600"
+                className="mt-4 text-gray-400 dark:text-gray-500 text-sm hover:text-gray-600 dark:hover:text-gray-300"
               >
                 {isLoading ? 'Creando cuenta...' : 'Omitir por ahora'}
               </button>
@@ -271,113 +249,104 @@ const RegisterView: React.FC<RegisterViewProps> = ({ setView }) => {
 
   // Step 1: Basic Info
   return (
-    <div className="h-full flex flex-col bg-white">
-      {/* Header */}
+    <div className="h-full flex flex-col bg-white dark:bg-gray-900">
       <div className="bg-oaxaca-purple p-4 flex items-center gap-4">
         <button onClick={() => setView(ViewState.LOGIN)} className="text-white p-2 rounded-full hover:bg-white/10">
           <ArrowLeft size={24} />
         </button>
         <div>
           <h2 className="text-white font-bold text-lg">Crear Cuenta</h2>
-          <p className="text-white/70 text-sm">Paso 1 de 2 - Información</p>
+          <p className="text-white/70 text-sm">Paso 1 de 2 - Informacion</p>
         </div>
       </div>
 
-      {/* Form */}
       <div className="flex-1 overflow-y-auto px-6 py-6 pb-24">
         <div className="space-y-4">
-          {/* Nombre */}
-          <div>
-            <label className="text-sm font-medium text-gray-700 mb-1 block">Nombre *</label>
-            <div className="relative">
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-              <input
-                type="text"
-                name="nombre"
-                value={formData.nombre}
-                onChange={handleInputChange}
-                placeholder="Tu nombre"
-                className="w-full pl-12 pr-4 py-3 bg-gray-100 rounded-xl focus:ring-2 focus:ring-oaxaca-pink outline-none"
-              />
-            </div>
-          </div>
+          <FormInput
+            label="Nombre"
+            name="nombre"
+            value={formData.nombre}
+            onChange={handleFieldChange('nombre')}
+            placeholder="Tu nombre"
+            icon={User}
+            required
+            validationRules={[
+              { type: 'required', message: 'El nombre es requerido' },
+              { type: 'minLength', value: 2, message: 'Minimo 2 caracteres' },
+            ]}
+          />
 
-          {/* Apellido */}
-          <div>
-            <label className="text-sm font-medium text-gray-700 mb-1 block">Apellido</label>
-            <div className="relative">
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-              <input
-                type="text"
-                name="apellido"
-                value={formData.apellido}
-                onChange={handleInputChange}
-                placeholder="Tu apellido (opcional)"
-                className="w-full pl-12 pr-4 py-3 bg-gray-100 rounded-xl focus:ring-2 focus:ring-oaxaca-pink outline-none"
-              />
-            </div>
-          </div>
+          <FormInput
+            label="Apellido"
+            name="apellido"
+            value={formData.apellido}
+            onChange={handleFieldChange('apellido')}
+            placeholder="Tu apellido (opcional)"
+            icon={User}
+          />
 
-          {/* Email */}
-          <div>
-            <label className="text-sm font-medium text-gray-700 mb-1 block">Correo electrónico *</label>
-            <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                placeholder="tu@correo.com"
-                className="w-full pl-12 pr-4 py-3 bg-gray-100 rounded-xl focus:ring-2 focus:ring-oaxaca-pink outline-none"
-              />
-            </div>
-          </div>
+          <FormInput
+            label="Correo electronico"
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleFieldChange('email')}
+            placeholder="tu@correo.com"
+            icon={Mail}
+            required
+            autoComplete="email"
+            validationRules={[
+              { type: 'required', message: 'El email es requerido' },
+              { type: 'email', message: 'Ingresa un email valido' },
+            ]}
+          />
 
-          {/* Password */}
-          <div>
-            <label className="text-sm font-medium text-gray-700 mb-1 block">Contraseña *</label>
-            <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                placeholder="Mínimo 6 caracteres"
-                className="w-full pl-12 pr-4 py-3 bg-gray-100 rounded-xl focus:ring-2 focus:ring-oaxaca-pink outline-none"
-              />
-            </div>
-          </div>
+          <FormInput
+            label="Contrasena"
+            name="password"
+            type="password"
+            value={formData.password}
+            onChange={handleFieldChange('password')}
+            placeholder="Minimo 6 caracteres"
+            icon={Lock}
+            required
+            autoComplete="new-password"
+            validationRules={[
+              { type: 'required', message: 'La contrasena es requerida' },
+              { type: 'minLength', value: 6, message: 'Minimo 6 caracteres' },
+            ]}
+          />
 
-          {/* Confirm Password */}
-          <div>
-            <label className="text-sm font-medium text-gray-700 mb-1 block">Confirmar contraseña *</label>
-            <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-              <input
-                type="password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
-                placeholder="Repite tu contraseña"
-                className="w-full pl-12 pr-4 py-3 bg-gray-100 rounded-xl focus:ring-2 focus:ring-oaxaca-pink outline-none"
-              />
-            </div>
-          </div>
+          <FormInput
+            label="Confirmar contrasena"
+            name="confirmPassword"
+            type="password"
+            value={formData.confirmPassword}
+            onChange={handleFieldChange('confirmPassword')}
+            placeholder="Repite tu contrasena"
+            icon={Lock}
+            required
+            autoComplete="new-password"
+            matchValue={formData.password}
+            validationRules={[
+              { type: 'required', message: 'Confirma tu contrasena' },
+              { type: 'match', message: 'Las contrasenas no coinciden' },
+            ]}
+          />
 
-          {/* Region */}
           <div>
-            <label className="text-sm font-medium text-gray-700 mb-1 block">Región de origen</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              Region de origen
+            </label>
             <div className="relative">
-              <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
               <select
                 name="region"
                 value={formData.region}
-                onChange={handleInputChange}
-                className="w-full pl-12 pr-4 py-3 bg-gray-100 rounded-xl focus:ring-2 focus:ring-oaxaca-pink outline-none appearance-none"
+                onChange={(e) => handleFieldChange('region')(e.target.value)}
+                className="w-full pl-11 pr-4 py-3 bg-gray-50 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-oaxaca-pink dark:focus:border-oaxaca-pink outline-none appearance-none text-gray-900 dark:text-gray-100"
               >
-                <option value="">Selecciona tu región (opcional)</option>
+                <option value="">Selecciona tu region (opcional)</option>
                 {REGIONS.map(r => (
                   <option key={r} value={r}>{r}</option>
                 ))}
@@ -385,22 +354,25 @@ const RegisterView: React.FC<RegisterViewProps> = ({ setView }) => {
             </div>
           </div>
 
-          {/* Error */}
           {error && (
-            <p className="text-red-500 text-sm text-center">{error}</p>
+            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+              <p className="text-red-600 dark:text-red-400 text-sm text-center">{error}</p>
+            </div>
           )}
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="p-6 bg-white border-t border-gray-100">
-        <button
+      <div className="p-6 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800">
+        <LoadingButton
           onClick={handleNextStep}
-          className="w-full bg-oaxaca-pink text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2"
+          disabled={!isStep1Valid}
+          icon={ArrowRight}
+          iconPosition="right"
+          fullWidth
+          size="lg"
         >
           Siguiente
-          <ArrowRight size={20} />
-        </button>
+        </LoadingButton>
       </div>
     </div>
   );

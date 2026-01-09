@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  ChevronLeft,
+  ArrowLeft,
   Star,
   Heart,
   Share2,
@@ -15,12 +15,17 @@ import {
 import {
   getProduct,
   addToCart,
+  addToWishlist,
+  removeFromWishlist,
+  isInWishlist,
   Product,
   ProductReview,
   CATEGORY_LABELS,
   formatPrice,
 } from '../services/marketplace';
 import { ViewState } from '../types';
+import LoadingSpinner from './ui/LoadingSpinner';
+import { useToast } from './ui/Toast';
 
 interface ProductDetailViewProps {
   productId: string;
@@ -33,6 +38,7 @@ export default function ProductDetailView({
   onNavigate,
   onBack,
 }: ProductDetailViewProps) {
+  const toast = useToast();
   const [product, setProduct] = useState<(Product & { reviews: ProductReview[] }) | null>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
@@ -40,10 +46,38 @@ export default function ProductDetailView({
   const [addedToCart, setAddedToCart] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [activeTab, setActiveTab] = useState<'description' | 'reviews'>('description');
+  const [inWishlist, setInWishlist] = useState(false);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
 
   useEffect(() => {
     loadProduct();
+    checkWishlist();
   }, [productId]);
+
+  const checkWishlist = async () => {
+    const result = await isInWishlist(productId);
+    setInWishlist(result);
+  };
+
+  const handleToggleWishlist = async () => {
+    try {
+      setWishlistLoading(true);
+      if (inWishlist) {
+        await removeFromWishlist(productId);
+        setInWishlist(false);
+        toast.info('Eliminado', 'Producto eliminado de tu lista de deseos');
+      } else {
+        await addToWishlist(productId);
+        setInWishlist(true);
+        toast.success('Guardado', 'Producto agregado a tu lista de deseos');
+      }
+    } catch (error) {
+      console.error('Error toggling wishlist:', error);
+      toast.error('Error', 'No se pudo actualizar la lista de deseos');
+    } finally {
+      setWishlistLoading(false);
+    }
+  };
 
   const loadProduct = async () => {
     try {
@@ -52,6 +86,7 @@ export default function ProductDetailView({
       setProduct(data);
     } catch (error) {
       console.error('Error loading product:', error);
+      toast.error('Error', 'No se pudo cargar el producto');
     } finally {
       setLoading(false);
     }
@@ -64,10 +99,11 @@ export default function ProductDetailView({
       setAddingToCart(true);
       await addToCart(productId, quantity);
       setAddedToCart(true);
+      toast.success('Agregado al carrito', `${quantity}x ${product.name}`);
       setTimeout(() => setAddedToCart(false), 2000);
     } catch (error) {
       console.error('Error adding to cart:', error);
-      alert('Error al agregar al carrito');
+      toast.error('Error', 'No se pudo agregar al carrito');
     } finally {
       setAddingToCart(false);
     }
@@ -86,11 +122,7 @@ export default function ProductDetailView({
   };
 
   if (loading || !product) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <div className="w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <LoadingSpinner fullScreen text="Cargando producto..." />;
   }
 
   const images = product.images.length > 0
@@ -111,14 +143,22 @@ export default function ProductDetailView({
 
         {/* Navigation */}
         <div className="absolute top-0 left-0 right-0 p-4 pt-12 flex justify-between">
-          <button onClick={onBack} className="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow">
-            <ChevronLeft className="w-6 h-6" />
+          <button onClick={onBack} className="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow text-gray-800">
+            <ArrowLeft className="w-6 h-6" />
           </button>
           <div className="flex gap-2">
-            <button className="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow">
-              <Heart className="w-6 h-6" />
+            <button
+              onClick={handleToggleWishlist}
+              disabled={wishlistLoading}
+              className={`p-2 backdrop-blur-sm rounded-full shadow transition ${
+                inWishlist
+                  ? 'bg-pink-500 text-white'
+                  : 'bg-white/90 text-gray-800 hover:bg-pink-50'
+              } ${wishlistLoading ? 'opacity-50' : ''}`}
+            >
+              <Heart className={`w-6 h-6 ${inWishlist ? 'fill-current' : ''}`} />
             </button>
-            <button onClick={handleShare} className="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow">
+            <button onClick={handleShare} className="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow text-gray-800">
               <Share2 className="w-6 h-6" />
             </button>
           </div>

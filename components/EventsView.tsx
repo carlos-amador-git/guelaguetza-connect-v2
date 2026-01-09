@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Calendar, Loader2, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { ArrowLeft, Calendar, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import EventCard from './ui/EventCard';
+import PullToRefresh from './ui/PullToRefresh';
+import { SkeletonGrid } from './ui/LoadingSpinner';
+import EmptyState from './ui/EmptyState';
 import {
   getEvents,
   Event,
@@ -41,7 +44,7 @@ const EventsView: React.FC<EventsViewProps> = ({
     loadEvents();
   }, [selectedCategory, selectedMonth, token]);
 
-  const loadEvents = async () => {
+  const loadEvents = useCallback(async () => {
     setLoading(true);
     try {
       // Get start and end of selected month
@@ -63,7 +66,7 @@ const EventsView: React.FC<EventsViewProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedCategory, selectedMonth, token]);
 
   const changeMonth = (delta: number) => {
     setSelectedMonth(new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + delta, 1));
@@ -172,44 +175,52 @@ const EventsView: React.FC<EventsViewProps> = ({
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto px-4 py-4">
-        {loading ? (
-          <div className="flex items-center justify-center py-16">
-            <Loader2 className="animate-spin text-oaxaca-pink" size={32} />
-          </div>
-        ) : events.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <Calendar size={64} className="text-gray-300 dark:text-gray-600 mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              No hay eventos
-            </h3>
-            <p className="text-gray-500 dark:text-gray-400 text-sm">
-              No se encontraron eventos para este mes
-              {selectedCategory && ` en la categoría ${getCategoryLabel(selectedCategory)}`}
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {Object.entries(groupedEvents).map(([date, dateEvents]) => (
-              <div key={date}>
-                <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 capitalize">
-                  {date}
-                </h3>
-                <div className="space-y-3">
-                  {dateEvents.map((event) => (
-                    <EventCard
-                      key={event.id}
-                      event={event}
-                      onClick={() => onEventDetail(event.id)}
-                      compact
-                    />
-                  ))}
+      <PullToRefresh onRefresh={loadEvents} className="flex-1">
+        <div className="px-4 py-4">
+          {loading ? (
+            <SkeletonGrid type="event" count={4} columns={1} />
+          ) : events.length === 0 ? (
+            <EmptyState
+              type="events"
+              title="No hay eventos"
+              description={
+                selectedCategory
+                  ? `No se encontraron eventos en la categoria ${getCategoryLabel(selectedCategory)}`
+                  : 'No se encontraron eventos para este mes'
+              }
+              action={
+                selectedCategory
+                  ? {
+                      label: 'Ver todos los eventos',
+                      onClick: () => setSelectedCategory(null),
+                      variant: 'secondary',
+                    }
+                  : undefined
+              }
+            />
+          ) : (
+            <div className="space-y-6">
+              {Object.entries(groupedEvents).map(([date, dateEvents]) => (
+                <div key={date} className="stagger-item">
+                  <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 capitalize">
+                    {date}
+                  </h3>
+                  <div className="space-y-3">
+                    {dateEvents.map((event) => (
+                      <EventCard
+                        key={event.id}
+                        event={event}
+                        onClick={() => onEventDetail(event.id)}
+                        compact
+                      />
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </PullToRefresh>
     </div>
   );
 };

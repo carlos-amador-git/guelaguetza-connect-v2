@@ -200,10 +200,11 @@ Puedo ayudarte con información sobre:
 
 interface ChatAssistantProps {
   onClose?: () => void;
+  onBack?: () => void;
   embedded?: boolean;
 }
 
-const ChatAssistant: React.FC<ChatAssistantProps> = ({ onClose, embedded = false }) => {
+const ChatAssistant: React.FC<ChatAssistantProps> = ({ onClose, onBack, embedded = false }) => {
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -343,8 +344,8 @@ Puedo ayudarte con:
       {/* Header */}
       <div className="px-4 py-3 text-white flex items-center justify-between">
         <div className="flex items-center gap-3">
-          {onClose && (
-            <button onClick={onClose} className="p-1">
+          {(onBack || onClose) && (
+            <button onClick={onBack || onClose} className="p-2 hover:bg-white/10 rounded-full transition">
               <ChevronLeft size={24} />
             </button>
           )}

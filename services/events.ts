@@ -1,4 +1,5 @@
 // Events Service - API calls
+import { MOCK_EVENTS } from './mockData';
 
 const API_BASE = (import.meta as { env: { VITE_API_URL?: string } }).env.VITE_API_URL || 'http://localhost:3000/api';
 
@@ -57,45 +58,76 @@ export async function getEvents(
 ): Promise<EventsResponse> {
   const { category, startDate, endDate, page = 1, limit = 20 } = options;
 
-  const params = new URLSearchParams({
-    page: page.toString(),
-    limit: limit.toString(),
-  });
+  try {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    });
 
-  if (category) params.append('category', category);
-  if (startDate) params.append('startDate', startDate.toISOString());
-  if (endDate) params.append('endDate', endDate.toISOString());
+    if (category) params.append('category', category);
+    if (startDate) params.append('startDate', startDate.toISOString());
+    if (endDate) params.append('endDate', endDate.toISOString());
 
-  const headers: HeadersInit = {};
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+    const headers: HeadersInit = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${API_BASE}/events?${params}`, { headers });
+
+    if (!response.ok) {
+      throw new Error('Error al obtener eventos');
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch {
+    // Return mock data when backend is unavailable
+    let filteredEvents = [...MOCK_EVENTS];
+
+    if (category) {
+      filteredEvents = filteredEvents.filter(e => e.category === category);
+    }
+
+    const start = (page - 1) * limit;
+    const paginatedEvents = filteredEvents.slice(start, start + limit);
+
+    return {
+      events: paginatedEvents,
+      hasMore: start + limit < filteredEvents.length,
+      total: filteredEvents.length,
+    };
   }
-
-  const response = await fetch(`${API_BASE}/events?${params}`, { headers });
-
-  if (!response.ok) {
-    throw new Error('Error al obtener eventos');
-  }
-
-  const data = await response.json();
-  return data.data;
 }
 
 // Get single event
 export async function getEvent(eventId: string, token?: string): Promise<EventDetail> {
-  const headers: HeadersInit = {};
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
+  try {
+    const headers: HeadersInit = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
 
-  const response = await fetch(`${API_BASE}/events/${eventId}`, { headers });
+    const response = await fetch(`${API_BASE}/events/${eventId}`, { headers });
 
-  if (!response.ok) {
+    if (!response.ok) {
+      throw new Error('Evento no encontrado');
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch {
+    // Return mock data when backend is unavailable
+    const event = MOCK_EVENTS.find(e => e.id === eventId);
+    if (event) {
+      return {
+        ...event,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+    }
     throw new Error('Evento no encontrado');
   }
-
-  const data = await response.json();
-  return data.data;
 }
 
 // Create RSVP

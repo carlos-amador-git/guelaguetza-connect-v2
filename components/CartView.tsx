@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
-  ChevronLeft,
+  ArrowLeft,
   Minus,
   Plus,
   Trash2,
-  ShoppingBag,
   ArrowRight,
 } from 'lucide-react';
 import {
@@ -16,6 +15,9 @@ import {
   formatPrice,
 } from '../services/marketplace';
 import { ViewState } from '../types';
+import EmptyState from './ui/EmptyState';
+import LoadingSpinner from './ui/LoadingSpinner';
+import { useToast } from './ui/Toast';
 
 interface CartViewProps {
   onNavigate: (view: ViewState, data?: unknown) => void;
@@ -23,6 +25,7 @@ interface CartViewProps {
 }
 
 export default function CartView({ onNavigate, onBack }: CartViewProps) {
+  const toast = useToast();
   const [cart, setCart] = useState<Cart | null>(null);
   const [loading, setLoading] = useState(true);
   const [updatingItem, setUpdatingItem] = useState<string | null>(null);
@@ -38,6 +41,7 @@ export default function CartView({ onNavigate, onBack }: CartViewProps) {
       setCart(data);
     } catch (error) {
       console.error('Error loading cart:', error);
+      toast.error('Error', 'No se pudo cargar el carrito');
     } finally {
       setLoading(false);
     }
@@ -50,7 +54,7 @@ export default function CartView({ onNavigate, onBack }: CartViewProps) {
       setCart(updatedCart);
     } catch (error) {
       console.error('Error updating cart:', error);
-      alert('Error al actualizar cantidad');
+      toast.error('Error', 'No se pudo actualizar la cantidad');
     } finally {
       setUpdatingItem(null);
     }
@@ -61,8 +65,10 @@ export default function CartView({ onNavigate, onBack }: CartViewProps) {
       setUpdatingItem(itemId);
       const updatedCart = await removeFromCart(itemId);
       setCart(updatedCart);
+      toast.success('Eliminado', 'Producto eliminado del carrito');
     } catch (error) {
       console.error('Error removing item:', error);
+      toast.error('Error', 'No se pudo eliminar el producto');
     } finally {
       setUpdatingItem(null);
     }
@@ -75,17 +81,15 @@ export default function CartView({ onNavigate, onBack }: CartViewProps) {
       await clearCart();
       setCart(null);
       loadCart();
+      toast.success('Carrito vaciado', 'Se eliminaron todos los productos');
     } catch (error) {
       console.error('Error clearing cart:', error);
+      toast.error('Error', 'No se pudo vaciar el carrito');
     }
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <div className="w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <LoadingSpinner fullScreen text="Cargando carrito..." />;
   }
 
   return (
@@ -95,7 +99,7 @@ export default function CartView({ onNavigate, onBack }: CartViewProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button onClick={onBack} className="p-2 hover:bg-gray-100 rounded-full">
-              <ChevronLeft className="w-6 h-6" />
+              <ArrowLeft className="w-6 h-6" />
             </button>
             <div>
               <h1 className="text-xl font-bold">Carrito</h1>
@@ -118,19 +122,14 @@ export default function CartView({ onNavigate, onBack }: CartViewProps) {
       {/* Cart Items */}
       <div className="flex-1 overflow-y-auto">
         {!cart || cart.items.length === 0 ? (
-          <div className="text-center py-16">
-            <ShoppingBag className="w-20 h-20 mx-auto text-gray-300 mb-4" />
-            <p className="text-gray-500 text-lg mb-2">Tu carrito esta vacio</p>
-            <p className="text-gray-400 text-sm mb-6">
-              Explora nuestra tienda y encuentra productos increibles
-            </p>
-            <button
-              onClick={() => onNavigate(ViewState.TIENDA)}
-              className="px-6 py-3 bg-amber-500 text-white rounded-lg font-medium"
-            >
-              Ir a la tienda
-            </button>
-          </div>
+          <EmptyState
+            type="cart"
+            description="Explora nuestra tienda y encuentra productos increibles"
+            action={{
+              label: 'Ir a la tienda',
+              onClick: () => onNavigate(ViewState.TIENDA),
+            }}
+          />
         ) : (
           <div className="p-4 space-y-4">
             {cart.items.map((item) => {

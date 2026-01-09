@@ -15,6 +15,7 @@ import {
 import { MapContainer, TileLayer, Marker, Popup, useMap, CircleMarker } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import LoadingSpinner from './ui/LoadingSpinner';
 import {
   getNearbyPOIs,
   PointOfInterest,
@@ -129,7 +130,7 @@ export default function ARMapView({ onNavigate, onBack }: ARMapViewProps) {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <button onClick={onBack} className="p-2 hover:bg-white/20 rounded-full md:hidden">
+              <button onClick={onBack} className="p-2 hover:bg-white/20 rounded-full transition">
                 <ChevronLeft className="w-6 h-6" />
               </button>
               <div>
@@ -183,8 +184,8 @@ export default function ARMapView({ onNavigate, onBack }: ARMapViewProps) {
       {/* Content */}
       <div className="flex-1 relative">
         {loading ? (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-            <div className="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin" />
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
+            <LoadingSpinner size="lg" text="Cargando mapa..." />
           </div>
         ) : viewMode === 'map' ? (
           <MapContainer
