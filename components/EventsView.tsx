@@ -92,8 +92,8 @@ const EventsView: React.FC<EventsViewProps> = ({
 
   return (
     <div className="h-full flex flex-col bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3">
+      {/* Header - Sticky */}
+      <div className="sticky top-0 z-20 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3 shadow-sm">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
             <button
@@ -199,13 +199,18 @@ const EventsView: React.FC<EventsViewProps> = ({
               }
             />
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-2">
               {Object.entries(groupedEvents).map(([date, dateEvents]) => (
                 <div key={date} className="stagger-item">
-                  <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 capitalize">
-                    {date}
-                  </h3>
-                  <div className="space-y-3">
+                  {/* Sticky date header */}
+                  <div className="sticky top-[140px] z-10 -mx-4 px-4 py-2 bg-gray-50/95 dark:bg-gray-900/95 backdrop-blur-sm">
+                    <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 capitalize flex items-center gap-2">
+                      <span className="w-2 h-2 bg-oaxaca-pink rounded-full"></span>
+                      {date}
+                      <span className="text-xs font-normal text-gray-400">({dateEvents.length} eventos)</span>
+                    </h3>
+                  </div>
+                  <div className="space-y-3 pt-2">
                     {dateEvents.map((event) => (
                       <EventCard
                         key={event.id}
