@@ -20,9 +20,48 @@ const GASTRO_ITEMS = [
   { name: 'Nieves', desc: 'Helados artesanales de sabores regionales', icon: IceCream },
 ];
 
+const DISCOVER_SLIDES = [
+  {
+    id: 'gastro',
+    tag: 'Guía culinaria',
+    title: 'Gastronomía',
+    image: 'https://images.unsplash.com/photo-1613514785940-daed07799d9b?w=800&q=80',
+    action: 'gastro',
+  },
+  {
+    id: 'artesanias',
+    tag: 'Arte popular',
+    title: 'Artesanías',
+    image: 'https://images.unsplash.com/photo-1604176424472-17cd740f74e9?w=800&q=80',
+    action: 'tienda',
+  },
+  {
+    id: 'mezcal',
+    tag: 'Tradición ancestral',
+    title: 'Mezcal',
+    image: 'https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=800&q=80',
+    action: 'gastro',
+  },
+  {
+    id: 'danzas',
+    tag: 'Folklore vivo',
+    title: 'Danzas',
+    image: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=800&q=80',
+    action: 'programa',
+  },
+  {
+    id: 'naturaleza',
+    tag: 'Ecoturismo',
+    title: 'Naturaleza',
+    image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',
+    action: 'experiencias',
+  },
+];
+
 const HomeView: React.FC<HomeViewProps> = ({ setView }) => {
   const [showGastroModal, setShowGastroModal] = useState(false);
   const [heroIndex, setHeroIndex] = useState(0);
+  const [discoverIndex, setDiscoverIndex] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
 
   useEffect(() => {
@@ -30,6 +69,14 @@ const HomeView: React.FC<HomeViewProps> = ({ setView }) => {
     const interval = setInterval(() => {
       setHeroIndex((prev) => (prev + 1) % HERO_IMAGES.length);
     }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    // Auto-advance discover carousel (slower - 6 seconds)
+    const interval = setInterval(() => {
+      setDiscoverIndex((prev) => (prev + 1) % DISCOVER_SLIDES.length);
+    }, 6000);
     return () => clearInterval(interval);
   }, []);
 
@@ -279,18 +326,73 @@ const HomeView: React.FC<HomeViewProps> = ({ setView }) => {
               </div>
             </div>
 
-            {/* Featured Banner - Gastronomy - Responsive */}
+            {/* Featured Banner - Discover Oaxaca Carousel */}
             <div className="mt-8">
-              <h2 className="font-bold text-lg md:text-xl mb-4 text-gray-800 dark:text-gray-100">Descubre Oaxaca</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-bold text-lg md:text-xl text-gray-800 dark:text-gray-100">Descubre Oaxaca</h2>
+                <div className="flex gap-1.5">
+                  {DISCOVER_SLIDES.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setDiscoverIndex(index)}
+                      className={`w-2 h-2 rounded-full transition-all ${
+                        index === discoverIndex ? 'bg-oaxaca-pink w-5' : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400'
+                      }`}
+                      aria-label={`Ir a slide ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              </div>
               <div
-                onClick={() => setShowGastroModal(true)}
+                onClick={() => {
+                  const currentSlide = DISCOVER_SLIDES[discoverIndex];
+                  if (currentSlide.action === 'gastro') {
+                    setShowGastroModal(true);
+                  } else if (currentSlide.action === 'tienda') {
+                    setView(ViewState.TIENDA);
+                  } else if (currentSlide.action === 'programa') {
+                    setView(ViewState.PROGRAM);
+                  } else if (currentSlide.action === 'experiencias') {
+                    setView(ViewState.EXPERIENCES);
+                  }
+                }}
                 className="relative rounded-xl overflow-hidden h-40 md:h-48 lg:h-56 shadow-md cursor-pointer hover:shadow-lg transition active:scale-[0.98]"
               >
-                <img src="https://picsum.photos/800/400?grayscale" alt="Cultural" className="w-full h-full object-cover" />
+                {/* Carousel Images */}
+                {DISCOVER_SLIDES.map((slide, index) => (
+                  <img
+                    key={slide.id}
+                    src={slide.image}
+                    alt={slide.title}
+                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+                      index === discoverIndex ? 'opacity-100' : 'opacity-0'
+                    }`}
+                  />
+                ))}
                 <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent flex items-center">
                   <div className="pl-6 md:pl-8">
-                    <p className="text-oaxaca-yellow text-xs md:text-sm font-semibold uppercase tracking-wider">Guía culinaria</p>
-                    <p className="font-bold text-2xl md:text-3xl lg:text-4xl text-white">Gastronomía</p>
+                    {/* Tag with fade animation */}
+                    {DISCOVER_SLIDES.map((slide, index) => (
+                      <p
+                        key={`tag-${slide.id}`}
+                        className={`text-oaxaca-yellow text-xs md:text-sm font-semibold uppercase tracking-wider transition-opacity duration-700 ${
+                          index === discoverIndex ? 'opacity-100' : 'opacity-0 absolute'
+                        }`}
+                      >
+                        {slide.tag}
+                      </p>
+                    ))}
+                    {/* Title with fade animation */}
+                    {DISCOVER_SLIDES.map((slide, index) => (
+                      <p
+                        key={`title-${slide.id}`}
+                        className={`font-bold text-2xl md:text-3xl lg:text-4xl text-white transition-opacity duration-700 ${
+                          index === discoverIndex ? 'opacity-100' : 'opacity-0 absolute'
+                        }`}
+                      >
+                        {slide.title}
+                      </p>
+                    ))}
                     <div className="mt-2 flex items-center gap-1 text-white/80 text-xs md:text-sm">
                       <span>Explorar</span>
                       <ChevronRight size={14} />
