@@ -570,10 +570,13 @@ async function handleOrderPaymentFailed(
   );
 
   // Notificar al usuario del fallo de pago
-  // TODO: Agregar ORDER_PAYMENT_FAILED event type para notificaciones mas especificas
-  fastify.log.warn(
-    { orderId, userId: order.userId, error: paymentIntent.last_payment_error?.message },
-    'Order payment failed - notification sent via log (needs ORDER_PAYMENT_FAILED event type)'
+  fastify.eventBus.emitAsync(
+    createEvent(EventTypes.ORDER_PAYMENT_FAILED, {
+      orderId,
+      userId: order.userId,
+      sellerId: order.sellerId,
+      error: paymentIntent.last_payment_error?.message,
+    }, undefined, order.userId)
   );
 }
 
@@ -769,10 +772,15 @@ async function handleOrderRefunded(
     'Order refunded and inventory restored successfully'
   );
 
-  // TODO: Agregar ORDER_REFUNDED event type para notificaciones de reembolso
-  fastify.log.info(
-    { orderId, userId: order.userId, sellerId: order.sellerId },
-    'Order refund notification pending (needs ORDER_REFUNDED event type)'
+  // Notificar al usuario y vendedor del reembolso
+  fastify.eventBus.emitAsync(
+    createEvent(EventTypes.ORDER_REFUNDED, {
+      orderId,
+      userId: order.userId,
+      sellerId: order.sellerId,
+      amount: charge.amount_refunded / 100,
+      itemsRestored: order.items.map((i: any) => ({ productId: i.productId, quantity: i.quantity })),
+    }, undefined, order.userId)
   );
 }
 

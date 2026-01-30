@@ -9,6 +9,8 @@ import {
   OrderCreatedPayload,
   OrderPaidPayload,
   OrderShippedPayload,
+  OrderPaymentFailedPayload,
+  OrderRefundedPayload,
   BadgeUnlockedPayload,
   LevelUpPayload,
   ReviewCreatedPayload,
@@ -38,6 +40,8 @@ export class NotificationHandler {
     eventBus.on(EventTypes.ORDER_CREATED, this.onOrderCreated.bind(this), 'NotificationHandler.onOrderCreated');
     eventBus.on(EventTypes.ORDER_PAID, this.onOrderPaid.bind(this), 'NotificationHandler.onOrderPaid');
     eventBus.on(EventTypes.ORDER_SHIPPED, this.onOrderShipped.bind(this), 'NotificationHandler.onOrderShipped');
+    eventBus.on(EventTypes.ORDER_PAYMENT_FAILED, this.onOrderPaymentFailed.bind(this), 'NotificationHandler.onOrderPaymentFailed');
+    eventBus.on(EventTypes.ORDER_REFUNDED, this.onOrderRefunded.bind(this), 'NotificationHandler.onOrderRefunded');
 
     // Gamification Events
     eventBus.on(EventTypes.BADGE_UNLOCKED, this.onBadgeUnlocked.bind(this), 'NotificationHandler.onBadgeUnlocked');
@@ -212,6 +216,47 @@ export class NotificationHandler {
         orderId: event.payload.orderId,
         trackingNumber,
         type: 'order_shipped',
+      },
+    });
+  }
+
+  private async onOrderPaymentFailed(event: DomainEvent<OrderPaymentFailedPayload>): Promise<void> {
+    const { userId, orderId, error } = event.payload;
+
+    await this.createNotification({
+      userId,
+      type: 'SYSTEM',
+      title: 'Error en el pago',
+      body: `No se pudo procesar el pago de tu orden${error ? `. ${error}` : ''}. Intenta nuevamente.`,
+      data: {
+        orderId,
+        type: 'order_payment_failed',
+      },
+    });
+  }
+
+  private async onOrderRefunded(event: DomainEvent<OrderRefundedPayload>): Promise<void> {
+    const { userId, sellerId, orderId, amount } = event.payload;
+
+    await this.createNotification({
+      userId,
+      type: 'SYSTEM',
+      title: 'Reembolso procesado',
+      body: `Se ha procesado un reembolso de $${amount.toFixed(2)} para tu orden`,
+      data: {
+        orderId,
+        type: 'order_refunded',
+      },
+    });
+
+    await this.createNotification({
+      userId: sellerId,
+      type: 'SYSTEM',
+      title: 'Orden reembolsada',
+      body: `Se ha procesado un reembolso de $${amount.toFixed(2)} para una orden`,
+      data: {
+        orderId,
+        type: 'order_refunded_seller',
       },
     });
   }

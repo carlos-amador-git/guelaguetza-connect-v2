@@ -44,11 +44,17 @@ export function initializeEventBus(prisma: PrismaClient): EventBus {
         error: error.message,
       });
 
-      // TODO: Send to error tracking service (Sentry, etc.)
-      // Sentry.captureException(error, {
-      //   tags: { handler: handlerName, eventType: event.type },
-      //   extra: { correlationId: event.correlationId },
-      // });
+      // Send to Sentry if available
+      import('@sentry/node')
+        .then((Sentry) => {
+          Sentry.captureException(error, {
+            tags: { handler: handlerName, eventType: event.type },
+            extra: { correlationId: event.correlationId },
+          });
+        })
+        .catch(() => {
+          // Sentry not available, skip
+        });
     },
   });
 

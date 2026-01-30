@@ -4,6 +4,10 @@ import { AuthService } from '../services/auth.service.js';
 import { registerSchema, loginSchema, updateProfileSchema } from '../schemas/auth.schema.js';
 import { AppError } from '../utils/errors.js';
 
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+const REFRESH_TOKEN_COOKIE = 'gc_refresh_token';
+const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60; // 7 days in seconds
+
 // Schemas adicionales
 const refreshTokenSchema = z.object({
   refreshToken: z.string().min(1, 'Refresh token es requerido'),
@@ -17,11 +21,24 @@ const changePasswordSchema = z.object({
 const authRoutes: FastifyPluginAsync = async (fastify) => {
   const authService = new AuthService(fastify.prisma);
 
+  /** Sets httpOnly cookie with refresh token */
+  function setRefreshCookie(reply: any, refreshToken: string) {
+    reply.setCookie(REFRESH_TOKEN_COOKIE, refreshToken, {
+      httpOnly: true,
+      secure: IS_PRODUCTION,
+      sameSite: IS_PRODUCTION ? 'strict' : 'lax',
+      path: '/api/auth',
+      maxAge: REFRESH_TOKEN_MAX_AGE,
+    });
+  }
+
   // Register - Devuelve tokens JWT modernos
   fastify.post('/register', async (request, reply) => {
     try {
       const data = registerSchema.parse(request.body);
       const result = await authService.register(data);
+
+      setRefreshCookie(reply, result.tokens.refreshToken);
 
       return reply.status(201).send({
         success: true,
@@ -46,6 +63,8 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
       const data = loginSchema.parse(request.body);
       const result = await authService.login(data.email, data.password);
 
+      setRefreshCookie(reply, result.tokens.refreshToken);
+
       return reply.send({
         success: true,
         user: result.user,
@@ -63,11 +82,22 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
     }
   });
 
-  // Refresh tokens - Obtiene nuevos tokens con un refresh token válido
+  // Refresh tokens - Accepts refresh token from body OR httpOnly cookie
   fastify.post('/refresh', async (request, reply) => {
     try {
-      const data = refreshTokenSchema.parse(request.body);
-      const tokens = await authService.refreshTokens(data.refreshToken);
+      // Try body first, then cookie
+      const body = request.body as any;
+      const refreshToken =
+        body?.refreshToken ||
+        (request.cookies && (request.cookies as any)[REFRESH_TOKEN_COOKIE]);
+
+      if (!refreshToken) {
+        return reply.status(400).send({ error: 'Refresh token es requerido' });
+      }
+
+      const tokens = await authService.refreshTokens(refreshToken);
+
+      setRefreshCookie(reply, tokens.refreshToken);
 
       return reply.send({
         success: true,

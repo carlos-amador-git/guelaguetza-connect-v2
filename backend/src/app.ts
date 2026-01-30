@@ -1,6 +1,7 @@
 import Fastify, { FastifyInstance, FastifyError } from 'fastify';
 import compress from '@fastify/compress';
 import cors from '@fastify/cors';
+import cookie from '@fastify/cookie';
 import helmet from '@fastify/helmet';
 import multipart from '@fastify/multipart';
 import websocket from '@fastify/websocket';
@@ -15,6 +16,7 @@ import authPlugin from './plugins/auth.js';
 import redisPlugin from './plugins/redis.js';
 import eventBusPlugin from './plugins/eventBus.js';
 import rateLimitPlugin from './plugins/rate-limit.js';
+import sentryPlugin from './plugins/sentry.js';
 import authRoutes from './routes/auth.js';
 import storiesRoutes from './routes/stories.js';
 import transportRoutes from './routes/transport.js';
@@ -92,10 +94,16 @@ export async function buildApp(): Promise<FastifyInstance> {
     runFirst: true,
   });
 
+  // Register cookie support for httpOnly refresh tokens
+  await app.register(cookie, {
+    secret: process.env.COOKIE_SECRET || process.env.JWT_SECRET || 'dev-cookie-secret',
+  });
+
   // Register WebSocket support
   await app.register(websocket);
 
   // Register plugins
+  await app.register(sentryPlugin);
   await app.register(prismaPlugin);
   await app.register(redisPlugin);
   await app.register(eventBusPlugin);

@@ -123,6 +123,21 @@ export interface OrderDeliveredPayload {
   deliveredAt: Date;
 }
 
+export interface OrderPaymentFailedPayload {
+  orderId: string;
+  userId: string;
+  sellerId: string;
+  error?: string;
+}
+
+export interface OrderRefundedPayload {
+  orderId: string;
+  userId: string;
+  sellerId: string;
+  amount: number;
+  itemsRestored: Array<{ productId: string; quantity: number }>;
+}
+
 // ============================================
 // USER EVENTS
 // ============================================
@@ -221,6 +236,8 @@ export const EventTypes = {
   ORDER_PAID: 'order.paid',
   ORDER_SHIPPED: 'order.shipped',
   ORDER_DELIVERED: 'order.delivered',
+  ORDER_PAYMENT_FAILED: 'order.payment_failed',
+  ORDER_REFUNDED: 'order.refunded',
 
   // User Events
   USER_REGISTERED: 'user.registered',
@@ -254,6 +271,8 @@ export type EventPayloadMap = {
   [EventTypes.ORDER_PAID]: OrderPaidPayload;
   [EventTypes.ORDER_SHIPPED]: OrderShippedPayload;
   [EventTypes.ORDER_DELIVERED]: OrderDeliveredPayload;
+  [EventTypes.ORDER_PAYMENT_FAILED]: OrderPaymentFailedPayload;
+  [EventTypes.ORDER_REFUNDED]: OrderRefundedPayload;
 
   [EventTypes.USER_REGISTERED]: UserRegisteredPayload;
   [EventTypes.USER_BANNED]: UserBannedPayload;
