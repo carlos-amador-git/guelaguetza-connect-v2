@@ -608,7 +608,7 @@ export const CharacterCounter: React.FC<CharacterCounterProps> = ({
         isOverLimit
           ? 'text-red-500'
           : isNearLimit
-          ? 'text-yellow-500'
+          ? 'text-oaxaca-yellow'
           : 'text-gray-400'
       } ${className}`}
     >

@@ -227,8 +227,8 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
 
       const levels = [
         { label: 'Muy débil', color: 'bg-red-500' },
-        { label: 'Débil', color: 'bg-orange-500' },
-        { label: 'Regular', color: 'bg-yellow-500' },
+        { label: 'Débil', color: 'bg-oaxaca-yellow' },
+        { label: 'Regular', color: 'bg-oaxaca-yellow' },
         { label: 'Buena', color: 'bg-lime-500' },
         { label: 'Fuerte', color: 'bg-green-500' },
       ];

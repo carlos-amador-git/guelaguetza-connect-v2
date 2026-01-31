@@ -31,8 +31,8 @@ const ROLE_LABELS: Record<UserRole, string> = {
 
 const ROLE_COLORS: Record<UserRole, string> = {
   USER: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
-  MODERATOR: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-  ADMIN: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
+  MODERATOR: 'bg-oaxaca-sky-light text-oaxaca-sky dark:bg-oaxaca-sky/20 dark:text-oaxaca-sky',
+  ADMIN: 'bg-oaxaca-purple-light text-oaxaca-purple dark:bg-oaxaca-purple/20 dark:text-oaxaca-purple',
 };
 
 const ROLE_ICONS: Record<UserRole, React.ReactNode> = {

@@ -134,7 +134,7 @@ const DirectMessagesView: React.FC<DirectMessagesViewProps> = ({
                       {
                         icon: <Archive size={20} />,
                         color: 'white',
-                        bgColor: 'bg-blue-500',
+                        bgColor: 'bg-oaxaca-sky',
                         label: 'Archivar',
                         onClick: () => {
                           // Archive conversation

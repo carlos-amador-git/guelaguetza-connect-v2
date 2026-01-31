@@ -164,7 +164,7 @@ export default function CheckoutView({ onNavigate, onBack }: CheckoutViewProps) 
         <p className="text-gray-500 dark:text-gray-400 text-base sm:text-lg mb-4 text-center">No hay productos en el carrito</p>
         <button
           onClick={() => onNavigate(ViewState.TIENDA)}
-          className="px-6 py-3 bg-amber-500 text-white rounded-lg font-medium min-h-[44px] hover:bg-amber-600 active:scale-[0.98] transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2"
+          className="px-6 py-3 bg-oaxaca-yellow text-white rounded-lg font-medium min-h-[44px] hover:bg-oaxaca-yellow/90 active:scale-[0.98] transition-all focus-visible:ring-2 focus-visible:ring-oaxaca-yellow focus-visible:ring-offset-2"
         >
           Ir a la tienda
         </button>
@@ -189,8 +189,8 @@ export default function CheckoutView({ onNavigate, onBack }: CheckoutViewProps) 
         </p>
 
         <div className="w-full max-w-sm space-y-3">
-          <div className="flex items-center gap-3 p-3 sm:p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
-            <Truck className="w-5 sm:w-6 h-5 sm:h-6 text-amber-600 dark:text-amber-400 flex-shrink-0" aria-hidden="true" />
+          <div className="flex items-center gap-3 p-3 sm:p-4 bg-oaxaca-yellow-light dark:bg-oaxaca-yellow/20 rounded-xl">
+            <Truck className="w-5 sm:w-6 h-5 sm:h-6 text-oaxaca-yellow dark:text-oaxaca-yellow flex-shrink-0" aria-hidden="true" />
             <div className="text-left">
               <p className="font-medium text-gray-900 dark:text-white text-sm sm:text-base">Tiempo estimado</p>
               <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">5-10 dias habiles</p>
@@ -199,7 +199,7 @@ export default function CheckoutView({ onNavigate, onBack }: CheckoutViewProps) 
 
           <button
             onClick={() => onNavigate(ViewState.TIENDA)}
-            className="w-full py-3 sm:py-4 bg-amber-500 text-white rounded-lg font-medium min-h-[44px] hover:bg-amber-600 active:scale-[0.98] transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2"
+            className="w-full py-3 sm:py-4 bg-oaxaca-yellow text-white rounded-lg font-medium min-h-[44px] hover:bg-oaxaca-yellow/90 active:scale-[0.98] transition-all focus-visible:ring-2 focus-visible:ring-oaxaca-yellow focus-visible:ring-offset-2"
           >
             Seguir comprando
           </button>
@@ -225,7 +225,7 @@ export default function CheckoutView({ onNavigate, onBack }: CheckoutViewProps) 
         <div className="flex items-center gap-2 sm:gap-3 max-w-2xl mx-auto">
           <button
             onClick={() => step === 'shipping' ? onBack() : setStep('shipping')}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full min-w-[44px] min-h-[44px] flex items-center justify-center transition-colors focus-visible:ring-2 focus-visible:ring-amber-500"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full min-w-[44px] min-h-[44px] flex items-center justify-center transition-colors focus-visible:ring-2 focus-visible:ring-oaxaca-yellow"
             aria-label={step === 'shipping' ? 'Volver al carrito' : 'Volver a datos de envio'}
           >
             <ChevronLeft className="w-5 sm:w-6 h-5 sm:h-6 text-gray-600 dark:text-gray-300" />
@@ -241,8 +241,8 @@ export default function CheckoutView({ onNavigate, onBack }: CheckoutViewProps) 
 
         {/* Progress */}
         <div className="flex items-center gap-2 mt-3 sm:mt-4 max-w-2xl mx-auto" role="progressbar" aria-valuenow={step === 'shipping' ? 50 : 100} aria-valuemin={0} aria-valuemax={100}>
-          <div className={`flex-1 h-1 rounded transition-colors ${step === 'shipping' || step === 'payment' ? 'bg-amber-500' : 'bg-gray-200 dark:bg-gray-700'}`} />
-          <div className={`flex-1 h-1 rounded transition-colors ${step === 'payment' ? 'bg-amber-500' : 'bg-gray-200 dark:bg-gray-700'}`} />
+          <div className={`flex-1 h-1 rounded transition-colors ${step === 'shipping' || step === 'payment' ? 'bg-oaxaca-yellow' : 'bg-gray-200 dark:bg-gray-700'}`} />
+          <div className={`flex-1 h-1 rounded transition-colors ${step === 'payment' ? 'bg-oaxaca-yellow' : 'bg-gray-200 dark:bg-gray-700'}`} />
         </div>
       </div>
 
@@ -253,7 +253,7 @@ export default function CheckoutView({ onNavigate, onBack }: CheckoutViewProps) 
           <form onSubmit={handleShippingSubmit} className="space-y-3 sm:space-y-4">
             <div className="bg-white dark:bg-gray-800 rounded-xl p-3 sm:p-4">
               <h2 className="font-bold text-gray-900 dark:text-white mb-3 sm:mb-4 flex items-center gap-2 text-sm sm:text-base">
-                <MapPin className="w-4 sm:w-5 h-4 sm:h-5 text-amber-500" aria-hidden="true" />
+                <MapPin className="w-4 sm:w-5 h-4 sm:h-5 text-oaxaca-yellow" aria-hidden="true" />
                 Direccion de envio
               </h2>
 
@@ -266,7 +266,7 @@ export default function CheckoutView({ onNavigate, onBack }: CheckoutViewProps) 
                     required
                     value={shipping.name}
                     onChange={(e) => setShipping({ ...shipping, name: e.target.value })}
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-sm sm:text-base min-h-[44px]"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-oaxaca-yellow focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-sm sm:text-base min-h-[44px]"
                     placeholder="Tu nombre"
                   />
                 </div>
@@ -279,7 +279,7 @@ export default function CheckoutView({ onNavigate, onBack }: CheckoutViewProps) 
                     required
                     value={shipping.street}
                     onChange={(e) => setShipping({ ...shipping, street: e.target.value })}
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-sm sm:text-base min-h-[44px]"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-oaxaca-yellow focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-sm sm:text-base min-h-[44px]"
                     placeholder="Calle, numero, colonia"
                   />
                 </div>
@@ -293,7 +293,7 @@ export default function CheckoutView({ onNavigate, onBack }: CheckoutViewProps) 
                       required
                       value={shipping.city}
                       onChange={(e) => setShipping({ ...shipping, city: e.target.value })}
-                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-sm sm:text-base min-h-[44px]"
+                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-oaxaca-yellow focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-sm sm:text-base min-h-[44px]"
                       placeholder="Ciudad"
                     />
                   </div>
@@ -305,7 +305,7 @@ export default function CheckoutView({ onNavigate, onBack }: CheckoutViewProps) 
                       required
                       value={shipping.postalCode}
                       onChange={(e) => setShipping({ ...shipping, postalCode: e.target.value })}
-                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-sm sm:text-base min-h-[44px]"
+                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-oaxaca-yellow focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-sm sm:text-base min-h-[44px]"
                       placeholder="68000"
                     />
                   </div>
@@ -319,7 +319,7 @@ export default function CheckoutView({ onNavigate, onBack }: CheckoutViewProps) 
                     required
                     value={shipping.phone}
                     onChange={(e) => setShipping({ ...shipping, phone: e.target.value })}
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-sm sm:text-base min-h-[44px]"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-oaxaca-yellow focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-sm sm:text-base min-h-[44px]"
                     placeholder="951 123 4567"
                   />
                 </div>
@@ -330,7 +330,7 @@ export default function CheckoutView({ onNavigate, onBack }: CheckoutViewProps) 
                     id="notes"
                     value={shipping.notes}
                     onChange={(e) => setShipping({ ...shipping, notes: e.target.value })}
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-sm sm:text-base resize-none"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-oaxaca-yellow focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-sm sm:text-base resize-none"
                     placeholder="Instrucciones especiales de entrega"
                     rows={2}
                   />
@@ -341,7 +341,7 @@ export default function CheckoutView({ onNavigate, onBack }: CheckoutViewProps) 
             {/* Order Summary */}
             <div className="bg-white dark:bg-gray-800 rounded-xl p-3 sm:p-4">
               <h2 className="font-bold text-gray-900 dark:text-white mb-3 sm:mb-4 flex items-center gap-2 text-sm sm:text-base">
-                <Package className="w-4 sm:w-5 h-4 sm:h-5 text-amber-500" aria-hidden="true" />
+                <Package className="w-4 sm:w-5 h-4 sm:h-5 text-oaxaca-yellow" aria-hidden="true" />
                 Resumen del pedido
               </h2>
 
@@ -377,14 +377,14 @@ export default function CheckoutView({ onNavigate, onBack }: CheckoutViewProps) 
 
                 <div className="border-t border-gray-200 dark:border-gray-700 pt-2 sm:pt-3 flex justify-between">
                   <span className="font-bold text-gray-900 dark:text-white text-sm sm:text-base">Total</span>
-                  <span className="font-bold text-amber-600 dark:text-amber-400 text-sm sm:text-base">{formatPrice(total)}</span>
+                  <span className="font-bold text-oaxaca-yellow dark:text-oaxaca-yellow text-sm sm:text-base">{formatPrice(total)}</span>
                 </div>
               </div>
             </div>
 
             <button
               type="submit"
-              className="w-full py-3 sm:py-4 bg-amber-500 text-white rounded-lg font-medium min-h-[44px] hover:bg-amber-600 active:scale-[0.98] transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 text-sm sm:text-base"
+              className="w-full py-3 sm:py-4 bg-oaxaca-yellow text-white rounded-lg font-medium min-h-[44px] hover:bg-oaxaca-yellow/90 active:scale-[0.98] transition-all focus-visible:ring-2 focus-visible:ring-oaxaca-yellow focus-visible:ring-offset-2 text-sm sm:text-base"
             >
               Continuar al pago
             </button>
@@ -395,7 +395,7 @@ export default function CheckoutView({ onNavigate, onBack }: CheckoutViewProps) 
           <div className="space-y-3 sm:space-y-4">
             <div className="bg-white dark:bg-gray-800 rounded-xl p-3 sm:p-4">
               <h2 className="font-bold text-gray-900 dark:text-white mb-3 sm:mb-4 flex items-center gap-2 text-sm sm:text-base">
-                <CreditCard className="w-4 sm:w-5 h-4 sm:h-5 text-amber-500" aria-hidden="true" />
+                <CreditCard className="w-4 sm:w-5 h-4 sm:h-5 text-oaxaca-yellow" aria-hidden="true" />
                 Metodo de pago
               </h2>
 
@@ -403,14 +403,14 @@ export default function CheckoutView({ onNavigate, onBack }: CheckoutViewProps) 
                 <legend className="sr-only">Selecciona un metodo de pago</legend>
 
                 <label className={`flex items-center gap-2 sm:gap-3 p-3 sm:p-4 border-2 rounded-xl cursor-pointer transition-all min-h-[60px] ${
-                  paymentMethod === 'card' ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                  paymentMethod === 'card' ? 'border-oaxaca-yellow bg-oaxaca-yellow-light dark:bg-oaxaca-yellow/20' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                 }`}>
                   <input
                     type="radio"
                     name="payment"
                     checked={paymentMethod === 'card'}
                     onChange={() => setPaymentMethod('card')}
-                    className="w-4 h-4 text-amber-500 min-w-[16px]"
+                    className="w-4 h-4 text-oaxaca-yellow min-w-[16px]"
                   />
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-gray-900 dark:text-white text-sm sm:text-base">Tarjeta de credito/debito</p>
@@ -420,14 +420,14 @@ export default function CheckoutView({ onNavigate, onBack }: CheckoutViewProps) 
                 </label>
 
                 <label className={`flex items-center gap-2 sm:gap-3 p-3 sm:p-4 border-2 rounded-xl cursor-pointer transition-all min-h-[60px] ${
-                  paymentMethod === 'oxxo' ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                  paymentMethod === 'oxxo' ? 'border-oaxaca-yellow bg-oaxaca-yellow-light dark:bg-oaxaca-yellow/20' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                 }`}>
                   <input
                     type="radio"
                     name="payment"
                     checked={paymentMethod === 'oxxo'}
                     onChange={() => setPaymentMethod('oxxo')}
-                    className="w-4 h-4 text-amber-500 min-w-[16px]"
+                    className="w-4 h-4 text-oaxaca-yellow min-w-[16px]"
                   />
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-gray-900 dark:text-white text-sm sm:text-base">OXXO Pay</p>
@@ -437,14 +437,14 @@ export default function CheckoutView({ onNavigate, onBack }: CheckoutViewProps) 
                 </label>
 
                 <label className={`flex items-center gap-2 sm:gap-3 p-3 sm:p-4 border-2 rounded-xl cursor-pointer transition-all min-h-[60px] ${
-                  paymentMethod === 'transfer' ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                  paymentMethod === 'transfer' ? 'border-oaxaca-yellow bg-oaxaca-yellow-light dark:bg-oaxaca-yellow/20' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                 }`}>
                   <input
                     type="radio"
                     name="payment"
                     checked={paymentMethod === 'transfer'}
                     onChange={() => setPaymentMethod('transfer')}
-                    className="w-4 h-4 text-amber-500 min-w-[16px]"
+                    className="w-4 h-4 text-oaxaca-yellow min-w-[16px]"
                   />
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-gray-900 dark:text-white text-sm sm:text-base">Transferencia bancaria</p>
@@ -464,7 +464,7 @@ export default function CheckoutView({ onNavigate, onBack }: CheckoutViewProps) 
                       type="text"
                       inputMode="numeric"
                       placeholder="1234 5678 9012 3456"
-                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-sm sm:text-base min-h-[44px]"
+                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-oaxaca-yellow focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-sm sm:text-base min-h-[44px]"
                       maxLength={19}
                       autoComplete="cc-number"
                     />
@@ -476,7 +476,7 @@ export default function CheckoutView({ onNavigate, onBack }: CheckoutViewProps) 
                         id="expiry"
                         type="text"
                         placeholder="MM/AA"
-                        className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-sm sm:text-base min-h-[44px]"
+                        className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-oaxaca-yellow focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-sm sm:text-base min-h-[44px]"
                         maxLength={5}
                         autoComplete="cc-exp"
                       />
@@ -488,7 +488,7 @@ export default function CheckoutView({ onNavigate, onBack }: CheckoutViewProps) 
                         type="text"
                         inputMode="numeric"
                         placeholder="123"
-                        className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-sm sm:text-base min-h-[44px]"
+                        className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-oaxaca-yellow focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-sm sm:text-base min-h-[44px]"
                         maxLength={4}
                         autoComplete="cc-csc"
                       />
@@ -499,10 +499,10 @@ export default function CheckoutView({ onNavigate, onBack }: CheckoutViewProps) 
             )}
 
             {/* Total */}
-            <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-3 sm:p-4">
+            <div className="bg-oaxaca-yellow-light dark:bg-oaxaca-yellow/20 rounded-xl p-3 sm:p-4">
               <div className="flex justify-between items-center">
                 <span className="text-gray-700 dark:text-gray-300 text-sm sm:text-base">Total a pagar</span>
-                <span className="text-xl sm:text-2xl font-bold text-amber-600 dark:text-amber-400">{formatPrice(total)}</span>
+                <span className="text-xl sm:text-2xl font-bold text-oaxaca-yellow dark:text-oaxaca-yellow">{formatPrice(total)}</span>
               </div>
             </div>
 
@@ -513,7 +513,7 @@ export default function CheckoutView({ onNavigate, onBack }: CheckoutViewProps) 
             <button
               onClick={handlePaymentSubmit}
               disabled={processing}
-              className="w-full py-3 sm:py-4 bg-amber-500 text-white rounded-lg font-medium disabled:opacity-70 flex items-center justify-center gap-2 min-h-[44px] hover:bg-amber-600 active:scale-[0.98] transition-all focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 text-sm sm:text-base"
+              className="w-full py-3 sm:py-4 bg-oaxaca-yellow text-white rounded-lg font-medium disabled:opacity-70 flex items-center justify-center gap-2 min-h-[44px] hover:bg-oaxaca-yellow/90 active:scale-[0.98] transition-all focus-visible:ring-2 focus-visible:ring-oaxaca-yellow focus-visible:ring-offset-2 text-sm sm:text-base"
               aria-busy={processing}
             >
               {processing ? (

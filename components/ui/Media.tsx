@@ -925,14 +925,14 @@ interface FilePreviewProps {
 const getFileIcon = (type: string) => {
   if (type.startsWith('image/')) {
     return (
-      <svg className="w-full h-full text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+      <svg className="w-full h-full text-oaxaca-sky" fill="currentColor" viewBox="0 0 24 24">
         <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
       </svg>
     );
   }
   if (type.startsWith('video/')) {
     return (
-      <svg className="w-full h-full text-purple-500" fill="currentColor" viewBox="0 0 24 24">
+      <svg className="w-full h-full text-oaxaca-purple" fill="currentColor" viewBox="0 0 24 24">
         <path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z" />
       </svg>
     );

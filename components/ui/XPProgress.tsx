@@ -38,7 +38,7 @@ const XPProgress: React.FC<XPProgressProps> = ({
 
         {/* Streak */}
         {streak > 0 && (
-          <div className="flex items-center gap-1 text-orange-500">
+          <div className="flex items-center gap-1 text-oaxaca-yellow">
             <Flame size={16} className="fill-current" />
             <span className="text-sm font-medium">{streak}</span>
           </div>
@@ -64,7 +64,7 @@ const XPProgress: React.FC<XPProgressProps> = ({
 
         {/* Streak badge */}
         {streak > 0 && (
-          <div className="flex items-center gap-1.5 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 px-3 py-1.5 rounded-full">
+          <div className="flex items-center gap-1.5 bg-oaxaca-yellow-light dark:bg-oaxaca-yellow/20 text-oaxaca-yellow dark:text-oaxaca-yellow px-3 py-1.5 rounded-full">
             <Flame size={18} className="fill-current" />
             <span className="font-bold">{streak} días</span>
           </div>

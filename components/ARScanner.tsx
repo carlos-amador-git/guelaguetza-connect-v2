@@ -134,7 +134,7 @@ const ARScanner: React.FC<ARScannerProps> = ({ onBack }) => {
   if (showGallery) {
     const item = MARKERS_DATA[currentIndex];
     return (
-      <div className="h-full bg-gradient-to-br from-gray-900 via-purple-900/30 to-black flex flex-col">
+      <div className="h-full bg-gradient-to-br from-gray-900 via-oaxaca-purple/30 to-black flex flex-col">
         {/* Header */}
         <div className="p-4 flex items-center justify-between">
           <button onClick={onBack || (() => setShowGallery(false))} className="text-white p-2 rounded-full bg-white/10">
@@ -162,7 +162,7 @@ const ARScanner: React.FC<ARScannerProps> = ({ onBack }) => {
             </div>
             {/* Sparkle effect */}
             <div className="absolute top-4 right-4">
-              <Sparkles className="text-yellow-400 animate-pulse" size={24} />
+              <Sparkles className="text-oaxaca-yellow animate-pulse" size={24} />
             </div>
           </div>
 

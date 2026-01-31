@@ -238,13 +238,13 @@ export const AlertDialog: React.FC<AlertDialogProps> = ({
     },
     warning: {
       icon: <AlertCircle size={24} />,
-      iconBg: 'bg-amber-100 dark:bg-amber-900/30 text-amber-600',
-      button: 'bg-amber-600 hover:bg-amber-700 text-white',
+      iconBg: 'bg-oaxaca-yellow-light dark:bg-oaxaca-yellow/20 text-oaxaca-yellow',
+      button: 'bg-oaxaca-yellow hover:bg-oaxaca-yellow/90 text-white',
     },
     info: {
       icon: <Info size={24} />,
-      iconBg: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600',
-      button: 'bg-blue-600 hover:bg-blue-700 text-white',
+      iconBg: 'bg-oaxaca-sky-light dark:bg-oaxaca-sky/20 text-oaxaca-sky',
+      button: 'bg-oaxaca-sky hover:bg-oaxaca-sky/90 text-white',
     },
     success: {
       icon: <CheckCircle size={24} />,

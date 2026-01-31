@@ -58,11 +58,11 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({ onBack, onUserProfile
   const getRankIcon = (rank: number) => {
     switch (rank) {
       case 1:
-        return <Crown className="text-yellow-500 fill-yellow-500" size={24} />;
+        return <Crown className="text-oaxaca-yellow fill-oaxaca-yellow" size={24} />;
       case 2:
         return <Medal className="text-gray-400 fill-gray-400" size={22} />;
       case 3:
-        return <Medal className="text-amber-600 fill-amber-600" size={22} />;
+        return <Medal className="text-oaxaca-yellow fill-oaxaca-yellow" size={22} />;
       default:
         return <span className="text-gray-500 font-bold">{rank}</span>;
     }
@@ -71,11 +71,11 @@ const LeaderboardView: React.FC<LeaderboardViewProps> = ({ onBack, onUserProfile
   const getRankStyle = (rank: number): string => {
     switch (rank) {
       case 1:
-        return 'bg-gradient-to-r from-yellow-100 to-yellow-50 dark:from-yellow-900/20 dark:to-yellow-800/10 border-yellow-300 dark:border-yellow-700';
+        return 'bg-gradient-to-r from-oaxaca-yellow-light to-oaxaca-yellow-light dark:from-oaxaca-yellow/20 dark:to-oaxaca-yellow/10 border-oaxaca-yellow/30 dark:border-oaxaca-yellow/30';
       case 2:
         return 'bg-gradient-to-r from-gray-100 to-gray-50 dark:from-gray-800/50 dark:to-gray-800/30 border-gray-300 dark:border-gray-600';
       case 3:
-        return 'bg-gradient-to-r from-amber-100 to-amber-50 dark:from-amber-900/20 dark:to-amber-800/10 border-amber-300 dark:border-amber-700';
+        return 'bg-gradient-to-r from-oaxaca-yellow-light to-oaxaca-yellow-light dark:from-oaxaca-yellow/20 dark:to-oaxaca-yellow/10 border-oaxaca-yellow/30 dark:border-oaxaca-yellow/30';
       default:
         return 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700';
     }

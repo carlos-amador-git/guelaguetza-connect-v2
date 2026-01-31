@@ -90,7 +90,7 @@ const SimpleToggle: React.FC<{ size: 'sm' | 'md' | 'lg'; className?: string }> =
       <Sun
         className={`
           absolute inset-0 m-auto ${sizeConfig.icon}
-          text-amber-500
+          text-oaxaca-yellow
           transition-all duration-300
           ${isDark ? 'opacity-0 rotate-90 scale-50' : 'opacity-100 rotate-0 scale-100'}
         `}
@@ -99,7 +99,7 @@ const SimpleToggle: React.FC<{ size: 'sm' | 'md' | 'lg'; className?: string }> =
       <Moon
         className={`
           absolute inset-0 m-auto ${sizeConfig.icon}
-          text-blue-400
+          text-oaxaca-sky
           transition-all duration-300
           ${isDark ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-50'}
         `}
@@ -140,9 +140,9 @@ const CompactToggle: React.FC<{ size: 'sm' | 'md' | 'lg'; showLabel?: boolean; c
       aria-label={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
     >
       {isDark ? (
-        <Moon className={`${sizeConfig.icon} text-blue-400`} />
+        <Moon className={`${sizeConfig.icon} text-oaxaca-sky`} />
       ) : (
-        <Sun className={`${sizeConfig.icon} text-amber-500`} />
+        <Sun className={`${sizeConfig.icon} text-oaxaca-yellow`} />
       )}
       {showLabel && (
         <span className={sizeConfig.text}>
@@ -219,7 +219,7 @@ const DropdownToggle: React.FC<{ size: 'sm' | 'md' | 'lg'; showLabel?: boolean; 
       >
         <CurrentIcon
           className={`${sizeConfig.icon} ${
-            isDark ? 'text-blue-400' : theme === 'system' ? 'text-gray-500' : 'text-amber-500'
+            isDark ? 'text-oaxaca-sky' : theme === 'system' ? 'text-gray-500' : 'text-oaxaca-yellow'
           }`}
         />
         {showLabel && (
@@ -273,9 +273,9 @@ const DropdownToggle: React.FC<{ size: 'sm' | 'md' | 'lg'; showLabel?: boolean; 
                     isSelected
                       ? 'text-oaxaca-pink'
                       : option.value === 'light'
-                      ? 'text-amber-500'
+                      ? 'text-oaxaca-yellow'
                       : option.value === 'dark'
-                      ? 'text-blue-400'
+                      ? 'text-oaxaca-sky'
                       : 'text-gray-500 dark:text-gray-400'
                   }`}
                 />

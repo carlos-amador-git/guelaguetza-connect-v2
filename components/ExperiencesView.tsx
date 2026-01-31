@@ -83,7 +83,7 @@ export default function ExperiencesView({ onNavigate, onBack }: ExperiencesViewP
   return (
     <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <div className="bg-gradient-to-r from-pink-600 to-purple-600 text-white p-4 pt-8 md:pt-6">
+      <div className="bg-gradient-to-r from-oaxaca-pink to-oaxaca-purple text-white p-4 pt-8 md:pt-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-3 mb-4">
             <button onClick={onBack} className="p-2 hover:bg-white/20 rounded-full transition">
@@ -110,7 +110,7 @@ export default function ExperiencesView({ onNavigate, onBack }: ExperiencesViewP
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`p-2.5 md:p-3 rounded-lg transition ${showFilters ? 'bg-white text-purple-600' : 'bg-white/20 hover:bg-white/30'}`}
+              className={`p-2.5 md:p-3 rounded-lg transition ${showFilters ? 'bg-white text-oaxaca-purple' : 'bg-white/20 hover:bg-white/30'}`}
             >
               <Filter className="w-5 h-5" />
             </button>
@@ -122,7 +122,7 @@ export default function ExperiencesView({ onNavigate, onBack }: ExperiencesViewP
               <button
                 onClick={() => setCategory('')}
                 className={`px-3 py-1.5 md:px-4 md:py-2 rounded-full text-sm whitespace-nowrap transition ${
-                  category === '' ? 'bg-white text-purple-600' : 'bg-white/20 hover:bg-white/30'
+                  category === '' ? 'bg-white text-oaxaca-purple' : 'bg-white/20 hover:bg-white/30'
                 }`}
               >
                 Todas
@@ -132,7 +132,7 @@ export default function ExperiencesView({ onNavigate, onBack }: ExperiencesViewP
                   key={cat}
                   onClick={() => setCategory(cat)}
                   className={`px-3 py-1.5 md:px-4 md:py-2 rounded-full text-sm whitespace-nowrap transition ${
-                    category === cat ? 'bg-white text-purple-600' : 'bg-white/20 hover:bg-white/30'
+                    category === cat ? 'bg-white text-oaxaca-purple' : 'bg-white/20 hover:bg-white/30'
                   }`}
                 >
                   {CATEGORY_LABELS[cat]}
@@ -178,7 +178,7 @@ export default function ExperiencesView({ onNavigate, onBack }: ExperiencesViewP
                 <button
                   onClick={() => loadExperiences(true)}
                   disabled={loading}
-                  className="w-full md:w-auto md:px-8 py-3 mt-6 text-purple-600 font-medium hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition mx-auto block"
+                  className="w-full md:w-auto md:px-8 py-3 mt-6 text-oaxaca-purple font-medium hover:bg-oaxaca-purple-light dark:hover:bg-oaxaca-purple/20 rounded-lg transition mx-auto block"
                 >
                   {loading ? 'Cargando...' : 'Cargar mas'}
                 </button>
@@ -192,7 +192,7 @@ export default function ExperiencesView({ onNavigate, onBack }: ExperiencesViewP
       <div className="p-4 bg-white dark:bg-gray-800 border-t dark:border-gray-700 md:hidden">
         <button
           onClick={() => onNavigate(ViewState.MY_BOOKINGS)}
-          className="w-full py-3 bg-purple-600 text-white rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-purple-700 transition"
+          className="w-full py-3 bg-oaxaca-purple text-white rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-oaxaca-purple/90 transition"
         >
           <Ticket className="w-5 h-5" />
           Mis Reservaciones
@@ -225,7 +225,7 @@ function ExperienceCard({ experience, onClick }: ExperienceCardProps) {
           <GradientPlaceholder variant="event" className="w-full h-full" alt={experience.title} />
         )}
         <div className="absolute top-3 left-3">
-          <span className="px-2 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-medium text-purple-600">
+          <span className="px-2 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-medium text-oaxaca-purple">
             {CATEGORY_LABELS[experience.category]}
           </span>
         </div>
@@ -250,7 +250,7 @@ function ExperienceCard({ experience, onClick }: ExperienceCardProps) {
           </div>
           {experience.rating > 0 && (
             <div className="flex items-center gap-1">
-              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+              <Star className="w-4 h-4 fill-oaxaca-yellow text-oaxaca-yellow" />
               {experience.rating.toFixed(1)}
             </div>
           )}

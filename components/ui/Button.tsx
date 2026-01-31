@@ -615,8 +615,8 @@ const chipColors = {
     outlined: 'border border-green-500 text-green-600 dark:text-green-400',
   },
   warning: {
-    filled: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400',
-    outlined: 'border border-yellow-500 text-yellow-600 dark:text-yellow-400',
+    filled: 'bg-oaxaca-yellow-light dark:bg-oaxaca-yellow/20 text-oaxaca-yellow dark:text-oaxaca-yellow',
+    outlined: 'border border-oaxaca-yellow text-oaxaca-yellow dark:text-oaxaca-yellow',
   },
   error: {
     filled: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400',

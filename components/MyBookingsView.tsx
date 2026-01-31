@@ -152,7 +152,7 @@ export default function MyBookingsView({ onNavigate, onBack }: MyBookingsViewPro
   return (
     <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <div className="bg-gradient-to-r from-pink-600 to-purple-600 text-white p-3 sm:p-4 pt-10 sm:pt-12">
+      <div className="bg-gradient-to-r from-oaxaca-pink to-oaxaca-purple text-white p-3 sm:p-4 pt-10 sm:pt-12">
         <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4 max-w-4xl mx-auto">
           <button
             onClick={onBack}
@@ -176,7 +176,7 @@ export default function MyBookingsView({ onNavigate, onBack }: MyBookingsViewPro
               role="tab"
               aria-selected={activeTab === tab.key}
               className={`px-3 py-1.5 rounded-full text-xs sm:text-sm whitespace-nowrap transition-colors min-h-[36px] focus-visible:ring-2 focus-visible:ring-white ${
-                activeTab === tab.key ? 'bg-white text-purple-600 font-medium' : 'bg-white/20 hover:bg-white/30'
+                activeTab === tab.key ? 'bg-white text-oaxaca-purple font-medium' : 'bg-white/20 hover:bg-white/30'
               }`}
             >
               {tab.label}
@@ -197,7 +197,7 @@ export default function MyBookingsView({ onNavigate, onBack }: MyBookingsViewPro
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 px-4">Aun no has reservado ninguna experiencia</p>
             <button
               onClick={() => onNavigate(ViewState.EXPERIENCES)}
-              className="px-5 sm:px-6 py-2.5 sm:py-3 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 active:scale-[0.98] transition-all min-h-[44px] focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 text-sm sm:text-base"
+              className="px-5 sm:px-6 py-2.5 sm:py-3 bg-oaxaca-purple text-white rounded-xl font-medium hover:bg-oaxaca-purple/90 active:scale-[0.98] transition-all min-h-[44px] focus-visible:ring-2 focus-visible:ring-oaxaca-purple focus-visible:ring-offset-2 text-sm sm:text-base"
             >
               Explorar experiencias
             </button>
@@ -254,11 +254,11 @@ export default function MyBookingsView({ onNavigate, onBack }: MyBookingsViewPro
                     onClick={() => setReviewRating(star)}
                     aria-label={`${star} ${star === 1 ? 'estrella' : 'estrellas'}`}
                     aria-pressed={star <= reviewRating}
-                    className="p-1 min-w-[44px] min-h-[44px] flex items-center justify-center focus-visible:ring-2 focus-visible:ring-purple-500 rounded"
+                    className="p-1 min-w-[44px] min-h-[44px] flex items-center justify-center focus-visible:ring-2 focus-visible:ring-oaxaca-purple rounded"
                   >
                     <Star
                       className={`w-8 sm:w-10 h-8 sm:h-10 transition-colors ${
-                        star <= reviewRating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300 dark:text-gray-600'
+                        star <= reviewRating ? 'fill-oaxaca-yellow text-oaxaca-yellow' : 'text-gray-300 dark:text-gray-600'
                       }`}
                     />
                   </button>
@@ -273,7 +273,7 @@ export default function MyBookingsView({ onNavigate, onBack }: MyBookingsViewPro
               value={reviewComment}
               onChange={(e) => setReviewComment(e.target.value)}
               placeholder="Cuentanos tu experiencia (opcional)"
-              className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-lg resize-none mb-4 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-sm sm:text-base focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-lg resize-none mb-4 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-sm sm:text-base focus:ring-2 focus:ring-oaxaca-purple focus:border-transparent"
               rows={4}
             />
 
@@ -288,7 +288,7 @@ export default function MyBookingsView({ onNavigate, onBack }: MyBookingsViewPro
               <button
                 onClick={handleReview}
                 disabled={reviewLoading}
-                className="flex-1 py-2.5 sm:py-3 bg-purple-600 text-white rounded-lg font-medium disabled:opacity-50 min-h-[44px] hover:bg-purple-700 active:scale-[0.98] transition-all focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 text-sm sm:text-base"
+                className="flex-1 py-2.5 sm:py-3 bg-oaxaca-purple text-white rounded-lg font-medium disabled:opacity-50 min-h-[44px] hover:bg-oaxaca-purple/90 active:scale-[0.98] transition-all focus-visible:ring-2 focus-visible:ring-oaxaca-purple focus-visible:ring-offset-2 text-sm sm:text-base"
                 aria-busy={reviewLoading}
               >
                 {reviewLoading ? 'Enviando...' : 'Enviar'}
@@ -390,7 +390,7 @@ function BookingCard({ booking, onCancel, onReview, onRetryPayment, onClick }: B
         {/* Total */}
         <div className="flex justify-between items-center mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-100 dark:border-gray-700">
           <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Total pagado</span>
-          <span className="text-base sm:text-lg font-bold text-purple-600 dark:text-purple-400">{formatPrice(booking.totalPrice)}</span>
+          <span className="text-base sm:text-lg font-bold text-oaxaca-purple dark:text-oaxaca-purple">{formatPrice(booking.totalPrice)}</span>
         </div>
 
         {/* Actions */}
@@ -401,7 +401,7 @@ function BookingCard({ booking, onCancel, onReview, onRetryPayment, onClick }: B
               onClick={handleRetryPayment}
               isLoading={isRetrying}
               variant="primary"
-              className="flex-1 py-2 sm:py-2.5 bg-purple-600 text-white rounded-lg font-medium flex items-center justify-center gap-1.5 sm:gap-2 hover:bg-purple-700 transition-colors disabled:opacity-50 min-h-[40px] sm:min-h-[44px] text-xs sm:text-sm"
+              className="flex-1 py-2 sm:py-2.5 bg-oaxaca-purple text-white rounded-lg font-medium flex items-center justify-center gap-1.5 sm:gap-2 hover:bg-oaxaca-purple/90 transition-colors disabled:opacity-50 min-h-[40px] sm:min-h-[44px] text-xs sm:text-sm"
               aria-label="Reintentar pago"
             >
               <RefreshCw className="w-3.5 sm:w-4 h-3.5 sm:h-4" aria-hidden="true" />
@@ -412,7 +412,7 @@ function BookingCard({ booking, onCancel, onReview, onRetryPayment, onClick }: B
           {/* Estado: PENDING_PAYMENT - Mostrar estado de procesamiento */}
           {booking.status === 'PENDING_PAYMENT' && (
             <div
-              className="flex-1 py-2 sm:py-2.5 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 text-amber-700 dark:text-amber-400 rounded-lg font-medium flex items-center justify-center gap-1.5 sm:gap-2 min-h-[40px] sm:min-h-[44px] text-xs sm:text-sm"
+              className="flex-1 py-2 sm:py-2.5 bg-oaxaca-yellow-light dark:bg-oaxaca-yellow/20 border border-oaxaca-yellow/30 dark:border-oaxaca-yellow/30 text-oaxaca-yellow dark:text-oaxaca-yellow rounded-lg font-medium flex items-center justify-center gap-1.5 sm:gap-2 min-h-[40px] sm:min-h-[44px] text-xs sm:text-sm"
               role="status"
               aria-live="polite"
             >
@@ -442,7 +442,7 @@ function BookingCard({ booking, onCancel, onReview, onRetryPayment, onClick }: B
                 e.stopPropagation();
                 onReview();
               }}
-              className="flex-1 py-2 sm:py-2.5 bg-purple-600 text-white rounded-lg font-medium flex items-center justify-center gap-1.5 sm:gap-2 hover:bg-purple-700 transition-colors min-h-[40px] sm:min-h-[44px] text-xs sm:text-sm focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
+              className="flex-1 py-2 sm:py-2.5 bg-oaxaca-purple text-white rounded-lg font-medium flex items-center justify-center gap-1.5 sm:gap-2 hover:bg-oaxaca-purple/90 transition-colors min-h-[40px] sm:min-h-[44px] text-xs sm:text-sm focus-visible:ring-2 focus-visible:ring-oaxaca-purple focus-visible:ring-offset-2"
               aria-label="Dejar resena"
             >
               <Star className="w-3.5 sm:w-4 h-3.5 sm:h-4" aria-hidden="true" />

@@ -219,7 +219,7 @@ const SmartMapView: React.FC<SmartMapViewProps> = ({ onBack }) => {
   return (
     <div className="h-full bg-gray-50 dark:bg-gray-950 flex flex-col">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-4 py-4">
+      <div className="bg-gradient-to-r from-oaxaca-sky to-oaxaca-purple text-white px-4 py-4">
         <div className="flex items-center gap-3 mb-3">
           <button onClick={onBack} className="p-2 hover:bg-white/10 rounded-full transition">
             <ArrowLeft size={20} />
@@ -238,7 +238,7 @@ const SmartMapView: React.FC<SmartMapViewProps> = ({ onBack }) => {
               onClick={() => setSelectedMode(mode.id)}
               className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition ${
                 selectedMode === mode.id
-                  ? 'bg-white text-blue-600'
+                  ? 'bg-white text-oaxaca-sky'
                   : 'bg-white/20 hover:bg-white/30'
               }`}
             >
@@ -254,7 +254,7 @@ const SmartMapView: React.FC<SmartMapViewProps> = ({ onBack }) => {
         <div className="flex-1 overflow-y-auto">
           <div className="p-4">
             <h2 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-              <MapPin className="text-blue-500" size={20} />
+              <MapPin className="text-oaxaca-sky" size={20} />
               Donde estas o desde donde partes?
             </h2>
 
@@ -262,7 +262,7 @@ const SmartMapView: React.FC<SmartMapViewProps> = ({ onBack }) => {
             <button
               onClick={getUserLocation}
               disabled={isLocating}
-              className="w-full mb-4 p-4 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl flex items-center justify-center gap-3 hover:from-blue-600 hover:to-indigo-600 transition disabled:opacity-50"
+              className="w-full mb-4 p-4 bg-gradient-to-r from-oaxaca-sky to-oaxaca-purple text-white rounded-xl flex items-center justify-center gap-3 hover:from-oaxaca-sky/90 hover:to-oaxaca-purple/90 transition disabled:opacity-50"
             >
               {isLocating ? (
                 <>
@@ -279,24 +279,24 @@ const SmartMapView: React.FC<SmartMapViewProps> = ({ onBack }) => {
 
             {/* Location Error */}
             {locationError && (
-              <div className="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl flex items-start gap-3">
-                <AlertCircle size={20} className="text-yellow-600 flex-shrink-0 mt-0.5" />
+              <div className="mb-4 p-3 bg-oaxaca-yellow-light dark:bg-oaxaca-yellow/20 border border-oaxaca-yellow/30 dark:border-oaxaca-yellow/30 rounded-xl flex items-start gap-3">
+                <AlertCircle size={20} className="text-oaxaca-yellow flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm text-yellow-800 dark:text-yellow-200">{locationError}</p>
+                  <p className="text-sm text-oaxaca-yellow dark:text-oaxaca-yellow">{locationError}</p>
                 </div>
               </div>
             )}
 
             {/* Distance Warning */}
             {distanceFromOaxaca !== null && distanceFromOaxaca >= 100 && (
-              <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+              <div className="mb-4 p-4 bg-oaxaca-sky-light dark:bg-oaxaca-sky/20 border border-oaxaca-sky/30 dark:border-oaxaca-sky/30 rounded-xl">
                 <div className="flex items-start gap-3">
-                  <Map size={24} className="text-blue-500 flex-shrink-0" />
+                  <Map size={24} className="text-oaxaca-sky flex-shrink-0" />
                   <div>
-                    <p className="font-medium text-blue-900 dark:text-blue-100">
+                    <p className="font-medium text-oaxaca-sky dark:text-oaxaca-sky">
                       Estas a {Math.round(distanceFromOaxaca)} km de Oaxaca
                     </p>
-                    <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                    <p className="text-sm text-oaxaca-sky dark:text-oaxaca-sky mt-1">
                       Selecciona un punto de partida en Oaxaca para planificar tu recorrido cuando llegues.
                     </p>
                   </div>
@@ -312,7 +312,7 @@ const SmartMapView: React.FC<SmartMapViewProps> = ({ onBack }) => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Buscar lugar de partida..."
-                className="w-full pl-10 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-oaxaca-sky focus:border-transparent"
               />
             </div>
 
@@ -326,9 +326,9 @@ const SmartMapView: React.FC<SmartMapViewProps> = ({ onBack }) => {
                   className="w-full p-3 bg-white dark:bg-gray-800 rounded-xl flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition text-left"
                 >
                   <div className={`p-2 rounded-lg ${
-                    location.type === 'transport' ? 'bg-blue-100 text-blue-600' :
-                    location.type === 'event' ? 'bg-pink-100 text-pink-600' :
-                    'bg-purple-100 text-purple-600'
+                    location.type === 'transport' ? 'bg-oaxaca-sky-light text-oaxaca-sky' :
+                    location.type === 'event' ? 'bg-oaxaca-pink-light text-oaxaca-pink' :
+                    'bg-oaxaca-purple-light text-oaxaca-purple'
                   }`}>
                     <MapPin size={18} />
                   </div>
@@ -363,7 +363,7 @@ const SmartMapView: React.FC<SmartMapViewProps> = ({ onBack }) => {
               </div>
               <button
                 onClick={() => setShowLocationPicker(true)}
-                className="text-sm text-blue-600 dark:text-blue-400"
+                className="text-sm text-oaxaca-sky dark:text-oaxaca-sky"
               >
                 Cambiar
               </button>
@@ -376,7 +376,7 @@ const SmartMapView: React.FC<SmartMapViewProps> = ({ onBack }) => {
               onClick={() => setShowItinerary(false)}
               className={`flex-1 py-3 text-sm font-medium transition ${
                 !showItinerary
-                  ? 'text-blue-600 border-b-2 border-blue-600'
+                  ? 'text-oaxaca-sky border-b-2 border-oaxaca-sky'
                   : 'text-gray-500 dark:text-gray-400'
               }`}
             >
@@ -386,13 +386,13 @@ const SmartMapView: React.FC<SmartMapViewProps> = ({ onBack }) => {
               onClick={() => setShowItinerary(true)}
               className={`flex-1 py-3 text-sm font-medium transition flex items-center justify-center gap-2 ${
                 showItinerary
-                  ? 'text-blue-600 border-b-2 border-blue-600'
+                  ? 'text-oaxaca-sky border-b-2 border-oaxaca-sky'
                   : 'text-gray-500 dark:text-gray-400'
               }`}
             >
               Mi Itinerario
               {itinerary.length > 0 && (
-                <span className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full">
+                <span className="bg-oaxaca-sky text-white text-xs px-2 py-0.5 rounded-full">
                   {itinerary.length}
                 </span>
               )}
@@ -427,7 +427,7 @@ const SmartMapView: React.FC<SmartMapViewProps> = ({ onBack }) => {
                           ? `${Math.round(location.distance * 1000)} m`
                           : `${location.distance.toFixed(1)} km`}
                       </span>
-                      <span className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
+                      <span className="flex items-center gap-1 text-oaxaca-sky dark:text-oaxaca-sky">
                         <Clock size={14} />
                         {location.time < 60
                           ? `${location.time} min`
@@ -440,7 +440,7 @@ const SmartMapView: React.FC<SmartMapViewProps> = ({ onBack }) => {
                       className={`p-2 rounded-full transition ${
                         itinerary.some(i => i.location.id === location.id)
                           ? 'bg-green-100 text-green-600'
-                          : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
+                          : 'bg-oaxaca-sky-light text-oaxaca-sky hover:bg-oaxaca-sky/30'
                       }`}
                     >
                       {itinerary.some(i => i.location.id === location.id) ? (
@@ -471,7 +471,7 @@ const SmartMapView: React.FC<SmartMapViewProps> = ({ onBack }) => {
               ) : (
                 <>
                   {/* Itinerary Summary */}
-                  <div className="bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl p-4 text-white mb-4">
+                  <div className="bg-gradient-to-r from-oaxaca-sky to-oaxaca-purple rounded-xl p-4 text-white mb-4">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm text-white/80">Tiempo total estimado</span>
                       <span className="font-bold text-lg">
@@ -495,7 +495,7 @@ const SmartMapView: React.FC<SmartMapViewProps> = ({ onBack }) => {
                       >
                         <div className="flex items-center gap-3">
                           <div className="flex flex-col items-center">
-                            <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center text-blue-600 font-bold text-sm">
+                            <div className="w-8 h-8 bg-oaxaca-sky-light dark:bg-oaxaca-sky/20 rounded-full flex items-center justify-center text-oaxaca-sky font-bold text-sm">
                               {index + 1}
                             </div>
                             {index < itinerary.length - 1 && (

@@ -94,13 +94,13 @@ export const ConcurrencyErrorModal: React.FC<ConcurrencyErrorModalProps> = ({
   const getIcon = () => {
     switch (type) {
       case 'booking':
-        return <Clock className="w-6 h-6 text-amber-600" />;
+        return <Clock className="w-6 h-6 text-oaxaca-yellow" />;
       case 'stock':
-        return <ShoppingCart className="w-6 h-6 text-amber-600" />;
+        return <ShoppingCart className="w-6 h-6 text-oaxaca-yellow" />;
       case 'version':
-        return <RotateCcw className="w-6 h-6 text-amber-600" />;
+        return <RotateCcw className="w-6 h-6 text-oaxaca-yellow" />;
       default:
-        return <AlertTriangle className="w-6 h-6 text-amber-600" />;
+        return <AlertTriangle className="w-6 h-6 text-oaxaca-yellow" />;
     }
   };
 
@@ -125,7 +125,7 @@ export const ConcurrencyErrorModal: React.FC<ConcurrencyErrorModalProps> = ({
     >
       <div className="p-6" onKeyDown={handleKeyDown}>
         {/* Icon */}
-        <div className="mx-auto w-14 h-14 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center mb-4">
+        <div className="mx-auto w-14 h-14 bg-oaxaca-yellow-light dark:bg-oaxaca-yellow/20 rounded-full flex items-center justify-center mb-4">
           {getIcon()}
         </div>
 
@@ -157,7 +157,7 @@ export const ConcurrencyErrorModal: React.FC<ConcurrencyErrorModalProps> = ({
                   key={i}
                   className={`w-2 h-2 rounded-full transition-colors ${
                     i < retryCount
-                      ? 'bg-amber-500'
+                      ? 'bg-oaxaca-yellow'
                       : 'bg-gray-200 dark:bg-gray-700'
                   }`}
                 />
@@ -170,9 +170,9 @@ export const ConcurrencyErrorModal: React.FC<ConcurrencyErrorModalProps> = ({
         )}
 
         {/* Tip */}
-        <div className="flex items-start gap-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 mb-6">
-          <AlertTriangle className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-          <p className="text-xs text-blue-700 dark:text-blue-300">
+        <div className="flex items-start gap-2 bg-oaxaca-sky-light dark:bg-oaxaca-sky/20 rounded-lg p-3 mb-6">
+          <AlertTriangle className="w-4 h-4 text-oaxaca-sky dark:text-oaxaca-sky mt-0.5 flex-shrink-0" />
+          <p className="text-xs text-oaxaca-sky dark:text-oaxaca-sky">
             {displayTip}
           </p>
         </div>
@@ -190,7 +190,7 @@ export const ConcurrencyErrorModal: React.FC<ConcurrencyErrorModalProps> = ({
             ref={reloadButtonRef}
             onClick={handleReload}
             disabled={loading}
-            className="flex-1 px-4 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
+            className="flex-1 px-4 py-3 bg-oaxaca-yellow hover:bg-oaxaca-yellow/90 text-white rounded-xl font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-oaxaca-yellow focus:ring-offset-2"
           >
             {loading ? (
               <>

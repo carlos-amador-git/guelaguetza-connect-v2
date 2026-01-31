@@ -116,7 +116,7 @@ const LoginView: React.FC<LoginViewProps> = ({ setView }) => {
   // Face ID Modal
   if (showFaceAuth) {
     return (
-      <div className="h-full bg-gradient-to-br from-gray-900 via-purple-900/30 to-black flex flex-col">
+      <div className="h-full bg-gradient-to-br from-gray-900 via-oaxaca-purple/30 to-black flex flex-col">
         {/* Header */}
         <div className="p-4 flex items-center justify-between">
           <button onClick={closeFaceAuth} className="text-white p-2 rounded-full bg-white/10">
@@ -302,7 +302,7 @@ const LoginView: React.FC<LoginViewProps> = ({ setView }) => {
                 await loginAsDemo('user');
                 setView(ViewState.HOME);
               }}
-              className="py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl text-sm font-medium hover:opacity-90 transition"
+              className="py-3 px-4 bg-gradient-to-r from-oaxaca-sky to-oaxaca-sky text-white rounded-xl text-sm font-medium hover:opacity-90 transition"
             >
               Usuario Demo
             </button>
@@ -312,7 +312,7 @@ const LoginView: React.FC<LoginViewProps> = ({ setView }) => {
                 await loginAsDemo('seller');
                 setView(ViewState.HOME);
               }}
-              className="py-3 px-4 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl text-sm font-medium hover:opacity-90 transition"
+              className="py-3 px-4 bg-gradient-to-r from-oaxaca-yellow to-oaxaca-yellow text-white rounded-xl text-sm font-medium hover:opacity-90 transition"
             >
               Vendedor Demo
             </button>
@@ -332,7 +332,7 @@ const LoginView: React.FC<LoginViewProps> = ({ setView }) => {
                 await loginAsDemo('admin');
                 setView(ViewState.HOME);
               }}
-              className="py-3 px-4 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl text-sm font-medium hover:opacity-90 transition"
+              className="py-3 px-4 bg-gradient-to-r from-oaxaca-purple to-oaxaca-purple text-white rounded-xl text-sm font-medium hover:opacity-90 transition"
             >
               Admin Demo
             </button>

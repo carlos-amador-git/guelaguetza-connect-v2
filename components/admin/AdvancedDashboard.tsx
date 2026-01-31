@@ -197,10 +197,10 @@ const AdvancedDashboard: React.FC<AdvancedDashboardProps> = ({
     switch (status) {
       case 'pending':
       case 'processing':
-        return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400';
+        return 'bg-oaxaca-yellow-light text-oaxaca-yellow dark:bg-oaxaca-yellow/20 dark:text-oaxaca-yellow';
       case 'confirmed':
       case 'shipped':
-        return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
+        return 'bg-oaxaca-sky-light text-oaxaca-sky dark:bg-oaxaca-sky/20 dark:text-oaxaca-sky';
       case 'completed':
       case 'delivered':
         return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
@@ -258,7 +258,7 @@ const AdvancedDashboard: React.FC<AdvancedDashboardProps> = ({
   return (
     <div className="h-full bg-gray-100 dark:bg-gray-950 overflow-hidden flex flex-col">
       {/* Header */}
-      <div className="bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900 text-white">
+      <div className="bg-gradient-to-r from-oaxaca-purple via-oaxaca-purple to-oaxaca-purple text-white">
         <div className="px-4 py-4">
           {/* Top bar */}
           <div className="flex items-center justify-between mb-4">
@@ -271,7 +271,7 @@ const AdvancedDashboard: React.FC<AdvancedDashboardProps> = ({
                 <ArrowLeft size={20} />
               </button>
               <div className="flex items-center gap-2">
-                <div className="p-2 bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg">
+                <div className="p-2 bg-gradient-to-br from-oaxaca-sky to-oaxaca-purple rounded-lg">
                   <BarChart3 size={20} className="text-white" />
                 </div>
                 <div>
@@ -334,7 +334,7 @@ const AdvancedDashboard: React.FC<AdvancedDashboardProps> = ({
                       onClick={() => handlePeriodChange(option.value)}
                       className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition ${
                         filters.period === option.value
-                          ? 'text-blue-600 dark:text-blue-400 font-medium'
+                          ? 'text-oaxaca-sky dark:text-oaxaca-sky font-medium'
                           : 'text-gray-700 dark:text-gray-300'
                       }`}
                     >
@@ -370,7 +370,7 @@ const AdvancedDashboard: React.FC<AdvancedDashboardProps> = ({
                       </div>
                       <button
                         onClick={handleCustomDateApply}
-                        className="w-full py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                        className="w-full py-1 text-xs bg-oaxaca-sky text-white rounded hover:bg-oaxaca-sky/90 transition"
                       >
                         Aplicar
                       </button>
@@ -410,7 +410,7 @@ const AdvancedDashboard: React.FC<AdvancedDashboardProps> = ({
               <Filter size={16} />
               <span className="text-sm">Filtros</span>
               {activeFiltersCount > 0 && (
-                <span className="px-1.5 py-0.5 text-xs bg-blue-600 text-white rounded-full">
+                <span className="px-1.5 py-0.5 text-xs bg-oaxaca-sky text-white rounded-full">
                   {activeFiltersCount}
                 </span>
               )}
@@ -495,7 +495,7 @@ const AdvancedDashboard: React.FC<AdvancedDashboardProps> = ({
               {/* Stats Cards */}
               <section>
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                  <TrendingUp size={20} className="text-blue-500" />
+                  <TrendingUp size={20} className="text-oaxaca-sky" />
                   Metricas Principales
                 </h2>
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -596,7 +596,7 @@ const AdvancedDashboard: React.FC<AdvancedDashboardProps> = ({
                 {/* Booking/Order Trends */}
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
                   <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                    <TrendingUp size={18} className="text-blue-500" />
+                    <TrendingUp size={18} className="text-oaxaca-sky" />
                     Tendencia de {filters.dataType === 'orders' ? 'Ordenes' : filters.dataType === 'bookings' ? 'Reservas' : 'Actividad'}
                   </h3>
                   {loading.trends ? (
@@ -634,7 +634,7 @@ const AdvancedDashboard: React.FC<AdvancedDashboardProps> = ({
                 {/* Region Comparison */}
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
                   <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                    <BarChart3 size={18} className="text-purple-500" />
+                    <BarChart3 size={18} className="text-oaxaca-purple" />
                     Top 10 Regiones
                   </h3>
                   {loading.regions ? (
@@ -649,7 +649,7 @@ const AdvancedDashboard: React.FC<AdvancedDashboardProps> = ({
                 {/* Status Distribution */}
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
                   <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                    <Filter size={18} className="text-pink-500" />
+                    <Filter size={18} className="text-oaxaca-pink" />
                     Distribucion por Estado
                   </h3>
                   {loading.status ? (
@@ -666,7 +666,7 @@ const AdvancedDashboard: React.FC<AdvancedDashboardProps> = ({
               <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
                   <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                    <Layers size={18} className="text-orange-500" />
+                    <Layers size={18} className="text-oaxaca-yellow" />
                     Distribucion por Categoria
                   </h3>
                   {loading.categories ? (
@@ -681,7 +681,7 @@ const AdvancedDashboard: React.FC<AdvancedDashboardProps> = ({
                 {/* Heatmap */}
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
                   <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                    <Clock size={18} className="text-orange-500" />
+                    <Clock size={18} className="text-oaxaca-yellow" />
                     Actividad por Horas Pico
                   </h3>
                   {loading.heatmap ? (
@@ -702,7 +702,7 @@ const AdvancedDashboard: React.FC<AdvancedDashboardProps> = ({
               <section className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
                 <div className="p-4 border-b dark:border-gray-700">
                   <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                    <Star size={18} className="text-yellow-500" />
+                    <Star size={18} className="text-oaxaca-yellow" />
                     Top Experiencias (por Reservas)
                   </h3>
                 </div>
@@ -766,7 +766,7 @@ const AdvancedDashboard: React.FC<AdvancedDashboardProps> = ({
                               </span>
                             </td>
                             <td className="px-4 py-3 text-right">
-                              <span className="inline-flex items-center gap-1 text-sm text-yellow-600">
+                              <span className="inline-flex items-center gap-1 text-sm text-oaxaca-yellow">
                                 <Star size={14} fill="currentColor" />
                                 {exp.rating}
                               </span>
@@ -786,7 +786,7 @@ const AdvancedDashboard: React.FC<AdvancedDashboardProps> = ({
               <section className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
                 <div className="p-4 border-b dark:border-gray-700">
                   <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                    <Users size={18} className="text-purple-500" />
+                    <Users size={18} className="text-oaxaca-purple" />
                     Top Vendedores (por Revenue)
                   </h3>
                 </div>
@@ -831,7 +831,7 @@ const AdvancedDashboard: React.FC<AdvancedDashboardProps> = ({
                             </td>
                             <td className="px-4 py-3">
                               <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-xs font-bold">
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-oaxaca-purple to-oaxaca-pink flex items-center justify-center text-white text-xs font-bold">
                                   {seller.avatar}
                                 </div>
                                 <span className="text-sm font-medium text-gray-900 dark:text-white">
@@ -855,7 +855,7 @@ const AdvancedDashboard: React.FC<AdvancedDashboardProps> = ({
                               </span>
                             </td>
                             <td className="px-4 py-3 text-right">
-                              <span className="inline-flex items-center gap-1 text-sm text-yellow-600">
+                              <span className="inline-flex items-center gap-1 text-sm text-oaxaca-yellow">
                                 <Star size={14} fill="currentColor" />
                                 {seller.rating}
                               </span>
@@ -875,10 +875,10 @@ const AdvancedDashboard: React.FC<AdvancedDashboardProps> = ({
               <section className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
                 <div className="p-4 border-b dark:border-gray-700 flex items-center justify-between">
                   <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                    <Calendar size={18} className="text-blue-500" />
+                    <Calendar size={18} className="text-oaxaca-sky" />
                     Actividad Reciente
                   </h3>
-                  <button className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                  <button className="text-sm text-oaxaca-sky dark:text-oaxaca-sky hover:underline">
                     Ver todo
                   </button>
                 </div>
@@ -925,8 +925,8 @@ const AdvancedDashboard: React.FC<AdvancedDashboardProps> = ({
                               <span
                                 className={`text-xs px-2 py-1 rounded-full font-medium ${
                                   booking.type === 'order'
-                                    ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
-                                    : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                                    ? 'bg-oaxaca-purple-light text-oaxaca-purple dark:bg-oaxaca-purple/20 dark:text-oaxaca-purple'
+                                    : 'bg-oaxaca-sky-light text-oaxaca-sky dark:bg-oaxaca-sky/20 dark:text-oaxaca-sky'
                                 }`}
                               >
                                 {booking.type === 'order' ? 'Orden' : 'Reserva'}

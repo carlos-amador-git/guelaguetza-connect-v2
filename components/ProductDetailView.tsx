@@ -157,8 +157,8 @@ export default function ProductDetailView({
               disabled={wishlistLoading}
               className={`p-2 backdrop-blur-sm rounded-full shadow transition ${
                 inWishlist
-                  ? 'bg-pink-500 text-white'
-                  : 'bg-white/90 text-gray-800 hover:bg-pink-50'
+                  ? 'bg-oaxaca-pink text-white'
+                  : 'bg-white/90 text-gray-800 hover:bg-oaxaca-pink-light'
               } ${wishlistLoading ? 'opacity-50' : ''}`}
             >
               <Heart className={`w-6 h-6 ${inWishlist ? 'fill-current' : ''}`} />
@@ -177,7 +177,7 @@ export default function ProductDetailView({
                 key={index}
                 onClick={() => setActiveImageIndex(index)}
                 className={`w-2 h-2 rounded-full ${
-                  index === activeImageIndex ? 'bg-amber-500' : 'bg-white/50'
+                  index === activeImageIndex ? 'bg-oaxaca-yellow' : 'bg-white/50'
                 }`}
               />
             ))}
@@ -197,11 +197,11 @@ export default function ProductDetailView({
         <div className="p-4">
           {/* Category & Price */}
           <div className="flex justify-between items-start mb-2">
-            <span className="px-3 py-1 bg-amber-100 text-amber-700 text-sm font-medium rounded-full">
+            <span className="px-3 py-1 bg-oaxaca-yellow-light text-oaxaca-yellow text-sm font-medium rounded-full">
               {CATEGORY_LABELS[product.category]}
             </span>
             <div className="text-right">
-              <p className="text-2xl font-bold text-amber-600">{formatPrice(product.price)}</p>
+              <p className="text-2xl font-bold text-oaxaca-yellow">{formatPrice(product.price)}</p>
               <p className="text-sm text-gray-500">{product.stock} disponibles</p>
             </div>
           </div>
@@ -213,7 +213,7 @@ export default function ProductDetailView({
           {product.seller.rating > 0 && (
             <div className="flex items-center gap-2 mb-4">
               <div className="flex items-center gap-1">
-                <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                <Star className="w-5 h-5 fill-oaxaca-yellow text-oaxaca-yellow" />
                 <span className="font-medium">{product.seller.rating.toFixed(1)}</span>
               </div>
               <span className="text-gray-500">({product._count?.reviews || 0} resenas)</span>
@@ -250,7 +250,7 @@ export default function ProductDetailView({
               onClick={() => setActiveTab('description')}
               className={`flex-1 py-3 text-center font-medium border-b-2 transition-colors ${
                 activeTab === 'description'
-                  ? 'border-amber-500 text-amber-600'
+                  ? 'border-oaxaca-yellow text-oaxaca-yellow'
                   : 'border-transparent text-gray-500'
               }`}
             >
@@ -260,7 +260,7 @@ export default function ProductDetailView({
               onClick={() => setActiveTab('reviews')}
               className={`flex-1 py-3 text-center font-medium border-b-2 transition-colors ${
                 activeTab === 'reviews'
-                  ? 'border-amber-500 text-amber-600'
+                  ? 'border-oaxaca-yellow text-oaxaca-yellow'
                   : 'border-transparent text-gray-500'
               }`}
             >
@@ -275,7 +275,7 @@ export default function ProductDetailView({
               {/* Shipping info */}
               <div className="mt-6 p-4 bg-gray-50 rounded-xl">
                 <div className="flex items-center gap-3">
-                  <Package className="w-6 h-6 text-amber-500" />
+                  <Package className="w-6 h-6 text-oaxaca-yellow" />
                   <div>
                     <p className="font-medium text-gray-900">Envio a toda la republica</p>
                     <p className="text-sm text-gray-500">Entrega estimada: 5-10 dias habiles</p>
@@ -308,7 +308,7 @@ export default function ProductDetailView({
                                 key={star}
                                 className={`w-4 h-4 ${
                                   star <= review.rating
-                                    ? 'fill-yellow-400 text-yellow-400'
+                                    ? 'fill-oaxaca-yellow text-oaxaca-yellow'
                                     : 'text-gray-300'
                                 }`}
                               />
@@ -355,7 +355,7 @@ export default function ProductDetailView({
             className={`flex-1 py-4 rounded-lg font-medium flex items-center justify-center gap-2 ${
               addedToCart
                 ? 'bg-green-500 text-white'
-                : 'bg-amber-500 text-white disabled:bg-gray-300'
+                : 'bg-oaxaca-yellow text-white disabled:bg-gray-300'
             }`}
           >
             {addedToCart ? (

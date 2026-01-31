@@ -299,7 +299,7 @@ export default function ARMapView({ onNavigate, onBack }: ARMapViewProps) {
                 <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400 mt-1">
                   {selectedPOI.rating > 0 && (
                     <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                      <Star className="w-4 h-4 fill-oaxaca-yellow text-oaxaca-yellow" />
                       {selectedPOI.rating.toFixed(1)}
                     </div>
                   )}
@@ -385,7 +385,7 @@ function POIListCard({ poi, onClick }: POIListCardProps) {
         <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400 mt-1">
           {poi.rating > 0 && (
             <div className="flex items-center gap-1">
-              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+              <Star className="w-4 h-4 fill-oaxaca-yellow text-oaxaca-yellow" />
               {poi.rating.toFixed(1)}
             </div>
           )}

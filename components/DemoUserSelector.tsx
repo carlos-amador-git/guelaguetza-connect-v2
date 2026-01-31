@@ -13,21 +13,21 @@ const DEMO_USERS = [
     name: 'Usuario Demo',
     description: 'Visitante del festival',
     icon: Users,
-    color: 'from-blue-500 to-blue-600',
+    color: 'from-oaxaca-sky to-oaxaca-sky',
   },
   {
     type: 'seller' as const,
     name: 'Vendedor Demo',
     description: 'Productos y experiencias',
     icon: ShoppingBag,
-    color: 'from-amber-500 to-amber-600',
+    color: 'from-oaxaca-yellow to-oaxaca-yellow',
   },
   {
     type: 'admin' as const,
     name: 'Admin Demo',
     description: 'Metricas y gestion',
     icon: Shield,
-    color: 'from-purple-500 to-purple-600',
+    color: 'from-oaxaca-purple to-oaxaca-purple',
   },
 ];
 

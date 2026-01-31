@@ -157,7 +157,7 @@ export default function MyOrdersView({ onNavigate, onBack }: MyOrdersViewProps) 
   return (
     <div className="flex flex-col h-full bg-gray-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-pink-600 to-purple-600 text-white p-4 pt-12">
+      <div className="bg-gradient-to-r from-oaxaca-pink to-oaxaca-purple text-white p-4 pt-12">
         <div className="flex items-center gap-3 mb-4">
           <button
             onClick={onBack}
@@ -179,7 +179,7 @@ export default function MyOrdersView({ onNavigate, onBack }: MyOrdersViewProps) 
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
               className={`px-3 py-1.5 rounded-full text-sm whitespace-nowrap transition-colors ${
-                activeTab === tab.key ? 'bg-white text-purple-600' : 'bg-white/20 hover:bg-white/30'
+                activeTab === tab.key ? 'bg-white text-oaxaca-purple' : 'bg-white/20 hover:bg-white/30'
               }`}
             >
               {tab.label}
@@ -203,7 +203,7 @@ export default function MyOrdersView({ onNavigate, onBack }: MyOrdersViewProps) 
             </p>
             <button
               onClick={() => onNavigate(ViewState.MARKETPLACE)}
-              className="px-6 py-3 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 transition"
+              className="px-6 py-3 bg-oaxaca-purple text-white rounded-xl font-medium hover:bg-oaxaca-purple/90 transition"
             >
               Explorar marketplace
             </button>
@@ -318,7 +318,7 @@ function OrderCard({ order, onCancel, onRetryPayment }: OrderCardProps) {
             <div className="flex-1 min-w-0">
               <p className="font-medium text-gray-900 truncate">{item.productName}</p>
               <p className="text-sm text-gray-500">Cantidad: {item.quantity}</p>
-              <p className="text-sm font-semibold text-purple-600">{formatPrice(item.price)}</p>
+              <p className="text-sm font-semibold text-oaxaca-purple">{formatPrice(item.price)}</p>
             </div>
           </div>
         ))}
@@ -338,7 +338,7 @@ function OrderCard({ order, onCancel, onRetryPayment }: OrderCardProps) {
       {/* Total */}
       <div className="flex justify-between items-center px-4 py-3 border-t border-gray-100">
         <span className="text-gray-600">Total</span>
-        <span className="text-lg font-bold text-purple-600">{formatPrice(order.total)}</span>
+        <span className="text-lg font-bold text-oaxaca-purple">{formatPrice(order.total)}</span>
       </div>
 
       {/* Actions */}
@@ -349,7 +349,7 @@ function OrderCard({ order, onCancel, onRetryPayment }: OrderCardProps) {
             onClick={handleRetryPayment}
             isLoading={isRetrying}
             variant="primary"
-            className="w-full py-2.5 bg-purple-600 text-white rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-purple-700 transition-colors disabled:opacity-50"
+            className="w-full py-2.5 bg-oaxaca-purple text-white rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-oaxaca-purple/90 transition-colors disabled:opacity-50"
             aria-label="Reintentar pago"
           >
             <RefreshCw className="w-4 h-4" aria-hidden="true" />
@@ -360,7 +360,7 @@ function OrderCard({ order, onCancel, onRetryPayment }: OrderCardProps) {
         {/* Estado: PENDING_PAYMENT - Mensaje de procesamiento */}
         {order.status === 'PENDING_PAYMENT' && (
           <div
-            className="w-full py-2.5 bg-amber-50 border border-amber-200 text-amber-700 rounded-lg font-medium flex items-center justify-center gap-2"
+            className="w-full py-2.5 bg-oaxaca-yellow-light border border-oaxaca-yellow/30 text-oaxaca-yellow rounded-lg font-medium flex items-center justify-center gap-2"
             role="status"
             aria-live="polite"
           >
@@ -384,7 +384,7 @@ function OrderCard({ order, onCancel, onRetryPayment }: OrderCardProps) {
 
         {/* Estado: SHIPPED - Mensaje de seguimiento */}
         {order.status === 'SHIPPED' && (
-          <button className="w-full py-2.5 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-blue-100 transition-colors">
+          <button className="w-full py-2.5 bg-oaxaca-sky-light border border-oaxaca-sky/30 text-oaxaca-sky rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-oaxaca-sky/20 transition-colors">
             <Truck className="w-4 h-4" aria-hidden="true" />
             Rastrear envío
           </button>

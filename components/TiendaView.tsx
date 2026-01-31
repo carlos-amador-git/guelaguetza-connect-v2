@@ -111,7 +111,7 @@ export default function TiendaView({ onNavigate, onBack }: TiendaViewProps) {
   return (
     <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-4 pt-8 md:pt-6">
+      <div className="bg-gradient-to-r from-oaxaca-yellow to-oaxaca-yellow text-white p-4 pt-8 md:pt-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -130,7 +130,7 @@ export default function TiendaView({ onNavigate, onBack }: TiendaViewProps) {
               >
                 <Heart className="w-6 h-6" />
                 {wishlistCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-pink-500 text-white text-xs rounded-full flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-oaxaca-pink text-white text-xs rounded-full flex items-center justify-center">
                     {wishlistCount}
                   </span>
                 )}
@@ -164,7 +164,7 @@ export default function TiendaView({ onNavigate, onBack }: TiendaViewProps) {
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`p-2.5 md:p-3 rounded-lg ${showFilters ? 'bg-white text-amber-600' : 'bg-white/20'}`}
+              className={`p-2.5 md:p-3 rounded-lg ${showFilters ? 'bg-white text-oaxaca-yellow' : 'bg-white/20'}`}
             >
               <Filter className="w-5 h-5" />
             </button>
@@ -176,7 +176,7 @@ export default function TiendaView({ onNavigate, onBack }: TiendaViewProps) {
               <button
                 onClick={() => setCategory('')}
                 className={`px-3 py-1.5 md:px-4 md:py-2 rounded-full text-sm whitespace-nowrap ${
-                  category === '' ? 'bg-white text-amber-600' : 'bg-white/20 hover:bg-white/30'
+                  category === '' ? 'bg-white text-oaxaca-yellow' : 'bg-white/20 hover:bg-white/30'
                 } transition`}
               >
                 Todos
@@ -186,7 +186,7 @@ export default function TiendaView({ onNavigate, onBack }: TiendaViewProps) {
                   key={cat}
                   onClick={() => setCategory(cat)}
                   className={`px-3 py-1.5 md:px-4 md:py-2 rounded-full text-sm whitespace-nowrap ${
-                    category === cat ? 'bg-white text-amber-600' : 'bg-white/20 hover:bg-white/30'
+                    category === cat ? 'bg-white text-oaxaca-yellow' : 'bg-white/20 hover:bg-white/30'
                   } transition`}
                 >
                   {CATEGORY_LABELS[cat]}
@@ -251,7 +251,7 @@ export default function TiendaView({ onNavigate, onBack }: TiendaViewProps) {
       <div className="p-4 bg-white dark:bg-gray-800 border-t dark:border-gray-700 md:hidden">
         <button
           onClick={() => onNavigate(ViewState.ORDERS)}
-          className="w-full py-3 border-2 border-amber-500 text-amber-600 rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-amber-50 transition"
+          className="w-full py-3 border-2 border-oaxaca-yellow text-oaxaca-yellow rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-oaxaca-yellow-light transition"
         >
           <Package className="w-5 h-5" />
           Mis Pedidos
@@ -290,7 +290,7 @@ function ProductCard({ product, onClick }: ProductCardProps) {
           </div>
         )}
         <div className="absolute top-2 left-2">
-          <span className="px-2 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-medium text-amber-600">
+          <span className="px-2 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-medium text-oaxaca-yellow">
             {CATEGORY_LABELS[product.category]}
           </span>
         </div>
@@ -298,13 +298,13 @@ function ProductCard({ product, onClick }: ProductCardProps) {
 
       <div className="p-3 md:p-4">
         <h3 className="font-medium text-gray-900 dark:text-gray-100 line-clamp-1 md:text-lg">{product.name}</h3>
-        <p className="text-lg md:text-xl font-bold text-amber-600 mt-1">{formatPrice(product.price)}</p>
+        <p className="text-lg md:text-xl font-bold text-oaxaca-yellow mt-1">{formatPrice(product.price)}</p>
 
         <div className="flex items-center justify-between mt-2">
           <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
             {product.seller.rating > 0 && (
               <>
-                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                <Star className="w-4 h-4 fill-oaxaca-yellow text-oaxaca-yellow" />
                 <span>{product.seller.rating.toFixed(1)}</span>
               </>
             )}

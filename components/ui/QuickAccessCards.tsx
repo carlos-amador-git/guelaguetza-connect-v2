@@ -105,7 +105,7 @@ export default function QuickAccessCards({
           className="relative bg-white dark:bg-gray-800 rounded-xl p-4 md:p-5 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md active:scale-95 transition text-left"
         >
           {card.badge && (
-            <span className="absolute top-3 right-3 px-2 py-0.5 bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400 text-xs font-bold rounded-full">
+            <span className="absolute top-3 right-3 px-2 py-0.5 bg-oaxaca-pink-light dark:bg-oaxaca-pink/20 text-oaxaca-pink dark:text-oaxaca-pink text-xs font-bold rounded-full">
               {card.badge}
             </span>
           )}

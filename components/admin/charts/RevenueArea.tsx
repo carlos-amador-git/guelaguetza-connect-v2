@@ -49,7 +49,7 @@ const CustomTooltip = ({ active, payload, label, showCumulative }: CustomTooltip
       </p>
       <div className="space-y-1">
         <div className="flex items-center gap-2 text-sm">
-          <span className="w-3 h-3 rounded-full bg-blue-500" />
+          <span className="w-3 h-3 rounded-full bg-oaxaca-sky" />
           <span className="text-gray-600 dark:text-gray-400">
             {showCumulative ? 'Acumulado' : 'Actual'}:
           </span>
@@ -209,7 +209,7 @@ const RevenueArea: React.FC<RevenueAreaProps> = ({
       {/* Legend */}
       <div className="flex justify-center gap-6 mt-4">
         <div className="flex items-center gap-2">
-          <div className={`w-6 h-0.5 ${viewMode === 'cumulative' ? 'bg-green-500' : 'bg-blue-500'}`} />
+          <div className={`w-6 h-0.5 ${viewMode === 'cumulative' ? 'bg-green-500' : 'bg-oaxaca-sky'}`} />
           <span className="text-xs text-gray-600 dark:text-gray-400">
             {viewMode === 'cumulative' ? 'Acumulado actual' : 'Periodo actual'}
           </span>

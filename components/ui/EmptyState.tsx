@@ -477,7 +477,7 @@ export const NoPermissionState: React.FC<NoPermissionStateProps> = ({
 }) => {
   return (
     <div className={`flex flex-col items-center text-center py-12 px-6 ${className}`}>
-      <div className="w-16 h-16 rounded-full bg-amber-100 dark:bg-amber-900/20 flex items-center justify-center text-amber-500 mb-4">
+      <div className="w-16 h-16 rounded-full bg-oaxaca-yellow-light dark:bg-oaxaca-yellow/20 flex items-center justify-center text-oaxaca-yellow mb-4">
         <Lock size={32} />
       </div>
 

@@ -159,7 +159,7 @@ export default function CartView({ onNavigate, onBack }: CartViewProps) {
                       <p className="text-sm text-gray-500">
                         {item.product.seller.businessName}
                       </p>
-                      <p className="text-lg font-bold text-amber-600 mt-1">
+                      <p className="text-lg font-bold text-oaxaca-yellow mt-1">
                         {formatPrice(item.product.price)}
                       </p>
                     </div>
@@ -213,7 +213,7 @@ export default function CartView({ onNavigate, onBack }: CartViewProps) {
           </div>
           <button
             onClick={() => onNavigate(ViewState.CHECKOUT)}
-            className="w-full py-4 bg-amber-500 text-white rounded-lg font-medium flex items-center justify-center gap-2"
+            className="w-full py-4 bg-oaxaca-yellow text-white rounded-lg font-medium flex items-center justify-center gap-2"
           >
             Continuar al pago
             <ArrowRight className="w-5 h-5" />

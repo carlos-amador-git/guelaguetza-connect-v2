@@ -34,7 +34,7 @@ const OfflineIndicator: React.FC = () => {
       className={`fixed top-0 left-0 right-0 z-50 px-4 py-2.5 text-center text-sm font-medium transition-all duration-300 ${
         isOnline
           ? 'bg-green-500 text-white'
-          : 'bg-yellow-500 text-gray-900'
+          : 'bg-oaxaca-yellow text-gray-900'
       }`}
     >
       {isOnline ? (

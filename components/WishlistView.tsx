@@ -87,7 +87,7 @@ export default function WishlistView({ onNavigate, onBack }: WishlistViewProps) 
   return (
     <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <div className="bg-gradient-to-r from-pink-500 to-rose-500 text-white p-4 pt-12 md:pt-6">
+      <div className="bg-gradient-to-r from-oaxaca-pink to-oaxaca-pink text-white p-4 pt-12 md:pt-6">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-3">
             <button onClick={onBack} className="p-2 hover:bg-white/20 rounded-full transition">
@@ -152,19 +152,19 @@ export default function WishlistView({ onNavigate, onBack }: WishlistViewProps) 
                       <div className="flex-1 p-4 flex flex-col">
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1">
-                            <span className="inline-block px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-medium rounded-full mb-1">
+                            <span className="inline-block px-2 py-0.5 bg-oaxaca-yellow-light text-oaxaca-yellow text-xs font-medium rounded-full mb-1">
                               {CATEGORY_LABELS[product.category]}
                             </span>
                             <h3
                               onClick={() => handleProductClick(product)}
-                              className="font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 cursor-pointer hover:text-pink-600 transition"
+                              className="font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 cursor-pointer hover:text-oaxaca-pink transition"
                             >
                               {product.name}
                             </h3>
                             <div className="flex items-center gap-2 mt-1">
                               {product.seller.rating > 0 && (
                                 <div className="flex items-center gap-1 text-sm text-gray-500">
-                                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                                  <Star className="w-4 h-4 fill-oaxaca-yellow text-oaxaca-yellow" />
                                   <span>{product.seller.rating.toFixed(1)}</span>
                                 </div>
                               )}
@@ -183,13 +183,13 @@ export default function WishlistView({ onNavigate, onBack }: WishlistViewProps) 
                         </div>
 
                         <div className="mt-auto pt-3 flex items-center justify-between">
-                          <p className="text-lg font-bold text-pink-600">
+                          <p className="text-lg font-bold text-oaxaca-pink">
                             {formatPrice(product.price)}
                           </p>
                           <button
                             onClick={() => handleAddToCart(product)}
                             disabled={product.stock === 0 || isAddingToCart}
-                            className="flex items-center gap-2 px-4 py-2 bg-amber-500 text-white rounded-lg font-medium text-sm hover:bg-amber-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+                            className="flex items-center gap-2 px-4 py-2 bg-oaxaca-yellow text-white rounded-lg font-medium text-sm hover:bg-oaxaca-yellow/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
                           >
                             <ShoppingCart className="w-4 h-4" />
                             {isAddingToCart ? 'Agregando...' : product.stock === 0 ? 'Agotado' : 'Agregar'}
@@ -210,7 +210,7 @@ export default function WishlistView({ onNavigate, onBack }: WishlistViewProps) 
         <div className="md:hidden p-4 bg-white dark:bg-gray-800 border-t dark:border-gray-700">
           <button
             onClick={() => onNavigate(ViewState.TIENDA)}
-            className="w-full py-3 border-2 border-pink-500 text-pink-600 rounded-lg font-medium hover:bg-pink-50 transition"
+            className="w-full py-3 border-2 border-oaxaca-pink text-oaxaca-pink rounded-lg font-medium hover:bg-oaxaca-pink-light transition"
           >
             Seguir Comprando
           </button>

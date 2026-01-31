@@ -357,7 +357,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         {product.rating && (
           <div className="mt-2 flex items-center gap-1">
-            <span className="text-amber-500">★</span>
+            <span className="text-oaxaca-yellow">★</span>
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
               {product.rating}
             </span>

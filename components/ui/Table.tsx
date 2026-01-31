@@ -644,17 +644,17 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
 }) => {
   const statusColors = {
     success: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-    warning: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
+    warning: 'bg-oaxaca-yellow-light text-oaxaca-yellow dark:bg-oaxaca-yellow/20 dark:text-oaxaca-yellow',
     error: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-    info: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+    info: 'bg-oaxaca-sky-light text-oaxaca-sky dark:bg-oaxaca-sky/20 dark:text-oaxaca-sky',
     neutral: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400',
   };
 
   const dotColors = {
     success: 'bg-green-500',
-    warning: 'bg-yellow-500',
+    warning: 'bg-oaxaca-yellow',
     error: 'bg-red-500',
-    info: 'bg-blue-500',
+    info: 'bg-oaxaca-sky',
     neutral: 'bg-gray-500',
   };
 

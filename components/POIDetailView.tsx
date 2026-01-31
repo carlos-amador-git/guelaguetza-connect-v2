@@ -194,7 +194,7 @@ export default function POIDetailView({ poiId, onNavigate, onBack }: POIDetailVi
             <div className="flex items-center gap-3 mt-2">
               {poi.rating > 0 && (
                 <div className="flex items-center gap-1">
-                  <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                  <Star className="w-5 h-5 fill-oaxaca-yellow text-oaxaca-yellow" />
                   <span className="font-medium">{poi.rating.toFixed(1)}</span>
                   <span className="text-gray-500">({poi.reviewCount} resenas)</span>
                 </div>
@@ -251,14 +251,14 @@ export default function POIDetailView({ poiId, onNavigate, onBack }: POIDetailVi
 
               {/* AR Badge if available */}
               {poi.arModelUrl && (
-                <div className="mt-4 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl">
+                <div className="mt-4 p-4 bg-gradient-to-r from-oaxaca-purple-light to-oaxaca-pink-light rounded-xl">
                   <div className="flex items-center gap-3">
-                    <div className="p-3 bg-purple-100 rounded-full">
-                      <Camera className="w-6 h-6 text-purple-600" />
+                    <div className="p-3 bg-oaxaca-purple-light rounded-full">
+                      <Camera className="w-6 h-6 text-oaxaca-purple" />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-purple-900">Experiencia AR disponible</h4>
-                      <p className="text-sm text-purple-600">
+                      <h4 className="font-semibold text-oaxaca-purple">Experiencia AR disponible</h4>
+                      <p className="text-sm text-oaxaca-purple">
                         Usa la camara para ver contenido en realidad aumentada
                       </p>
                     </div>
@@ -297,7 +297,7 @@ export default function POIDetailView({ poiId, onNavigate, onBack }: POIDetailVi
                                 key={star}
                                 className={`w-4 h-4 ${
                                   star <= review.rating
-                                    ? 'fill-yellow-400 text-yellow-400'
+                                    ? 'fill-oaxaca-yellow text-oaxaca-yellow'
                                     : 'text-gray-300'
                                 }`}
                               />
@@ -351,7 +351,7 @@ export default function POIDetailView({ poiId, onNavigate, onBack }: POIDetailVi
                 <button key={star} onClick={() => setReviewRating(star)}>
                   <Star
                     className={`w-10 h-10 ${
-                      star <= reviewRating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
+                      star <= reviewRating ? 'fill-oaxaca-yellow text-oaxaca-yellow' : 'text-gray-300'
                     }`}
                   />
                 </button>

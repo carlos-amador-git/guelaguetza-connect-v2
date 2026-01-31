@@ -342,7 +342,7 @@ export const SmartOfflineBanner: React.FC<SmartOfflineBannerProps> = ({
       return {
         icon: <Wifi size={18} />,
         text: 'Conexión lenta',
-        bgColor: 'bg-yellow-500',
+        bgColor: 'bg-oaxaca-yellow',
         textColor: 'text-black',
       };
     }
@@ -360,7 +360,7 @@ export const SmartOfflineBanner: React.FC<SmartOfflineBannerProps> = ({
       return {
         icon: <RefreshCw size={18} className="animate-spin" />,
         text: 'Sincronizando...',
-        bgColor: 'bg-blue-500',
+        bgColor: 'bg-oaxaca-sky',
         textColor: 'text-white',
       };
     }
@@ -438,7 +438,7 @@ export const SyncStatusIndicator: React.FC<SyncStatusIndicatorProps> = ({
       case 'syncing':
         return {
           icon: <RefreshCw size={iconSize} className="animate-spin" />,
-          color: 'text-blue-500',
+          color: 'text-oaxaca-sky',
           label: 'Sincronizando...',
         };
       case 'success':
@@ -456,7 +456,7 @@ export const SyncStatusIndicator: React.FC<SyncStatusIndicatorProps> = ({
       case 'pending':
         return {
           icon: <CloudOff size={iconSize} />,
-          color: 'text-yellow-500',
+          color: 'text-oaxaca-yellow',
           label: `${pendingActions.length} pendiente${pendingActions.length > 1 ? 's' : ''}`,
         };
       default:
@@ -497,7 +497,7 @@ export const NetworkStatusBadge: React.FC<{ className?: string }> = ({ className
       className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
         !isOnline
           ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-          : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+          : 'bg-oaxaca-yellow-light text-oaxaca-yellow dark:bg-oaxaca-yellow/20 dark:text-oaxaca-yellow'
       } ${className}`}
     >
       {!isOnline ? <WifiOff size={12} /> : <Wifi size={12} />}

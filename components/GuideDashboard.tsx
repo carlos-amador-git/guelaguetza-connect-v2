@@ -93,10 +93,10 @@ const MOCK_MESSAGES = [
 ];
 
 const QUICK_ACTIONS = [
-  { icon: Plus, label: 'Nueva Experiencia', color: 'bg-purple-500' },
-  { icon: Calendar, label: 'Mi Calendario', color: 'bg-blue-500' },
+  { icon: Plus, label: 'Nueva Experiencia', color: 'bg-oaxaca-purple' },
+  { icon: Calendar, label: 'Mi Calendario', color: 'bg-oaxaca-sky' },
   { icon: MapPin, label: 'Compartir Ubicacion', color: 'bg-green-500' },
-  { icon: Camera, label: 'Subir Fotos', color: 'bg-pink-500' },
+  { icon: Camera, label: 'Subir Fotos', color: 'bg-oaxaca-pink' },
 ];
 
 const GuideDashboard: React.FC<GuideDashboardProps> = ({ onBack, onNavigate }) => {
@@ -109,7 +109,7 @@ const GuideDashboard: React.FC<GuideDashboardProps> = ({ onBack, onNavigate }) =
   return (
     <div className="h-full bg-gray-50 dark:bg-gray-950 overflow-y-auto">
       {/* Header */}
-      <div className="bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-600 text-white">
+      <div className="bg-gradient-to-br from-emerald-500 via-teal-500 to-oaxaca-sky text-white">
         <div className="px-4 py-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -225,7 +225,7 @@ const GuideDashboard: React.FC<GuideDashboardProps> = ({ onBack, onNavigate }) =
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                     tour.status === 'confirmed'
                       ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                      : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                      : 'bg-oaxaca-yellow-light text-oaxaca-yellow dark:bg-oaxaca-yellow/20 dark:text-oaxaca-yellow'
                   }`}>
                     {tour.status === 'confirmed' ? 'Confirmado' : 'Pendiente'}
                   </span>
@@ -315,7 +315,7 @@ const GuideDashboard: React.FC<GuideDashboardProps> = ({ onBack, onNavigate }) =
               <div className="flex items-center justify-between mb-2">
                 <span className="text-gray-600 dark:text-gray-300">Calificacion</span>
                 <div className="flex items-center gap-1">
-                  <Star size={20} className="text-yellow-400 fill-yellow-400" />
+                  <Star size={20} className="text-oaxaca-yellow fill-oaxaca-yellow" />
                   <span className="text-2xl font-bold text-gray-900 dark:text-white">4.9</span>
                 </div>
               </div>

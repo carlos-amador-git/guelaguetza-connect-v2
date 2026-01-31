@@ -63,22 +63,22 @@ const AdvancedStatCard: React.FC<AdvancedStatCardProps> = ({
 }) => {
   const colorClasses = {
     pink: {
-      bg: 'bg-pink-100 dark:bg-pink-900/30',
-      text: 'text-pink-600 dark:text-pink-400',
+      bg: 'bg-oaxaca-pink-light dark:bg-oaxaca-pink/20',
+      text: 'text-oaxaca-pink dark:text-oaxaca-pink',
       sparkline: '#EC4899',
-      gradient: 'from-pink-500 to-rose-500',
+      gradient: 'from-oaxaca-pink to-oaxaca-pink',
     },
     purple: {
-      bg: 'bg-purple-100 dark:bg-purple-900/30',
-      text: 'text-purple-600 dark:text-purple-400',
+      bg: 'bg-oaxaca-purple-light dark:bg-oaxaca-purple/20',
+      text: 'text-oaxaca-purple dark:text-oaxaca-purple',
       sparkline: '#8B5CF6',
-      gradient: 'from-purple-500 to-violet-500',
+      gradient: 'from-oaxaca-purple to-oaxaca-purple',
     },
     yellow: {
-      bg: 'bg-yellow-100 dark:bg-yellow-900/30',
-      text: 'text-yellow-600 dark:text-yellow-400',
+      bg: 'bg-oaxaca-yellow-light dark:bg-oaxaca-yellow/20',
+      text: 'text-oaxaca-yellow dark:text-oaxaca-yellow',
       sparkline: '#F59E0B',
-      gradient: 'from-yellow-500 to-amber-500',
+      gradient: 'from-oaxaca-yellow to-oaxaca-yellow',
     },
     green: {
       bg: 'bg-green-100 dark:bg-green-900/30',
@@ -87,28 +87,28 @@ const AdvancedStatCard: React.FC<AdvancedStatCardProps> = ({
       gradient: 'from-green-500 to-emerald-500',
     },
     blue: {
-      bg: 'bg-blue-100 dark:bg-blue-900/30',
-      text: 'text-blue-600 dark:text-blue-400',
+      bg: 'bg-oaxaca-sky-light dark:bg-oaxaca-sky/20',
+      text: 'text-oaxaca-sky dark:text-oaxaca-sky',
       sparkline: '#3B82F6',
-      gradient: 'from-blue-500 to-cyan-500',
+      gradient: 'from-oaxaca-sky to-oaxaca-sky',
     },
     red: {
       bg: 'bg-red-100 dark:bg-red-900/30',
       text: 'text-red-600 dark:text-red-400',
       sparkline: '#EF4444',
-      gradient: 'from-red-500 to-rose-500',
+      gradient: 'from-red-500 to-red-500',
     },
     indigo: {
-      bg: 'bg-indigo-100 dark:bg-indigo-900/30',
-      text: 'text-indigo-600 dark:text-indigo-400',
+      bg: 'bg-oaxaca-purple-light dark:bg-oaxaca-purple/20',
+      text: 'text-oaxaca-purple dark:text-oaxaca-purple',
       sparkline: '#6366F1',
-      gradient: 'from-indigo-500 to-purple-500',
+      gradient: 'from-oaxaca-purple to-oaxaca-purple',
     },
     orange: {
-      bg: 'bg-orange-100 dark:bg-orange-900/30',
-      text: 'text-orange-600 dark:text-orange-400',
+      bg: 'bg-oaxaca-yellow-light dark:bg-oaxaca-yellow/20',
+      text: 'text-oaxaca-yellow dark:text-oaxaca-yellow',
       sparkline: '#F97316',
-      gradient: 'from-orange-500 to-amber-500',
+      gradient: 'from-oaxaca-yellow to-oaxaca-yellow',
     },
   };
 

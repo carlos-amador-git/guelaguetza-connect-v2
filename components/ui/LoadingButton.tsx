@@ -18,7 +18,7 @@ interface LoadingButtonProps {
 
 const variants = {
   primary: 'bg-oaxaca-pink text-white hover:bg-oaxaca-pink/90 disabled:bg-gray-300 dark:disabled:bg-gray-700',
-  secondary: 'bg-amber-500 text-white hover:bg-amber-600 disabled:bg-gray-300 dark:disabled:bg-gray-700',
+  secondary: 'bg-oaxaca-yellow text-white hover:bg-oaxaca-yellow/90 disabled:bg-gray-300 dark:disabled:bg-gray-700',
   outline: 'border-2 border-oaxaca-pink text-oaxaca-pink hover:bg-oaxaca-pink/10 disabled:border-gray-300 disabled:text-gray-300',
   ghost: 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:text-gray-300',
   danger: 'bg-red-500 text-white hover:bg-red-600 disabled:bg-gray-300 dark:disabled:bg-gray-700',

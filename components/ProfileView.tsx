@@ -201,11 +201,11 @@ const ProfileView: React.FC<ProfileViewProps> = ({ setView }) => {
           <p className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase">Apariencia</p>
 
           <div className="w-full px-4 py-3 flex items-center gap-3">
-            <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-full">
+            <div className="p-2 bg-oaxaca-yellow-light dark:bg-oaxaca-yellow/20 rounded-full">
               {isDark ? (
-                <Moon size={18} className="text-blue-500 dark:text-blue-400" />
+                <Moon size={18} className="text-oaxaca-sky dark:text-oaxaca-sky" />
               ) : (
-                <Sun size={18} className="text-amber-600" />
+                <Sun size={18} className="text-oaxaca-yellow" />
               )}
             </div>
             <span className="flex-1 text-left text-gray-900 dark:text-gray-100">Tema</span>
@@ -218,16 +218,16 @@ const ProfileView: React.FC<ProfileViewProps> = ({ setView }) => {
           <p className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase">Cuenta</p>
 
           <button className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-full">
-              <Settings size={18} className="text-blue-600 dark:text-blue-400" />
+            <div className="p-2 bg-oaxaca-sky-light dark:bg-oaxaca-sky/20 rounded-full">
+              <Settings size={18} className="text-oaxaca-sky dark:text-oaxaca-sky" />
             </div>
             <span className="flex-1 text-left text-gray-900 dark:text-gray-100">Configuracion</span>
             <ChevronRight size={18} className="text-gray-400" />
           </button>
 
           <button className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-            <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-full">
-              <Bell size={18} className="text-purple-600 dark:text-purple-400" />
+            <div className="p-2 bg-oaxaca-purple-light dark:bg-oaxaca-purple/20 rounded-full">
+              <Bell size={18} className="text-oaxaca-purple dark:text-oaxaca-purple" />
             </div>
             <span className="flex-1 text-left text-gray-900 dark:text-gray-100">Notificaciones</span>
             <ChevronRight size={18} className="text-gray-400" />
@@ -250,8 +250,8 @@ const ProfileView: React.FC<ProfileViewProps> = ({ setView }) => {
             onClick={() => setView(ViewState.DIRECT_MESSAGES)}
             className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
           >
-            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-full">
-              <MessageSquare size={18} className="text-blue-600 dark:text-blue-400" />
+            <div className="p-2 bg-oaxaca-sky-light dark:bg-oaxaca-sky/20 rounded-full">
+              <MessageSquare size={18} className="text-oaxaca-sky dark:text-oaxaca-sky" />
             </div>
             <span className="flex-1 text-left text-gray-900 dark:text-gray-100">Mensajes Directos</span>
             <ChevronRight size={18} className="text-gray-400" />
@@ -261,8 +261,8 @@ const ProfileView: React.FC<ProfileViewProps> = ({ setView }) => {
             onClick={() => setView(ViewState.COMMUNITIES)}
             className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
           >
-            <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-full">
-              <Users size={18} className="text-indigo-600 dark:text-indigo-400" />
+            <div className="p-2 bg-oaxaca-purple-light dark:bg-oaxaca-purple/20 rounded-full">
+              <Users size={18} className="text-oaxaca-purple dark:text-oaxaca-purple" />
             </div>
             <span className="flex-1 text-left text-gray-900 dark:text-gray-100">Comunidades</span>
             <ChevronRight size={18} className="text-gray-400" />
@@ -285,8 +285,8 @@ const ProfileView: React.FC<ProfileViewProps> = ({ setView }) => {
           </button>
 
           <button className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-            <div className="p-2 bg-pink-100 dark:bg-pink-900/30 rounded-full">
-              <Heart size={18} className="text-pink-600 dark:text-pink-400" />
+            <div className="p-2 bg-oaxaca-pink-light dark:bg-oaxaca-pink/20 rounded-full">
+              <Heart size={18} className="text-oaxaca-pink dark:text-oaxaca-pink" />
             </div>
             <span className="flex-1 text-left text-gray-900 dark:text-gray-100">Mis favoritos</span>
             <ChevronRight size={18} className="text-gray-400" />
@@ -296,8 +296,8 @@ const ProfileView: React.FC<ProfileViewProps> = ({ setView }) => {
             onClick={() => setView(ViewState.CHAT)}
             className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
           >
-            <div className="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-full">
-              <HelpCircle size={18} className="text-yellow-600 dark:text-yellow-400" />
+            <div className="p-2 bg-oaxaca-yellow-light dark:bg-oaxaca-yellow/20 rounded-full">
+              <HelpCircle size={18} className="text-oaxaca-yellow dark:text-oaxaca-yellow" />
             </div>
             <span className="flex-1 text-left text-gray-900 dark:text-gray-100">Mis conversaciones con GuelaBot</span>
             <ChevronRight size={18} className="text-gray-400" />

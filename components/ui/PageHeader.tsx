@@ -12,12 +12,12 @@ interface PageHeaderProps {
 }
 
 const gradients: Record<string, string> = {
-  pink: 'from-oaxaca-pink to-pink-600',
-  purple: 'from-oaxaca-purple to-purple-700',
-  blue: 'from-blue-600 to-indigo-700',
-  amber: 'from-amber-500 to-orange-500',
+  pink: 'from-oaxaca-pink to-oaxaca-pink',
+  purple: 'from-oaxaca-purple to-oaxaca-purple',
+  blue: 'from-oaxaca-sky to-oaxaca-purple',
+  amber: 'from-oaxaca-yellow to-oaxaca-yellow',
   green: 'from-green-600 to-emerald-600',
-  red: 'from-red-600 to-pink-600',
+  red: 'from-red-600 to-oaxaca-pink',
   dark: 'from-gray-800 to-gray-900',
 };
 

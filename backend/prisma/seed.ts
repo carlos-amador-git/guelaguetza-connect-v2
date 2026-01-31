@@ -160,7 +160,7 @@ async function main() {
       data: {
         userId: demoUser.id,
         description: '¡Viviendo la magia del Lunes del Cerro! #Guelaguetza2025',
-        mediaUrl: 'https://picsum.photos/400/600?random=101',
+        mediaUrl: '/images/dance_pluma.png',
         location: 'Auditorio Guelaguetza',
         views: 342,
       },
@@ -169,7 +169,7 @@ async function main() {
       data: {
         userId: demoUser.id,
         description: 'Probando los mejores mezcales artesanales.',
-        mediaUrl: 'https://picsum.photos/400/600?random=102',
+        mediaUrl: '/images/product_mezcal.png',
         location: 'Feria del Mezcal',
         views: 89,
       },
@@ -178,7 +178,7 @@ async function main() {
       data: {
         userId: demoUser.id,
         description: 'El desfile de delegaciones es impresionante.',
-        mediaUrl: 'https://picsum.photos/400/600?random=103',
+        mediaUrl: '/images/dance_flor_de_pina.png',
         location: 'Santo Domingo',
         views: 1205,
       },
@@ -330,7 +330,7 @@ async function main() {
         category: ProductCategory.ARTESANIA,
         status: ProductStatus.ACTIVE,
         stock: 5,
-        images: ['https://picsum.photos/400/400?random=301', 'https://picsum.photos/400/400?random=302'],
+        images: ['/images/product_alebrije.png'],
       },
     }),
     prisma.product.create({
@@ -342,7 +342,7 @@ async function main() {
         category: ProductCategory.TEXTIL,
         status: ProductStatus.ACTIVE,
         stock: 3,
-        images: ['https://picsum.photos/400/400?random=303', 'https://picsum.photos/400/400?random=304'],
+        images: ['/images/product_textiles.png'],
       },
     }),
     prisma.product.create({
@@ -354,7 +354,7 @@ async function main() {
         category: ProductCategory.CERAMICA,
         status: ProductStatus.ACTIVE,
         stock: 8,
-        images: ['https://picsum.photos/400/400?random=305'],
+        images: ['/images/product_barro_negro.png'],
       },
     }),
     prisma.product.create({
@@ -366,7 +366,7 @@ async function main() {
         category: ProductCategory.MEZCAL,
         status: ProductStatus.ACTIVE,
         stock: 25,
-        images: ['https://picsum.photos/400/400?random=306'],
+        images: ['/images/product_mezcal.png'],
       },
     }),
     prisma.product.create({
@@ -378,7 +378,7 @@ async function main() {
         category: ProductCategory.MEZCAL,
         status: ProductStatus.ACTIVE,
         stock: 10,
-        images: ['https://picsum.photos/400/400?random=307'],
+        images: ['/images/product_mezcal.png'],
       },
     }),
     prisma.product.create({
@@ -414,7 +414,7 @@ async function main() {
         category: ProductCategory.TEXTIL,
         status: ProductStatus.ACTIVE,
         stock: 2,
-        images: ['https://picsum.photos/400/400?random=310'],
+        images: ['/images/product_textiles.png'],
       },
     }),
   ]);
@@ -436,7 +436,7 @@ async function main() {
         startedAt: new Date(),
         viewerCount: 1547,
         peakViewers: 2103,
-        thumbnailUrl: 'https://picsum.photos/800/450?random=401',
+        thumbnailUrl: '/images/dance_pluma.png',
       },
     }),
     prisma.liveStream.create({
@@ -449,7 +449,7 @@ async function main() {
         startedAt: new Date(Date.now() - 30 * 60 * 1000),
         viewerCount: 234,
         peakViewers: 312,
-        thumbnailUrl: 'https://picsum.photos/800/450?random=402',
+        thumbnailUrl: '/images/product_mezcal.png',
       },
     }),
     prisma.liveStream.create({
@@ -462,7 +462,7 @@ async function main() {
         scheduledAt: new Date(Date.now() + 2 * 60 * 60 * 1000),
         viewerCount: 0,
         peakViewers: 0,
-        thumbnailUrl: 'https://picsum.photos/800/450?random=403',
+        thumbnailUrl: '/images/product_barro_negro.png',
       },
     }),
     prisma.liveStream.create({
@@ -475,7 +475,7 @@ async function main() {
         scheduledAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
         viewerCount: 0,
         peakViewers: 0,
-        thumbnailUrl: 'https://picsum.photos/800/450?random=404',
+        thumbnailUrl: '/images/product_alebrije.png',
       },
     }),
     prisma.liveStream.create({
@@ -513,7 +513,7 @@ async function main() {
         rating: 4.9,
         reviewCount: 2341,
         isVerified: true,
-        imageUrl: 'https://picsum.photos/600/400?random=501',
+        imageUrl: '/images/poi_auditorio_guelaguetza.png',
       },
     }),
     prisma.pointOfInterest.create({
@@ -541,7 +541,7 @@ async function main() {
         rating: 4.9,
         reviewCount: 3421,
         isVerified: true,
-        imageUrl: 'https://picsum.photos/600/400?random=503',
+        imageUrl: '/images/poi_santo_domingo.png',
       },
     }),
     prisma.pointOfInterest.create({
@@ -583,7 +583,7 @@ async function main() {
         rating: 4.8,
         reviewCount: 2156,
         isVerified: true,
-        imageUrl: 'https://picsum.photos/600/400?random=506',
+        imageUrl: '/images/poi_hierve_el_agua.png',
       },
     }),
     prisma.pointOfInterest.create({
@@ -597,7 +597,7 @@ async function main() {
         rating: 4.9,
         reviewCount: 4532,
         isVerified: true,
-        imageUrl: 'https://picsum.photos/600/400?random=507',
+        imageUrl: '/images/poi_monte_alban.png',
       },
     }),
     prisma.pointOfInterest.create({
@@ -679,8 +679,8 @@ async function main() {
         languages: ['Espanol', 'Ingles'],
         rating: 4.9,
         reviewCount: 87,
-        imageUrl: 'https://picsum.photos/600/400?random=601',
-        images: ['https://picsum.photos/600/400?random=602', 'https://picsum.photos/600/400?random=603'],
+        imageUrl: '/images/poi_auditorio_guelaguetza.png',
+        images: ['/images/poi_auditorio_guelaguetza.png', '/images/dance_pluma.png'],
       },
     }),
     prisma.experience.create({
@@ -699,8 +699,8 @@ async function main() {
         languages: ['Espanol'],
         rating: 4.8,
         reviewCount: 156,
-        imageUrl: 'https://picsum.photos/600/400?random=604',
-        images: ['https://picsum.photos/600/400?random=605'],
+        imageUrl: '/images/product_alebrije.png',
+        images: ['/images/product_alebrije.png'],
       },
     }),
     prisma.experience.create({
@@ -719,8 +719,8 @@ async function main() {
         languages: ['Espanol', 'Ingles'],
         rating: 4.9,
         reviewCount: 234,
-        imageUrl: 'https://picsum.photos/600/400?random=606',
-        images: ['https://picsum.photos/600/400?random=607', 'https://picsum.photos/600/400?random=608'],
+        imageUrl: '/images/product_mezcal.png',
+        images: ['/images/product_mezcal.png'],
       },
     }),
     prisma.experience.create({
@@ -739,8 +739,8 @@ async function main() {
         languages: ['Espanol', 'Ingles', 'Frances'],
         rating: 5.0,
         reviewCount: 89,
-        imageUrl: 'https://picsum.photos/600/400?random=609',
-        images: ['https://picsum.photos/600/400?random=610'],
+        imageUrl: '/images/poi_monte_alban.png',
+        images: ['/images/poi_monte_alban.png'],
       },
     }),
     prisma.experience.create({
@@ -779,8 +779,8 @@ async function main() {
         languages: ['Espanol', 'Ingles'],
         rating: 4.8,
         reviewCount: 67,
-        imageUrl: 'https://picsum.photos/600/400?random=614',
-        images: ['https://picsum.photos/600/400?random=615'],
+        imageUrl: '/images/poi_hierve_el_agua.png',
+        images: ['/images/poi_hierve_el_agua.png'],
       },
     }),
   ]);

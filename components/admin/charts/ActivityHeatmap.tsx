@@ -13,11 +13,11 @@ const getColorIntensity = (value: number, maxValue: number): string => {
   const intensity = value / maxValue;
 
   if (intensity === 0) return 'bg-gray-100 dark:bg-gray-800';
-  if (intensity < 0.2) return 'bg-blue-100 dark:bg-blue-900/30';
-  if (intensity < 0.4) return 'bg-blue-200 dark:bg-blue-800/40';
-  if (intensity < 0.6) return 'bg-blue-400 dark:bg-blue-600/60';
-  if (intensity < 0.8) return 'bg-blue-500 dark:bg-blue-500/80';
-  return 'bg-blue-600 dark:bg-blue-400';
+  if (intensity < 0.2) return 'bg-oaxaca-sky-light dark:bg-oaxaca-sky/20';
+  if (intensity < 0.4) return 'bg-oaxaca-sky/30 dark:bg-oaxaca-sky/30';
+  if (intensity < 0.6) return 'bg-oaxaca-sky/60 dark:bg-oaxaca-sky/50';
+  if (intensity < 0.8) return 'bg-oaxaca-sky/80 dark:bg-oaxaca-sky/70';
+  return 'bg-oaxaca-sky dark:bg-oaxaca-sky';
 };
 
 const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ data, height = 200 }) => {
@@ -52,7 +52,7 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ data, height = 200 })
               {DAYS[hoveredCell.day]} {formatHour(hoveredCell.hour)}
             </span>
             <span className="mx-2 text-gray-400">|</span>
-            <span className="text-blue-600 dark:text-blue-400 font-semibold">
+            <span className="text-oaxaca-sky dark:text-oaxaca-sky font-semibold">
               {hoveredValue} actividades
             </span>
           </span>
@@ -99,7 +99,7 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ data, height = 200 })
                         className={`
                           flex-1 h-5 rounded-sm cursor-pointer transition-all
                           ${getColorIntensity(value, maxValue)}
-                          ${isHovered ? 'ring-2 ring-blue-500 ring-offset-1' : ''}
+                          ${isHovered ? 'ring-2 ring-oaxaca-sky ring-offset-1' : ''}
                         `}
                         onMouseEnter={() => setHoveredCell({ day: dayIndex, hour })}
                         onMouseLeave={() => setHoveredCell(null)}
@@ -119,11 +119,11 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ data, height = 200 })
         <span className="text-xs text-gray-500">Menos</span>
         <div className="flex gap-1">
           <div className="w-4 h-4 rounded-sm bg-gray-100 dark:bg-gray-800" />
-          <div className="w-4 h-4 rounded-sm bg-blue-100 dark:bg-blue-900/30" />
-          <div className="w-4 h-4 rounded-sm bg-blue-200 dark:bg-blue-800/40" />
-          <div className="w-4 h-4 rounded-sm bg-blue-400 dark:bg-blue-600/60" />
-          <div className="w-4 h-4 rounded-sm bg-blue-500 dark:bg-blue-500/80" />
-          <div className="w-4 h-4 rounded-sm bg-blue-600 dark:bg-blue-400" />
+          <div className="w-4 h-4 rounded-sm bg-oaxaca-sky-light dark:bg-oaxaca-sky/20" />
+          <div className="w-4 h-4 rounded-sm bg-oaxaca-sky/30 dark:bg-oaxaca-sky/30" />
+          <div className="w-4 h-4 rounded-sm bg-oaxaca-sky/60 dark:bg-oaxaca-sky/50" />
+          <div className="w-4 h-4 rounded-sm bg-oaxaca-sky/80 dark:bg-oaxaca-sky/70" />
+          <div className="w-4 h-4 rounded-sm bg-oaxaca-sky dark:bg-oaxaca-sky" />
         </div>
         <span className="text-xs text-gray-500">Mas</span>
       </div>

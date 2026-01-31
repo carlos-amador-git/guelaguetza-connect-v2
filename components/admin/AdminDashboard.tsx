@@ -136,8 +136,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   const getIncidentStatusColor = (status: string) => {
     switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400';
-      case 'reviewing': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400';
+      case 'pending': return 'bg-oaxaca-yellow-light text-oaxaca-yellow dark:bg-oaxaca-yellow/20 dark:text-oaxaca-yellow';
+      case 'reviewing': return 'bg-oaxaca-sky-light text-oaxaca-sky dark:bg-oaxaca-sky/20 dark:text-oaxaca-sky';
       case 'resolved': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
       default: return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
     }
@@ -167,7 +167,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 <ArrowLeft size={20} />
               </button>
               <div className="flex items-center gap-2">
-                <div className="p-2 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg">
+                <div className="p-2 bg-gradient-to-br from-oaxaca-yellow to-oaxaca-yellow rounded-lg">
                   <Shield size={20} className="text-white" />
                 </div>
                 <div>
@@ -205,11 +205,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
               <div className="text-[10px] text-white/60">Hoy</div>
             </div>
             <div className="bg-white/10 rounded-lg p-2 text-center">
-              <div className="text-lg font-bold text-yellow-400">{stats?.activeUsersToday || 3420}</div>
+              <div className="text-lg font-bold text-oaxaca-yellow">{stats?.activeUsersToday || 3420}</div>
               <div className="text-[10px] text-white/60">Activos</div>
             </div>
             <div className="bg-white/10 rounded-lg p-2 text-center">
-              <div className="text-lg font-bold text-pink-400">{stats?.totalStories || 8934}</div>
+              <div className="text-lg font-bold text-oaxaca-pink">{stats?.totalStories || 8934}</div>
               <div className="text-[10px] text-white/60">Historias</div>
             </div>
           </div>
@@ -258,17 +258,17 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 text-center">
-                      <Eye size={20} className="mx-auto text-blue-500 mb-1" />
+                      <Eye size={20} className="mx-auto text-oaxaca-sky mb-1" />
                       <div className="text-xl font-bold text-gray-900 dark:text-white">847</div>
                       <div className="text-xs text-gray-500">Usuarios online</div>
                     </div>
                     <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 text-center">
-                      <Image size={20} className="mx-auto text-pink-500 mb-1" />
+                      <Image size={20} className="mx-auto text-oaxaca-pink mb-1" />
                       <div className="text-xl font-bold text-gray-900 dark:text-white">23</div>
                       <div className="text-xs text-gray-500">Historias/hora</div>
                     </div>
                     <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 text-center">
-                      <MessageCircle size={20} className="mx-auto text-purple-500 mb-1" />
+                      <MessageCircle size={20} className="mx-auto text-oaxaca-purple mb-1" />
                       <div className="text-xl font-bold text-gray-900 dark:text-white">156</div>
                       <div className="text-xs text-gray-500">Mensajes/hora</div>
                     </div>
@@ -305,7 +305,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 {/* Feature Usage */}
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
                   <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                    <PieChart size={18} className="text-blue-500" />
+                    <PieChart size={18} className="text-oaxaca-sky" />
                     Uso por Funcionalidad
                   </h3>
                   <div className="space-y-3">
@@ -365,7 +365,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-500">Tiempo Promedio</span>
-                      <Clock size={16} className="text-blue-500" />
+                      <Clock size={16} className="text-oaxaca-sky" />
                     </div>
                     <div className="text-2xl font-bold text-gray-900 dark:text-white mt-1">12.4 min</div>
                     <div className="text-xs text-green-500">+1.2 min vs promedio</div>
@@ -373,7 +373,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-500">Conversion</span>
-                      <Zap size={16} className="text-yellow-500" />
+                      <Zap size={16} className="text-oaxaca-yellow" />
                     </div>
                     <div className="text-2xl font-bold text-gray-900 dark:text-white mt-1">4.2%</div>
                     <div className="text-xs text-red-500">-0.3% vs mes anterior</div>
@@ -381,7 +381,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-500">NPS Score</span>
-                      <Heart size={16} className="text-pink-500" />
+                      <Heart size={16} className="text-oaxaca-pink" />
                     </div>
                     <div className="text-2xl font-bold text-gray-900 dark:text-white mt-1">72</div>
                     <div className="text-xs text-green-500">Excelente</div>
@@ -446,7 +446,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 {/* Pending Review */}
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
                   <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                    <Eye size={18} className="text-yellow-500" />
+                    <Eye size={18} className="text-oaxaca-yellow" />
                     Pendiente de Revision
                   </h3>
                   <div className="space-y-2">
@@ -457,7 +457,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     ].map((item, i) => (
                       <div key={i} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                         <div>
-                          <span className="text-xs px-2 py-0.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 rounded-full">{item.type}</span>
+                          <span className="text-xs px-2 py-0.5 bg-oaxaca-yellow-light dark:bg-oaxaca-yellow/20 text-oaxaca-yellow dark:text-oaxaca-yellow rounded-full">{item.type}</span>
                           <p className="text-sm font-medium text-gray-900 dark:text-white mt-1">{item.title}</p>
                           <p className="text-xs text-gray-500">{item.user} - hace {item.time}</p>
                         </div>
@@ -480,13 +480,13 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
               <>
                 {/* Incident Summary */}
                 <div className="grid grid-cols-3 gap-3">
-                  <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-xl p-4 text-center">
-                    <div className="text-2xl font-bold text-yellow-600">12</div>
-                    <div className="text-xs text-yellow-700 dark:text-yellow-400">Pendientes</div>
+                  <div className="bg-oaxaca-yellow-light dark:bg-oaxaca-yellow/20 rounded-xl p-4 text-center">
+                    <div className="text-2xl font-bold text-oaxaca-yellow">12</div>
+                    <div className="text-xs text-oaxaca-yellow dark:text-oaxaca-yellow">Pendientes</div>
                   </div>
-                  <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 text-center">
-                    <div className="text-2xl font-bold text-blue-600">5</div>
-                    <div className="text-xs text-blue-700 dark:text-blue-400">En revision</div>
+                  <div className="bg-oaxaca-sky-light dark:bg-oaxaca-sky/20 rounded-xl p-4 text-center">
+                    <div className="text-2xl font-bold text-oaxaca-sky">5</div>
+                    <div className="text-xs text-oaxaca-sky dark:text-oaxaca-sky">En revision</div>
                   </div>
                   <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 text-center">
                     <div className="text-2xl font-bold text-green-600">234</div>
@@ -509,10 +509,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         <div className="flex items-start justify-between">
                           <div className="flex items-start gap-3">
                             <div className={`p-2 rounded-lg ${
-                              incident.type === 'spam' ? 'bg-yellow-100 text-yellow-600' :
+                              incident.type === 'spam' ? 'bg-oaxaca-yellow-light text-oaxaca-yellow' :
                               incident.type === 'abuse' ? 'bg-red-100 text-red-600' :
-                              incident.type === 'bug' ? 'bg-purple-100 text-purple-600' :
-                              'bg-blue-100 text-blue-600'
+                              incident.type === 'bug' ? 'bg-oaxaca-purple-light text-oaxaca-purple' :
+                              'bg-oaxaca-sky-light text-oaxaca-sky'
                             }`}>
                               {getIncidentTypeIcon(incident.type)}
                             </div>
@@ -584,7 +584,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         <span className="text-sm font-medium text-gray-900 dark:text-white">67%</span>
                       </div>
                       <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded-full">
-                        <div className="h-full w-[67%] bg-yellow-500 rounded-full" />
+                        <div className="h-full w-[67%] bg-oaxaca-yellow rounded-full" />
                       </div>
                     </div>
                     <div className="space-y-3">
@@ -595,7 +595,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         <span className="text-sm font-medium text-gray-900 dark:text-white">45%</span>
                       </div>
                       <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded-full">
-                        <div className="h-full w-[45%] bg-blue-500 rounded-full" />
+                        <div className="h-full w-[45%] bg-oaxaca-sky rounded-full" />
                       </div>
                     </div>
                     <div className="space-y-3">
@@ -628,7 +628,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         <div className="flex items-center gap-2">
                           <span className={`w-2 h-2 rounded-full ${
                             service.status === 'online' ? 'bg-green-500' :
-                            service.status === 'degraded' ? 'bg-yellow-500' : 'bg-red-500'
+                            service.status === 'degraded' ? 'bg-oaxaca-yellow' : 'bg-red-500'
                           }`} />
                           <span className="text-sm text-gray-700 dark:text-gray-300">{service.name}</span>
                         </div>

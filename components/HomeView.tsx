@@ -15,7 +15,13 @@ import {
 } from '../services/gastronomy';
 import GradientPlaceholder, { type PlaceholderVariant } from './ui/GradientPlaceholder';
 
-const HERO_VARIANTS: PlaceholderVariant[] = ['dancers', 'pineapple', 'stage'];
+// Image assets mapping
+// Image assets mapping
+const HERO_IMAGES = [
+  '/images/dance_pluma.png',
+  '/images/dance_flor_de_pina.png',
+  '/images/poi_auditorio_guelaguetza.png'
+];
 
 interface HomeViewProps {
   setView: (view: ViewState) => void;
@@ -28,40 +34,48 @@ const GASTRO_ITEMS: { name: string; desc: string; icon: typeof Utensils; categor
   { name: 'Nieves', desc: 'Helados artesanales de sabores regionales', icon: IceCream, category: 'NIEVES' },
 ];
 
-const DISCOVER_SLIDES = [
+interface DiscoverySlide {
+  id: string;
+  tag: string;
+  title: string;
+  image: string;
+  action: string;
+}
+
+const DISCOVER_SLIDES: DiscoverySlide[] = [
   {
     id: 'gastro',
     tag: 'Guía culinaria',
     title: 'Gastronomía',
-    variant: 'food' as PlaceholderVariant,
+    image: '/images/product_mezcal.png',
     action: 'gastro',
   },
   {
     id: 'artesanias',
     tag: 'Arte popular',
     title: 'Artesanías',
-    variant: 'crafts' as PlaceholderVariant,
+    image: '/images/product_alebrije.png',
     action: 'tienda',
   },
   {
     id: 'mezcal',
     tag: 'Tradición ancestral',
     title: 'Mezcal',
-    variant: 'mezcal' as PlaceholderVariant,
+    image: '/images/product_mezcal.png',
     action: 'gastro',
   },
   {
     id: 'danzas',
     tag: 'Folklore vivo',
     title: 'Danzas',
-    variant: 'dancers' as PlaceholderVariant,
+    image: '/images/dance_flor_de_pina.png',
     action: 'programa',
   },
   {
     id: 'naturaleza',
     tag: 'Ecoturismo',
     title: 'Naturaleza',
-    variant: 'nature' as PlaceholderVariant,
+    image: '/images/poi_hierve_el_agua.png',
     action: 'experiencias',
   },
 ];
@@ -82,7 +96,7 @@ const HomeView: React.FC<HomeViewProps> = ({ setView }) => {
   useEffect(() => {
     // Auto-advance hero carousel
     const interval = setInterval(() => {
-      setHeroIndex((prev) => (prev + 1) % HERO_VARIANTS.length);
+      setHeroIndex((prev) => (prev + 1) % HERO_IMAGES.length);
     }, 5000);
     return () => clearInterval(interval);
   }, []);
@@ -97,25 +111,28 @@ const HomeView: React.FC<HomeViewProps> = ({ setView }) => {
 
   useEffect(() => {
     // Load wishlist count
-    getWishlistCount().then(setWishlistCount).catch(() => {});
+    getWishlistCount().then(setWishlistCount).catch(() => { });
   }, []);
 
-  const nextHero = () => setHeroIndex((prev) => (prev + 1) % HERO_VARIANTS.length);
-  const prevHero = () => setHeroIndex((prev) => (prev - 1 + HERO_VARIANTS.length) % HERO_VARIANTS.length);
+  const nextHero = () => setHeroIndex((prev) => (prev + 1) % HERO_IMAGES.length);
+  const prevHero = () => setHeroIndex((prev) => (prev - 1 + HERO_IMAGES.length) % HERO_IMAGES.length);
 
   return (
     <div className="pb-24 md:pb-8 animate-fade-in">
       {/* Hero Header - Responsive with Carousel */}
       <div className="relative h-72 md:h-96 lg:h-[28rem] md:rounded-b-[2rem] lg:rounded-b-[3rem] overflow-hidden shadow-lg">
         {/* Hero Gradient Carousel */}
-        {HERO_VARIANTS.map((variant, index) => (
+        {HERO_IMAGES.map((image, index) => (
           <div
-            key={variant}
-            className={`absolute inset-0 transition-opacity duration-700 ${
-              index === heroIndex ? 'opacity-100' : 'opacity-0'
-            }`}
+            key={index}
+            className={`absolute inset-0 transition-opacity duration-700 ${index === heroIndex ? 'opacity-100' : 'opacity-0'
+              }`}
           >
-            <GradientPlaceholder variant={variant} className="w-full h-full" iconSize={0} />
+            <img
+              src={image}
+              alt="Guelaguetza Hero"
+              className="w-full h-full object-cover"
+            />
           </div>
         ))}
 
@@ -138,13 +155,12 @@ const HomeView: React.FC<HomeViewProps> = ({ setView }) => {
 
         {/* Carousel Indicators */}
         <div className="absolute bottom-20 md:bottom-24 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-          {HERO_VARIANTS.map((_, index) => (
+          {HERO_IMAGES.map((_, index) => (
             <button
               key={index}
               onClick={() => setHeroIndex(index)}
-              className={`w-2 h-2 rounded-full transition-all ${
-                index === heroIndex ? 'bg-white w-6' : 'bg-white/50 hover:bg-white/70'
-              }`}
+              className={`w-2 h-2 rounded-full transition-all ${index === heroIndex ? 'bg-white w-6' : 'bg-white/50 hover:bg-white/70'
+                }`}
             />
           ))}
         </div>
@@ -215,7 +231,7 @@ const HomeView: React.FC<HomeViewProps> = ({ setView }) => {
               <p className="text-sm md:text-base text-gray-500 dark:text-gray-400">{t('parade')} • 17:00</p>
             </div>
             <button className="bg-oaxaca-purple text-white p-2 md:p-3 rounded-full hover:bg-opacity-90 transition">
-               <PlayCircle size={24} />
+              <PlayCircle size={24} />
             </button>
           </div>
         </div>
@@ -354,9 +370,8 @@ const HomeView: React.FC<HomeViewProps> = ({ setView }) => {
                     <button
                       key={index}
                       onClick={() => setDiscoverIndex(index)}
-                      className={`w-2 h-2 rounded-full transition-all ${
-                        index === discoverIndex ? 'bg-oaxaca-pink w-5' : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400'
-                      }`}
+                      className={`w-2 h-2 rounded-full transition-all ${index === discoverIndex ? 'bg-oaxaca-pink w-5' : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400'
+                        }`}
                       aria-label={`Ir a slide ${index + 1}`}
                     />
                   ))}
@@ -381,11 +396,14 @@ const HomeView: React.FC<HomeViewProps> = ({ setView }) => {
                 {DISCOVER_SLIDES.map((slide, index) => (
                   <div
                     key={slide.id}
-                    className={`absolute inset-0 transition-opacity duration-1000 ${
-                      index === discoverIndex ? 'opacity-100' : 'opacity-0'
-                    }`}
+                    className={`absolute inset-0 transition-opacity duration-1000 ${index === discoverIndex ? 'opacity-100' : 'opacity-0'
+                      }`}
                   >
-                    <GradientPlaceholder variant={slide.variant} className="w-full h-full" iconSize={0} />
+                    <img
+                      src={slide.image}
+                      alt={slide.title}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 ))}
                 <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent flex items-center">
@@ -394,9 +412,8 @@ const HomeView: React.FC<HomeViewProps> = ({ setView }) => {
                     {DISCOVER_SLIDES.map((slide, index) => (
                       <p
                         key={`tag-${slide.id}`}
-                        className={`text-oaxaca-yellow text-xs md:text-sm font-semibold uppercase tracking-wider transition-opacity duration-700 ${
-                          index === discoverIndex ? 'opacity-100' : 'opacity-0 absolute'
-                        }`}
+                        className={`text-oaxaca-yellow text-xs md:text-sm font-semibold uppercase tracking-wider transition-opacity duration-700 ${index === discoverIndex ? 'opacity-100' : 'opacity-0 absolute'
+                          }`}
                       >
                         {slide.tag}
                       </p>
@@ -405,9 +422,8 @@ const HomeView: React.FC<HomeViewProps> = ({ setView }) => {
                     {DISCOVER_SLIDES.map((slide, index) => (
                       <p
                         key={`title-${slide.id}`}
-                        className={`font-bold text-2xl md:text-3xl lg:text-4xl text-white transition-opacity duration-700 ${
-                          index === discoverIndex ? 'opacity-100' : 'opacity-0 absolute'
-                        }`}
+                        className={`font-bold text-2xl md:text-3xl lg:text-4xl text-white transition-opacity duration-700 ${index === discoverIndex ? 'opacity-100' : 'opacity-0 absolute'
+                          }`}
                       >
                         {slide.title}
                       </p>
@@ -521,11 +537,10 @@ const HomeView: React.FC<HomeViewProps> = ({ setView }) => {
               <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
                 <button
                   onClick={() => setSelectedGastroCategory('ALL')}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition ${
-                    selectedGastroCategory === 'ALL'
-                      ? 'bg-white text-oaxaca-purple'
-                      : 'bg-white/20 text-white hover:bg-white/30'
-                  }`}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition ${selectedGastroCategory === 'ALL'
+                    ? 'bg-white text-oaxaca-purple'
+                    : 'bg-white/20 text-white hover:bg-white/30'
+                    }`}
                 >
                   {t('all_categories')}
                 </button>
@@ -533,11 +548,10 @@ const HomeView: React.FC<HomeViewProps> = ({ setView }) => {
                   <button
                     key={item.category}
                     onClick={() => setSelectedGastroCategory(item.category)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition flex items-center gap-1.5 ${
-                      selectedGastroCategory === item.category
-                        ? 'bg-white text-oaxaca-purple'
-                        : 'bg-white/20 text-white hover:bg-white/30'
-                    }`}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition flex items-center gap-1.5 ${selectedGastroCategory === item.category
+                      ? 'bg-white text-oaxaca-purple'
+                      : 'bg-white/20 text-white hover:bg-white/30'
+                      }`}
                   >
                     <item.icon size={12} />
                     {item.name}

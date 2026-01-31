@@ -92,14 +92,14 @@ export const PaymentErrorModal: React.FC<PaymentErrorModalProps> = ({
         )}
 
         {/* Tips */}
-        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 mb-6">
+        <div className="bg-oaxaca-sky-light dark:bg-oaxaca-sky/20 rounded-lg p-3 mb-6">
           <div className="flex items-start gap-2">
-            <AlertTriangle className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" aria-hidden="true" />
+            <AlertTriangle className="w-4 h-4 text-oaxaca-sky dark:text-oaxaca-sky mt-0.5 flex-shrink-0" aria-hidden="true" />
             <div className="flex-1">
-              <p className="text-xs font-medium text-blue-700 dark:text-blue-300 mb-1">
+              <p className="text-xs font-medium text-oaxaca-sky dark:text-oaxaca-sky mb-1">
                 Posibles causas:
               </p>
-              <ul className="text-xs text-blue-600 dark:text-blue-400 list-disc list-inside space-y-0.5">
+              <ul className="text-xs text-oaxaca-sky dark:text-oaxaca-sky list-disc list-inside space-y-0.5">
                 <li>Fondos insuficientes</li>
                 <li>Tarjeta vencida o bloqueada</li>
                 <li>Error en los datos ingresados</li>
@@ -115,7 +115,7 @@ export const PaymentErrorModal: React.FC<PaymentErrorModalProps> = ({
           <button
             onClick={onRetry}
             disabled={retrying}
-            className="w-full px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full px-4 py-3 bg-oaxaca-purple hover:bg-oaxaca-purple/90 text-white rounded-xl font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             aria-label="Reintentar pago"
           >
             {retrying ? (

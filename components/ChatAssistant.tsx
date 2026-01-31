@@ -342,7 +342,7 @@ Puedo ayudarte con:
   };
 
   return (
-    <div className={`flex flex-col bg-gradient-to-b from-oaxaca-purple to-purple-900 ${embedded ? 'h-full' : 'h-full pb-20'}`}>
+    <div className={`flex flex-col bg-gradient-to-b from-oaxaca-purple to-oaxaca-purple ${embedded ? 'h-full' : 'h-full pb-20'}`}>
       {/* Header */}
       <div className="px-4 py-3 text-white flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -399,7 +399,7 @@ Puedo ayudarte con:
                     user?.faceData ? (
                       <img src={user.faceData} alt="" className="w-8 h-8 rounded-full object-cover" />
                     ) : (
-                      <User size={16} className="text-purple-900" />
+                      <User size={16} className="text-oaxaca-purple" />
                     )
                   ) : (
                     <Bot size={16} className="text-white" />
@@ -408,14 +408,14 @@ Puedo ayudarte con:
                 <div
                   className={`p-3 rounded-2xl text-sm ${
                     isUser
-                      ? 'bg-oaxaca-yellow text-purple-900 rounded-br-sm'
+                      ? 'bg-oaxaca-yellow text-oaxaca-purple rounded-br-sm'
                       : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-bl-sm shadow-lg'
                   }`}
                 >
                   <div className="leading-relaxed">
                     {formatMessage(msg.text)}
                   </div>
-                  <p className={`text-[10px] mt-1 ${isUser ? 'text-purple-900/50' : 'text-gray-400 dark:text-gray-500'}`}>
+                  <p className={`text-[10px] mt-1 ${isUser ? 'text-oaxaca-purple/50' : 'text-gray-400 dark:text-gray-500'}`}>
                     {msg.timestamp.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
@@ -466,7 +466,7 @@ Puedo ayudarte con:
           <button
             onClick={() => handleSend()}
             disabled={isLoading || !inputValue.trim()}
-            className="bg-oaxaca-yellow text-purple-900 p-3 rounded-full hover:bg-yellow-400 disabled:opacity-50 transition shadow-lg"
+            className="bg-oaxaca-yellow text-oaxaca-purple p-3 rounded-full hover:bg-oaxaca-yellow/90 disabled:opacity-50 transition shadow-lg"
           >
             <Send size={20} />
           </button>
