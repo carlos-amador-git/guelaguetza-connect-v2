@@ -401,7 +401,7 @@ const TransportView: React.FC<TransportViewProps> = ({ onBack }) => {
             )}
             <div>
               <h2 className="text-xl font-bold text-oaxaca-purple dark:text-oaxaca-pink flex items-center gap-2">
-                <Bus className="text-oaxaca-pink" size={24} />
+                <img src="/images/ui/icon_transport.png" alt="BinniBus" className="w-8 h-8 object-contain drop-shadow-md" />
                 BinniBus
               </h2>
               <p className="text-xs text-gray-500 dark:text-gray-400">Transporte oficial Guelaguetza 2025</p>

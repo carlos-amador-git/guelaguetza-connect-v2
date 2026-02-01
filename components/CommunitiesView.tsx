@@ -139,11 +139,14 @@ const CommunitiesView: React.FC<CommunitiesViewProps> = ({ onCommunityClick, onB
         </div>
 
         {/* Title */}
-        <div>
-          <h1 className="text-white font-bold text-2xl">Comunidades</h1>
-          <p className="text-white/70 text-sm">
-            Conecta con personas con intereses similares
-          </p>
+        <div className="flex items-center gap-3">
+          <img src="/images/ui/icon_community.png" alt="Comunidades" className="w-10 h-10 md:w-12 md:h-12 object-contain drop-shadow-md" />
+          <div>
+            <h1 className="text-white font-bold text-2xl">Comunidades</h1>
+            <p className="text-white/70 text-sm">
+              Conecta con personas con intereses similares
+            </p>
+          </div>
         </div>
 
         {/* Search */}

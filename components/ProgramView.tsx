@@ -145,7 +145,7 @@ const ProgramView: React.FC<ProgramViewProps> = ({ onBack }) => {
                 <ArrowLeft size={20} />
               </button>
             )}
-            <Calendar size={20} className="text-oaxaca-yellow" />
+            <img src="/images/ui/icon_events.png" alt="Programa" className="w-10 h-10 md:w-12 md:h-12 object-contain drop-shadow-md" />
             <h2 className="text-xl font-bold">Programa Guelaguetza 2025</h2>
           </div>
           <button

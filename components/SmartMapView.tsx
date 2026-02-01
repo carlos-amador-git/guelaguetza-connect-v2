@@ -224,6 +224,7 @@ const SmartMapView: React.FC<SmartMapViewProps> = ({ onBack }) => {
           <button onClick={onBack} className="p-2 hover:bg-white/10 rounded-full transition">
             <ArrowLeft size={20} />
           </button>
+          <img src="/images/ui/icon_plan.png" alt="Mapa" className="w-10 h-10 md:w-12 md:h-12 object-contain drop-shadow-md" />
           <div>
             <h1 className="font-bold text-lg">Mapa Cultural</h1>
             <p className="text-xs text-white/70">Planifica tu recorrido por Oaxaca</p>

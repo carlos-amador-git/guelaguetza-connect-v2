@@ -238,7 +238,7 @@ const DropdownToggle: React.FC<{ size: 'sm' | 'md' | 'lg'; showLabel?: boolean; 
       {isOpen && (
         <div
           className={`
-            absolute right-0 top-full mt-2 z-50
+            absolute right-0 bottom-full mb-2 z-50
             ${sizeConfig.dropdown}
             bg-white dark:bg-gray-800
             rounded-xl shadow-lg

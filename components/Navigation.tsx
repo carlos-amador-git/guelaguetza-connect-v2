@@ -101,7 +101,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, setView, onUserPro
                     <img
                       src={item.icon as string}
                       alt={item.label}
-                      className={`w-5 h-5 object-contain ${isActive ? 'brightness-100' : 'brightness-0 opacity-60 dark:invert'}`}
+                      className={`w-5 h-5 object-contain ${isActive ? '' : 'opacity-70'}`}
                     />
                   ) : (
                     <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} aria-hidden="true" />
@@ -132,7 +132,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, setView, onUserPro
                     <img
                       src={item.icon as string}
                       alt={item.label}
-                      className={`w-5 h-5 object-contain ${isActive ? 'brightness-100' : 'brightness-0 opacity-60 dark:invert'}`}
+                      className={`w-5 h-5 object-contain ${isActive ? '' : 'opacity-70'}`}
                     />
                   ) : (
                     <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} aria-hidden="true" />

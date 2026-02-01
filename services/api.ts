@@ -1,6 +1,6 @@
 import { MOCK_STORIES } from './mockData';
 
-const API_BASE = 'http://localhost:3005/api';
+const API_BASE = (import.meta.env.VITE_API_URL || '') + '/api';
 
 // Custom error class with status code
 export class ApiError extends Error {
