@@ -32,7 +32,7 @@ import {
 import { CacheService } from './cache.service.js';
 import { EventBus, createEvent, EventTypes } from '../infrastructure/events/index.js';
 
-export class BookingService {
+export class BookingWithEventsService {
   // Cache TTLs (in seconds)
   private readonly CACHE_TTL = {
     EXPERIENCE_DETAIL: 120, // 2 minutos - detalle de experiencia

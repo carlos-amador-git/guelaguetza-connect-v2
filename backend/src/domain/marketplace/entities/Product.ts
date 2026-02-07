@@ -147,6 +147,10 @@ export class Product {
     return [...this.props.images];
   }
 
+  get category(): string {
+    return this.props.category;
+  }
+
   toJSON() {
     return {
       ...this.props,

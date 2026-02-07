@@ -56,7 +56,7 @@ export class MarketplaceService {
 
     // Try cache first
     if (this.cache) {
-      const cached = await this.cache.get(cacheKey);
+      const cached = await this.cache.get<any>(cacheKey);
       if (cached) return cached;
     }
 

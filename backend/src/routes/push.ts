@@ -1,12 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
-import {
-  saveSubscription,
-  removeSubscription,
-  sendNotificationToAll,
-  sendNotificationToUser,
-  getVapidPublicKey,
-} from '../services/push.service.js';
+import { PushService } from '../services/push.service.js';
 
 const subscriptionSchema = z.object({
   endpoint: z.string().url(),
@@ -24,9 +18,11 @@ const sendNotificationSchema = z.object({
 });
 
 export default async function pushRoutes(app: FastifyInstance) {
+  const pushService = new PushService(app.prisma);
+
   // Get VAPID public key
   app.get('/vapid-key', async (_request: FastifyRequest, reply: FastifyReply) => {
-    const key = getVapidPublicKey();
+    const key = pushService.getVapidPublicKey();
     if (!key) {
       return reply.status(500).send({ error: 'VAPID keys not configured' });
     }
@@ -50,7 +46,7 @@ export default async function pushRoutes(app: FastifyInstance) {
       // Ignore auth errors, allow anonymous subscriptions
     }
 
-    await saveSubscription(app.prisma, body, userId);
+    await pushService.saveSubscription(body, userId);
 
     return reply.status(201).send({ message: 'Subscription saved' });
   });
@@ -59,7 +55,7 @@ export default async function pushRoutes(app: FastifyInstance) {
   app.post('/unsubscribe', async (request: FastifyRequest, reply: FastifyReply) => {
     const body = z.object({ endpoint: z.string().url() }).parse(request.body);
 
-    await removeSubscription(app.prisma, body.endpoint);
+    await pushService.removeSubscription(body.endpoint);
 
     return { message: 'Subscription removed' };
   });
@@ -70,13 +66,13 @@ export default async function pushRoutes(app: FastifyInstance) {
 
     let result;
     if (body.userId) {
-      result = await sendNotificationToUser(app.prisma, body.userId, {
+      result = await pushService.sendNotificationToUser(body.userId, {
         title: body.title,
         body: body.body,
         url: body.url,
       });
     } else {
-      result = await sendNotificationToAll(app.prisma, {
+      result = await pushService.sendNotificationToAll({
         title: body.title,
         body: body.body,
         url: body.url,

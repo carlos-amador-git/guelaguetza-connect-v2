@@ -1,4 +1,4 @@
-import { PrismaClient, BadgeCategory } from '@prisma/client';
+import { PrismaClient, BadgeCategory, Badge } from '@prisma/client';
 import { XP_VALUES, calculateLevel, getXpForNextLevel } from '../schemas/gamification.schema.js';
 import { CacheService } from './cache.service.js';
 
@@ -260,7 +260,7 @@ export class GamificationService {
   private async getAllBadges() {
     const cacheKey = 'badges:all';
     if (this.cache) {
-      const cached = await this.cache.get(cacheKey);
+      const cached = await this.cache.get<Badge[]>(cacheKey);
       if (cached) return cached;
     }
 

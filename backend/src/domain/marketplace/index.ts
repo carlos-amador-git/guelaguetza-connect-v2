@@ -11,5 +11,5 @@ export type {
   IProductRepository,
   ProductFilters,
   OrderFilters,
-  PaginatedResult,
+  PaginatedResult as MarketplacePaginatedResult,
 } from './repositories/IProductRepository.js';

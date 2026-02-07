@@ -267,6 +267,9 @@ describe('BookingService', () => {
         duration: 120,
         maxCapacity: 10,
         location: 'Oaxaca Centro',
+        includes: ['Transporte', 'Comida'],
+        images: ['https://example.com/image.jpg'],
+        languages: ['es', 'en'],
       };
 
       const mockCreated = {

@@ -27,7 +27,7 @@ import {
 } from '../utils/optimistic-locking.js';
 import { EventBus, createEvent, EventTypes } from '../infrastructure/events/index.js';
 
-export class MarketplaceService {
+export class MarketplaceWithEventsService {
   constructor(
     private prisma: PrismaClient,
     private eventBus?: EventBus

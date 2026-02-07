@@ -12,4 +12,4 @@ export { BookingStatus, BookingStatusEnum } from './value-objects/BookingStatus.
 export { BookingDomainService } from './services/BookingDomainService.js';
 
 // Repositories
-export type { IBookingRepository, BookingFilters, PaginatedResult } from './repositories/IBookingRepository.js';
+export type { IBookingRepository, BookingFilters, PaginatedResult as BookingPaginatedResult } from './repositories/IBookingRepository.js';

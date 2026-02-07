@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient, Prisma, BookingStatus as PrismaBookingStatus, ExperienceCategory } from '@prisma/client';
 import {
   IBookingRepository,
   BookingFilters,
@@ -21,10 +21,10 @@ export class PrismaBookingRepository implements IBookingRepository {
       userId: booking.userId,
       experienceId: booking.experienceId,
       timeSlotId: booking.timeSlotId,
-      status: booking.status.toString(),
+      status: booking.status.toString() as PrismaBookingStatus,
       guestCount: booking.guestCount.value,
       totalPrice: booking.totalPrice.toDecimal(),
-      specialRequests: booking.toJSON().specialRequests,
+      specialRequests: booking.specialRequests,
       stripePaymentId: booking.stripePaymentId,
       confirmedAt: booking.confirmedAt,
       cancelledAt: booking.cancelledAt,
@@ -68,7 +68,7 @@ export class PrismaBookingRepository implements IBookingRepository {
 
     const where: Prisma.BookingWhereInput = {
       userId,
-      ...(filters?.status && { status: filters.status }),
+      ...(filters?.status && { status: filters.status as PrismaBookingStatus }),
     };
 
     const [bookings, total] = await Promise.all([
@@ -103,7 +103,7 @@ export class PrismaBookingRepository implements IBookingRepository {
 
     const where: Prisma.BookingWhereInput = {
       experienceId,
-      ...(filters?.status && { status: filters.status }),
+      ...(filters?.status && { status: filters.status as PrismaBookingStatus }),
     };
 
     const [bookings, total] = await Promise.all([
@@ -131,16 +131,25 @@ export class PrismaBookingRepository implements IBookingRepository {
   // ==================== EXPERIENCE OPERATIONS ====================
 
   async saveExperience(experience: Experience): Promise<Experience> {
+    const props = experience.toJSON();
     const data = {
-      hostId: experience.hostId,
-      title: experience.title,
-      description: experience.description,
+      hostId: props.hostId,
+      title: props.title,
+      description: props.description,
+      imageUrl: props.imageUrl,
+      images: props.images,
+      category: props.category as ExperienceCategory,
       price: experience.price.toDecimal(),
-      isActive: experience.isActive,
-      rating: experience.rating,
-      reviewCount: experience.reviewCount,
-      // Add other fields from toJSON()
-      ...experience.toJSON(),
+      duration: props.duration,
+      maxCapacity: props.maxCapacity,
+      location: props.location,
+      latitude: props.latitude,
+      longitude: props.longitude,
+      includes: props.includes,
+      languages: props.languages,
+      isActive: props.isActive,
+      rating: props.rating,
+      reviewCount: props.reviewCount,
     };
 
     let saved;

@@ -12,7 +12,7 @@ if (!stripeSecretKey) {
 }
 
 const stripe = stripeSecretKey
-  ? new Stripe(stripeSecretKey, { apiVersion: '2025-04-30.basil' })
+  ? new Stripe(stripeSecretKey, { apiVersion: '2024-12-18.acacia' as any })
   : null;
 
 export class StripeService {

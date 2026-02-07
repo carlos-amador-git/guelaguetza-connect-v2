@@ -149,6 +149,10 @@ export class Booking {
     return this.props.id;
   }
 
+  get specialRequests(): string | undefined {
+    return this.props.specialRequests;
+  }
+
   get userId(): string {
     return this.props.userId;
   }

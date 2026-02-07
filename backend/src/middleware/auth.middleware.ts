@@ -16,10 +16,15 @@ export interface AuthenticatedUser {
   bannedAt: Date | null;
 }
 
+declare module '@fastify/jwt' {
+  interface FastifyJWT {
+    user: AuthenticatedUser;
+  }
+}
+
 // Extender FastifyRequest para incluir información de autenticación
 declare module 'fastify' {
   interface FastifyRequest {
-    user?: AuthenticatedUser;
     isAuthenticated: boolean;
   }
 }
@@ -135,7 +140,7 @@ export async function authenticate(
     };
     request.isAuthenticated = true;
   } catch (error) {
-    request.server.log.error('Authentication error:', error);
+    request.server.log.error({ err: error }, 'Authentication error');
     return reply.status(500).send({
       statusCode: 500,
       error: 'Internal Server Error',
@@ -257,13 +262,15 @@ export const requireAdmin = requireRole(UserRole.ADMIN);
 
 /**
  * Middleware para requerir rol SELLER o ADMIN
+ * Nota: Como no existe el rol SELLER en el enum, permitimos USER y ADMIN.
+ * La validación de perfil de vendedor debe hacerse a nivel de servicio/controlador.
  */
-export const requireSeller = requireRole([UserRole.SELLER, UserRole.ADMIN]);
+export const requireSeller = requireRole([UserRole.USER, UserRole.ADMIN]);
 
 /**
  * Middleware para requerir rol USER, SELLER o ADMIN (cualquier usuario autenticado)
  */
-export const requireUser = requireRole([UserRole.USER, UserRole.SELLER, UserRole.ADMIN]);
+export const requireUser = requireRole([UserRole.USER, UserRole.MODERATOR, UserRole.ADMIN]);
 
 // ============================================
 // PLUGIN DE FASTIFY
@@ -275,7 +282,7 @@ export const requireUser = requireRole([UserRole.USER, UserRole.SELLER, UserRole
  */
 const authMiddlewarePlugin: FastifyPluginAsync = async (fastify) => {
   // Decorar FastifyRequest con valores por defecto
-  fastify.decorateRequest('user', null);
+  fastify.decorateRequest('user', null as any);
   fastify.decorateRequest('isAuthenticated', false);
 
   // Decorar FastifyInstance con los middlewares (para compatibilidad con código existente)

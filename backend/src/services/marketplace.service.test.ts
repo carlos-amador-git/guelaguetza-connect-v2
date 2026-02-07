@@ -350,6 +350,7 @@ describe('MarketplaceService', () => {
           price: 100,
           category: 'ARTESANIA',
           stock: 5,
+          images: [],
         })
       ).rejects.toThrow('Necesitas crear un perfil de vendedor primero');
     });
@@ -365,6 +366,7 @@ describe('MarketplaceService', () => {
         price: 100,
         category: 'ARTESANIA',
         stock: 5,
+        images: [],
       });
 
       expect(mockCache.invalidate).toHaveBeenCalledWith('products:list:*');

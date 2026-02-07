@@ -67,7 +67,7 @@ export class CacheService {
       const redisUrl = process.env.REDIS_URL;
 
       if (redisUrl) {
-        this.client = new Redis(redisUrl, {
+        this.client = new (Redis as any)(redisUrl, {
           keyPrefix: this.config.keyPrefix,
           maxRetriesPerRequest: this.config.maxRetriesPerRequest,
           retryStrategy: this.config.retryStrategy,
@@ -75,7 +75,7 @@ export class CacheService {
         });
       } else {
         // Fallback a configuración manual
-        this.client = new Redis({
+        this.client = new (Redis as any)({
           host: this.config.host || process.env.REDIS_HOST || '127.0.0.1',
           port: this.config.port || parseInt(process.env.REDIS_PORT || '6379', 10),
           password: this.config.password || process.env.REDIS_PASSWORD,
@@ -88,25 +88,27 @@ export class CacheService {
       }
 
       // Event handlers
-      this.client.on('connect', () => {
-        console.log('[Cache] Connected to Redis');
-        this.isConnected = true;
-      });
+      if (this.client) {
+        this.client.on('connect', () => {
+          console.log('[Cache] Connected to Redis');
+          this.isConnected = true;
+        });
 
-      this.client.on('error', (err) => {
-        console.error('[Cache] Redis error:', err.message);
-        this.metrics.errors++;
-        // No deshabilitamos el cache en errores transitorios
-      });
+        this.client.on('error', (err) => {
+          console.error('[Cache] Redis error:', err.message);
+          this.metrics.errors++;
+          // No deshabilitamos el cache en errores transitorios
+        });
 
-      this.client.on('close', () => {
-        console.warn('[Cache] Redis connection closed');
-        this.isConnected = false;
-      });
+        this.client.on('close', () => {
+          console.warn('[Cache] Redis connection closed');
+          this.isConnected = false;
+        });
 
-      // Intentar conectar
-      if (this.config.lazyConnect) {
-        await this.client.connect();
+        // Intentar conectar
+        if (this.config.lazyConnect) {
+          await this.client.connect();
+        }
       }
     } catch (error) {
       console.error('[Cache] Failed to initialize Redis:', error);

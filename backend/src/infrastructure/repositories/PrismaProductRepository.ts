@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient, Prisma, ProductStatus, ProductCategory, OrderStatus } from '@prisma/client';
 import {
   IProductRepository,
   ProductFilters,
@@ -21,12 +21,11 @@ export class PrismaProductRepository implements IProductRepository {
       name: product.name,
       description: product.description,
       price: product.price.toDecimal(),
-      status: product.status,
+      status: product.status as ProductStatus,
       stock: product.stock.quantity,
       images: product.images,
       version: product.version,
-      // Add other fields from toJSON()
-      ...product.toJSON(),
+      category: product.category as ProductCategory,
     };
 
     let saved;
@@ -79,8 +78,8 @@ export class PrismaProductRepository implements IProductRepository {
 
     const where: Prisma.ProductWhereInput = {
       sellerId,
-      ...(filters?.status && { status: filters.status }),
-      ...(filters?.category && { category: filters.category }),
+      ...(filters?.status && { status: filters.status as ProductStatus }),
+      ...(filters?.category && { category: filters.category as ProductCategory }),
     };
 
     const [products, total] = await Promise.all([
@@ -110,8 +109,8 @@ export class PrismaProductRepository implements IProductRepository {
     const skip = (page - 1) * limit;
 
     const where: Prisma.ProductWhereInput = {
-      ...(filters?.status && { status: filters.status }),
-      ...(filters?.category && { category: filters.category }),
+      ...(filters?.status && { status: filters.status as ProductStatus }),
+      ...(filters?.category && { category: filters.category as ProductCategory }),
       ...(filters?.sellerId && { sellerId: filters.sellerId }),
       ...(filters?.minPrice && { price: { gte: filters.minPrice } }),
       ...(filters?.maxPrice && { price: { lte: filters.maxPrice } }),
@@ -150,7 +149,7 @@ export class PrismaProductRepository implements IProductRepository {
     const data = {
       userId: order.userId,
       sellerId: order.sellerId,
-      status: order.status.toString(),
+      status: order.status.toString() as OrderStatus,
       total: order.total.toDecimal(),
       shippingAddress: order.toJSON().shippingAddress,
       stripePaymentId: order.stripePaymentId,
@@ -202,7 +201,7 @@ export class PrismaProductRepository implements IProductRepository {
 
     const where: Prisma.OrderWhereInput = {
       userId,
-      ...(filters?.status && { status: filters.status }),
+      ...(filters?.status && { status: filters.status as OrderStatus }),
     };
 
     const [orders, total] = await Promise.all([
@@ -237,7 +236,7 @@ export class PrismaProductRepository implements IProductRepository {
 
     const where: Prisma.OrderWhereInput = {
       sellerId,
-      ...(filters?.status && { status: filters.status }),
+      ...(filters?.status && { status: filters.status as OrderStatus }),
     };
 
     const [orders, total] = await Promise.all([
