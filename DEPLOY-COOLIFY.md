@@ -3,7 +3,7 @@
 ## Requisitos previos
 
 - Servidor con Coolify instalado (163.245.208.96)
-- Dominio `mdconsultoria-ti.org` apuntando al servidor (registro A en DNS)
+- Dominio `guelaguetzav2.mdconsultoria-ti.org` apuntando al servidor (registro A o CNAME en DNS)
 - Repositorio accesible desde el servidor (GitHub)
 
 ## Arquitectura del deploy
@@ -26,13 +26,13 @@ El frontend sirve la app React y hace proxy de `/api` al backend. Un solo domini
 
 ### 1. Configurar DNS
 
-En tu proveedor de dominio, crear registro A:
+En tu proveedor de dominio, crear registro A o CNAME:
 
 ```
-mdconsultoria-ti.org  →  163.245.208.96
+guelaguetzav2.mdconsultoria-ti.org  →  163.245.208.96
 ```
 
-Verificar propagación: `dig mdconsultoria-ti.org` o https://dnschecker.org
+Verificar propagación: `dig guelaguetzav2.mdconsultoria-ti.org` o https://dnschecker.org
 
 ### 2. En Coolify: Crear proyecto
 
@@ -56,7 +56,7 @@ En la sección **Environment Variables** de Coolify, agregar:
 |----------|-------|-------|
 | `POSTGRES_PASSWORD` | (generar password seguro) | Usar: `openssl rand -base64 32` |
 | `JWT_SECRET` | (generar secret seguro) | Usar: `openssl rand -base64 64` |
-| `CORS_ORIGINS` | `https://mdconsultoria-ti.org,http://mdconsultoria-ti.org` | Dominios permitidos |
+| `CORS_ORIGINS` | `https://guelaguetzav2.mdconsultoria-ti.org` | Dominios permitidos |
 
 Para generar passwords seguros desde terminal:
 
@@ -71,7 +71,7 @@ openssl rand -base64 64
 ### 5. Configurar dominio y SSL
 
 1. En la configuración del servicio **frontend**:
-   - **Domain**: `mdconsultoria-ti.org`
+   - **Domain**: `https://guelaguetzav2.mdconsultoria-ti.org`
    - **Port**: `3000`
 2. Habilitar **SSL/HTTPS** (Let's Encrypt automático en Coolify)
 3. Habilitar **Force HTTPS redirect**
@@ -84,7 +84,7 @@ openssl rand -base64 64
 
 ### 7. Verificación
 
-Acceder a `https://mdconsultoria-ti.org` y verificar:
+Acceder a `https://guelaguetzav2.mdconsultoria-ti.org` y verificar:
 
 - [ ] La página carga correctamente
 - [ ] Login con: `demo@guelaguetza.mx` / `password123`
@@ -96,7 +96,7 @@ Acceder a `https://mdconsultoria-ti.org` y verificar:
 
 ### La página no carga
 
-1. Verificar DNS: `dig mdconsultoria-ti.org` debe resolver a `163.245.208.96`
+1. Verificar DNS: `dig guelaguetzav2.mdconsultoria-ti.org` debe resolver a `163.245.208.96`
 2. En Coolify, revisar logs del servicio `frontend`
 3. Verificar que el puerto 80/443 está abierto en el firewall del servidor
 
@@ -110,11 +110,12 @@ El backend no está listo. Revisar logs de `backend` en Coolify:
 
 1. Revisar logs del `backend` en Coolify
 2. Verificar que `AUTO_SEED=true` está en las variables (carga datos demo al iniciar)
-3. Probar directamente: `curl https://mdconsultoria-ti.org/api/health`
+3. Probar directamente: `curl https://guelaguetzav2.mdconsultoria-ti.org/api/health`
+4. Verificar `CORS_ORIGINS` si hay errores de CORS en consola del navegador
 
 ### SSL no funciona
 
-1. Verificar que el DNS ya propagó (`dig mdconsultoria-ti.org`)
+1. Verificar que el DNS ya propagó (`dig guelaguetzav2.mdconsultoria-ti.org`)
 2. En Coolify, regenerar certificado SSL
 3. Let's Encrypt requiere que el puerto 80 esté accesible para validación
 
