@@ -11,7 +11,7 @@
 ```
 Internet → Coolify (proxy 80/443 con SSL)
               ↓
-         frontend (nginx :3002)
+         frontend (nginx :3005)
            ├── / → SPA React (archivos estáticos)
            └── /api → proxy a backend:3001
               ↓
@@ -72,7 +72,7 @@ openssl rand -base64 64
 
 1. En la configuración del servicio **frontend**:
    - **Domain**: `https://guelaguetzav2.mdconsultoria-ti.org`
-   - **Port**: `3002`
+   - **Port**: `3005`
 2. Habilitar **SSL/HTTPS** (Let's Encrypt automático en Coolify)
 3. Habilitar **Force HTTPS redirect**
 
