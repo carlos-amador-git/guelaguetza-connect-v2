@@ -64,7 +64,9 @@ FROM base AS builder
 ENV NODE_ENV=production
 
 # Instalar dependencias de producción Y devDependencies para build
-RUN npm ci
+# Nota: 'tsc' está en devDependencies, por lo que necesitamos instalar
+# también las dependencias de desarrollo para el build
+RUN npm ci --include=dev
 
 # Copiar código fuente
 COPY . .
