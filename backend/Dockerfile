@@ -61,12 +61,12 @@ CMD ["sh", "-c", "npx prisma migrate deploy && npm run dev"]
 # ============================================
 FROM base AS builder
 
-ENV NODE_ENV=production
+# IMPORTANTE: Usamos NODE_ENV=development explícitamente para asegurar
+# que npm ci instale todas las devDependencies necesarias para el build (tsc, @types, etc.)
+ENV NODE_ENV=development
 
-# Instalar dependencias de producción Y devDependencies para build
-# Nota: 'tsc' está en devDependencies, por lo que necesitamos instalar
-# también las dependencias de desarrollo para el build
-RUN npm ci --include=dev
+# Instalar TODAS las dependencias (incluidas devDependencies)
+RUN npm ci
 
 # Copiar código fuente
 COPY . .
@@ -77,7 +77,9 @@ RUN npx prisma generate
 # Compilar TypeScript
 RUN npm run build
 
-# Limpiar devDependencies después del build
+# Limpiar devDependencies y preparar para producción
+# Restablecemos NODE_ENV a production para el prune
+ENV NODE_ENV=production
 RUN npm prune --production
 
 # ============================================
