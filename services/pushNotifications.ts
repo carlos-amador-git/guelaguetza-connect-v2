@@ -1,6 +1,6 @@
 // Push Notifications Service
 
-const API_BASE = 'http://localhost:3005/api';
+const API_BASE = ((import.meta as any).env.VITE_API_URL || '') + '/api';
 
 // VAPID public key - this should match the one in the backend
 // Generate with: npx web-push generate-vapid-keys

@@ -9,7 +9,7 @@
 ## Arquitectura del deploy
 
 ```
-Internet → Coolify (proxy 80/443 con SSL)
+internet → Coolify (proxy 80/443 con SSL)
               ↓
          frontend (nginx :3005)
            ├── / → SPA React (archivos estáticos)
@@ -57,6 +57,7 @@ En la sección **Environment Variables** de Coolify, agregar:
 | `POSTGRES_PASSWORD` | (generar password seguro) | Usar: `openssl rand -base64 32` |
 | `JWT_SECRET` | (generar secret seguro) | Usar: `openssl rand -base64 64` |
 | `CORS_ORIGINS` | `https://guelaguetzav2.mdconsultoria-ti.org` | Dominios permitidos |
+| `FRONTEND_URL` | `https://guelaguetzav2.mdconsultoria-ti.org` | URL del frontend para emails |
 
 Para generar passwords seguros desde terminal:
 

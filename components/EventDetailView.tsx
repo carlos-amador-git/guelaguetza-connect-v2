@@ -5,6 +5,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useAuth } from '../contexts/AuthContext';
 import RSVPButton from './ui/RSVPButton';
+import MapResizer from './ui/MapResizer';
 import {
   getEvent,
   EventDetail,
@@ -257,6 +258,7 @@ const EventDetailView: React.FC<EventDetailViewProps> = ({
                   className="h-full w-full"
                   zoomControl={false}
                 >
+                  <MapResizer />
                   <TileLayer
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'

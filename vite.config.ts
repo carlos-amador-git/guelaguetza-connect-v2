@@ -37,7 +37,7 @@ export default defineConfig(({ mode }) => {
                 },
               },
               {
-                urlPattern: /^https?:\/\/localhost:3005\/api\/stories/,
+                urlPattern: /\/api\/stories/,
                 handler: 'NetworkFirst',
                 options: {
                   cacheName: 'stories-cache',

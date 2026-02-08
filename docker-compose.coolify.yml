@@ -44,6 +44,7 @@ services:
       REDIS_URL: redis://redis:6379
       JWT_SECRET: ${JWT_SECRET}
       CORS_ORIGINS: ${CORS_ORIGINS:-https://guelaguetzav2.mdconsultoria-ti.org}
+      FRONTEND_URL: ${FRONTEND_URL:-https://guelaguetzav2.mdconsultoria-ti.org}
       AUTO_SEED: "true"
       ENABLE_PAYMENTS: "false"
       ENABLE_NOTIFICATIONS: "false"
@@ -68,6 +69,7 @@ services:
       target: production
       args:
         VITE_API_URL: ""
+        VITE_WS_URL: ""
     restart: always
     ports:
       - "3005:80"

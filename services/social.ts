@@ -1,7 +1,7 @@
 // Social Service - API calls for followers, profiles, and feed
 import { MOCK_STORIES, MOCK_USERS } from './mockData';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_BASE = ((import.meta as any).env.VITE_API_URL || '') + '/api';
 
 export interface UserProfile {
   id: string;

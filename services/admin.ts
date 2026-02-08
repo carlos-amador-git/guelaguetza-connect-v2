@@ -1,7 +1,7 @@
 // Admin Service - API calls for dashboard and user management
 import { MOCK_ADMIN_STATS, MOCK_USERS } from './mockData';
 
-const API_BASE = 'http://localhost:3005/api';
+const API_BASE = ((import.meta as any).env.VITE_API_URL || '') + '/api';
 
 // ==========================================
 // Advanced Dashboard Types

@@ -1,7 +1,7 @@
 // Notifications Service - API calls and WebSocket connection
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-const WS_BASE = import.meta.env.VITE_WS_URL || 'ws://localhost:3000/api';
+const API_BASE = ((import.meta as any).env.VITE_API_URL || '') + '/api';
+const WS_BASE = (import.meta as any).env.VITE_WS_URL || ((window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host + '/api');
 
 export interface Notification {
   id: string;

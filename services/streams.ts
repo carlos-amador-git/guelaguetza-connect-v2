@@ -360,7 +360,8 @@ export function connectToStreamChat(
     onClose: () => void;
   }
 ) {
-  const wsUrl = `ws://localhost:3005/api/streams/${streamId}/ws`;
+  const WS_BASE = (import.meta as any).env.VITE_WS_URL || ((window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host + '/api');
+  const wsUrl = `${WS_BASE}/streams/${streamId}/ws`;
   const ws = new WebSocket(wsUrl);
 
   ws.onopen = () => {

@@ -9,7 +9,7 @@ import {
 
 type SyncCallback = (pendingCount: number) => void;
 
-const API_BASE = (import.meta as { env: { VITE_API_URL?: string } }).env.VITE_API_URL || 'http://localhost:3000/api';
+const API_BASE = ((import.meta as any).env.VITE_API_URL || '') + '/api';
 
 let isOnline = navigator.onLine;
 let isSyncing = false;
