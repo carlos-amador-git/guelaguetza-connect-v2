@@ -4,6 +4,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Bus, Clock, MapPin, Navigation as NavIcon, Locate, ChevronRight, Users, Zap, ArrowLeft } from 'lucide-react';
 import { ViewState } from '../types';
+import MapResizer from './ui/MapResizer';
 
 // Fix Leaflet default marker icons
 delete (L.Icon.Default.prototype as unknown as { _getIconUrl?: unknown })._getIconUrl;
@@ -459,6 +460,7 @@ const TransportView: React.FC<TransportViewProps> = ({ onBack }) => {
           zoomControl={false}
           style={{ height: '100%', width: '100%' }}
         >
+          <MapResizer />
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

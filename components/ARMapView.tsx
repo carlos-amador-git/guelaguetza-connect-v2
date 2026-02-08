@@ -17,6 +17,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import LoadingSpinner from './ui/LoadingSpinner';
 import GradientPlaceholder from './ui/GradientPlaceholder';
+import MapResizer from './ui/MapResizer';
 import {
   getNearbyPOIs,
   PointOfInterest,
@@ -202,6 +203,7 @@ export default function ARMapView({ onNavigate, onBack }: ARMapViewProps) {
             className="h-full w-full z-0"
             zoomControl={false}
           >
+            <MapResizer />
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
