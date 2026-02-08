@@ -27,14 +27,19 @@ wait_for_db() {
     MAX_RETRIES=30
     RETRY_COUNT=0
     
-    until echo "SELECT 1" | npx prisma db execute --stdin > /dev/null 2>&1 || [ $RETRY_COUNT -eq $MAX_RETRIES ]; do
+    until echo "SELECT 1" | npx prisma db execute --stdin > /tmp/prisma_db_check.log 2>&1 || [ $RETRY_COUNT -eq $MAX_RETRIES ]; do
         RETRY_COUNT=$((RETRY_COUNT + 1))
         echo "   Attempt $RETRY_COUNT/$MAX_RETRIES..."
+        if [ -s /tmp/prisma_db_check.log ]; then
+            echo "   Last Error: $(head -n 1 /tmp/prisma_db_check.log)"
+        fi
         sleep 2
     done
     
     if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
         echo "${RED}❌ Could not connect to database after $MAX_RETRIES attempts${NC}"
+        echo "${YELLOW}Last error log:${NC}"
+        cat /tmp/prisma_db_check.log
         exit 1
     fi
     
