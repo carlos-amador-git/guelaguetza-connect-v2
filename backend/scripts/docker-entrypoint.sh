@@ -12,6 +12,12 @@ echo "================================================"
 echo "🚀 Guelaguetza Connect - Backend Starting..."
 echo "================================================"
 
+# Reconstruct DATABASE_URL safely if components are present
+if [ -n "$POSTGRES_PASSWORD" ] && [ -n "$POSTGRES_HOST" ]; then
+    echo "🔄 Reconstructing DATABASE_URL safely..."
+    export DATABASE_URL=$(node -e 'console.log(`postgresql://${process.env.POSTGRES_USER}:${encodeURIComponent(process.env.POSTGRES_PASSWORD)}@${process.env.POSTGRES_HOST}:${process.env.POSTGRES_PORT}/${process.env.POSTGRES_DB}?schema=public`)')
+fi
+
 # Colores para logs
 RED='\033[0;31m'
 GREEN='\033[0;32m'
