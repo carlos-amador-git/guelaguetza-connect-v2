@@ -27,7 +27,7 @@ wait_for_db() {
     MAX_RETRIES=30
     RETRY_COUNT=0
     
-    until echo "SELECT 1" | npx prisma db execute --stdin > /tmp/prisma_db_check.log 2>&1 || [ $RETRY_COUNT -eq $MAX_RETRIES ]; do
+    until echo "SELECT 1" | npx prisma db execute --url="$DATABASE_URL" --stdin > /tmp/prisma_db_check.log 2>&1 || [ $RETRY_COUNT -eq $MAX_RETRIES ]; do
         RETRY_COUNT=$((RETRY_COUNT + 1))
         echo "   Attempt $RETRY_COUNT/$MAX_RETRIES..."
         if [ -s /tmp/prisma_db_check.log ]; then
