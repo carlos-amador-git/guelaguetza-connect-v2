@@ -66,7 +66,8 @@ wait_for_redis() {
         MAX_RETRIES=30
         RETRY_COUNT=0
         
-        until wget -q --spider "http://${REDIS_HOST}:${REDIS_PORT}" > /dev/null 2>&1 || [ $RETRY_COUNT -eq $MAX_RETRIES ]; do
+        # Check TCP connection using Node.js to avoid HTTP headers (which trigger Redis security warnings)
+        until node -e "const net = require('net'); const client = new net.Socket(); client.on('error', (err) => process.exit(1)); client.connect($REDIS_PORT, '$REDIS_HOST', () => { client.end(); process.exit(0); });" > /dev/null 2>&1 || [ $RETRY_COUNT -eq $MAX_RETRIES ]; do
             RETRY_COUNT=$((RETRY_COUNT + 1))
             echo "   Attempt $RETRY_COUNT/$MAX_RETRIES..."
             sleep 1

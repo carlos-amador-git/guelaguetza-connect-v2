@@ -95,6 +95,13 @@ Acceder a `https://guelaguetzav2.mdconsultoria-ti.org` y verificar:
 
 ## Troubleshooting
 
+### Advertencias de Redis
+Si ves en los logs de Redis: `WARNING Memory overcommit must be enabled!`, ejecuta esto en el servidor (host):
+```bash
+sysctl vm.overcommit_memory=1
+```
+Para hacerlo permanente, agrega `vm.overcommit_memory = 1` en `/etc/sysctl.conf`.
+
 ### La página no carga
 
 1. Verificar DNS: `dig guelaguetzav2.mdconsultoria-ti.org` debe resolver a `163.245.208.96`
