@@ -138,7 +138,7 @@ const Modal: React.FC<ModalProps> = ({
   return createPortal(
     <ModalContext.Provider value={{ close: onClose }}>
       <div
-        className={`fixed inset-0 z-50 flex justify-center ${positions[position]} p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200`}
+        className={`fixed inset-0 z-[9999] flex justify-center ${positions[position]} p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200`}
         onClick={handleOverlayClick}
         role="dialog"
         aria-modal="true"
@@ -357,7 +357,7 @@ export const Drawer: React.FC<DrawerProps> = ({
   if (!isOpen) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-50">
+    <div className="fixed inset-0 z-[9999]">
       {/* Overlay */}
       <div
         className="absolute inset-0 bg-black/50 animate-in fade-in duration-200"
@@ -437,7 +437,7 @@ export const Lightbox: React.FC<LightboxProps> = ({
   const currentImage = images[currentIndex];
 
   return createPortal(
-    <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
+    <div className="fixed inset-0 z-[9999] bg-black flex items-center justify-center">
       {/* Close button */}
       <button
         onClick={onClose}
