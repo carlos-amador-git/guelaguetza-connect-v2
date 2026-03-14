@@ -261,7 +261,7 @@ export const Lightbox: React.FC<LightboxProps> = ({
       {/* Image */}
       <img
         src={images[currentIndex].src}
-        alt={images[currentIndex].alt || ''}
+        alt={images[currentIndex].alt || `Imagen ${currentIndex + 1}`}
         className="max-w-full max-h-full object-contain"
       />
 
@@ -292,7 +292,7 @@ export const Lightbox: React.FC<LightboxProps> = ({
             >
               <img
                 src={image.thumbnail || image.src}
-                alt=""
+                alt={image.alt || `Imagen ${index + 1}`}
                 className="w-full h-full object-cover"
               />
             </button>

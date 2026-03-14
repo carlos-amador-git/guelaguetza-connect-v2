@@ -88,7 +88,7 @@ export default function StreamWatchView({
         console.error('Chat error:', error);
       },
       onClose: () => {
-        console.log('Chat disconnected');
+        if (import.meta.env.DEV) console.log('[StreamWatchView] Chat disconnected');
       },
     });
   };

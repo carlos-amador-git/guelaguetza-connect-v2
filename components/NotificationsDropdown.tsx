@@ -198,17 +198,17 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
                       <button
                         onClick={() => handleMarkAsRead(notification)}
                         className="p-1.5 text-gray-400 hover:text-oaxaca-pink hover:bg-oaxaca-pink/10 rounded-full transition-colors"
-                        title="Marcar como leída"
+                        aria-label="Marcar como leída"
                       >
-                        <Check size={16} />
+                        <Check size={16} aria-hidden="true" />
                       </button>
                     )}
                     <button
                       onClick={() => handleDelete(notification.id)}
                       className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors"
-                      title="Eliminar"
+                      aria-label="Eliminar notificación"
                     >
-                      <Trash2 size={16} />
+                      <Trash2 size={16} aria-hidden="true" />
                     </button>
                   </div>
                 </div>

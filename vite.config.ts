@@ -4,7 +4,8 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig(({ mode }) => {
-    const env = loadEnv(mode, '.', '');
+    // env loaded for potential future server-side use; API keys must NOT be injected into the client bundle.
+    loadEnv(mode, '.');
     return {
       server: {
         port: 3000,
@@ -37,7 +38,7 @@ export default defineConfig(({ mode }) => {
                 },
               },
               {
-                urlPattern: /^https?:\/\/localhost:3005\/api\/stories/,
+                urlPattern: /^https?:\/\/localhost:3001\/api\/stories/,
                 handler: 'NetworkFirst',
                 options: {
                   cacheName: 'stories-cache',
@@ -77,10 +78,9 @@ export default defineConfig(({ mode }) => {
           },
         }),
       ],
-      define: {
-        'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
-      },
+      // API keys must never be injected into the client bundle via `define`.
+      // The Gemini service should proxy through the backend instead.
+      // Use VITE_GEMINI_API_KEY in .env only for local dev if absolutely required.
       resolve: {
         alias: {
           '@': path.resolve(__dirname, '.'),

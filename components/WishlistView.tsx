@@ -2,14 +2,12 @@ import React, { useState, useEffect } from 'react';
 import {
   ArrowLeft,
   Heart,
-  ShoppingCart,
   Trash2,
   Star,
 } from 'lucide-react';
 import {
   getWishlist,
   removeFromWishlist,
-  addToCart,
   Product,
   CATEGORY_LABELS,
   formatPrice,
@@ -30,7 +28,6 @@ export default function WishlistView({ onNavigate, onBack }: WishlistViewProps) 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [removingId, setRemovingId] = useState<string | null>(null);
-  const [addingToCartId, setAddingToCartId] = useState<string | null>(null);
 
   useEffect(() => {
     loadWishlist();
@@ -63,19 +60,6 @@ export default function WishlistView({ onNavigate, onBack }: WishlistViewProps) 
     }
   };
 
-  const handleAddToCart = async (product: Product) => {
-    try {
-      setAddingToCartId(product.id);
-      await addToCart(product.id, 1);
-      toast.success('Agregado al carrito', product.name);
-    } catch (error) {
-      console.error('Error adding to cart:', error);
-      toast.error('Error', 'No se pudo agregar al carrito');
-    } finally {
-      setAddingToCartId(null);
-    }
-  };
-
   const handleProductClick = (product: Product) => {
     onNavigate(ViewState.PRODUCT_DETAIL, { productId: product.id });
   };
@@ -96,7 +80,7 @@ export default function WishlistView({ onNavigate, onBack }: WishlistViewProps) 
             <div className="flex items-center gap-2">
               <Heart className="w-6 h-6" fill="currentColor" />
               <div>
-                <h1 className="text-xl md:text-2xl font-bold">Mi Lista de Deseos</h1>
+                <h1 className="text-xl md:text-2xl font-bold">Mis Favoritos</h1>
                 <p className="text-sm text-white/80">{products.length} productos guardados</p>
               </div>
             </div>
@@ -111,9 +95,9 @@ export default function WishlistView({ onNavigate, onBack }: WishlistViewProps) 
             <EmptyState
               type="products"
               title="Tu lista esta vacia"
-              description="Guarda productos que te gusten para comprarlos despues"
+              description="Guarda los productos que te gusten para verlos despues"
               action={{
-                label: 'Explorar Tienda',
+                label: 'Explorar Vitrina',
                 onClick: () => onNavigate(ViewState.TIENDA),
               }}
             />
@@ -122,7 +106,6 @@ export default function WishlistView({ onNavigate, onBack }: WishlistViewProps) 
               {products.map((product) => {
                 const mainImage = product.images[0] || '';
                 const isRemoving = removingId === product.id;
-                const isAddingToCart = addingToCartId === product.id;
 
                 return (
                   <div
@@ -187,12 +170,10 @@ export default function WishlistView({ onNavigate, onBack }: WishlistViewProps) 
                             {formatPrice(product.price)}
                           </p>
                           <button
-                            onClick={() => handleAddToCart(product)}
-                            disabled={product.stock === 0 || isAddingToCart}
-                            className="flex items-center gap-2 px-4 py-2 bg-oaxaca-yellow text-white rounded-lg font-medium text-sm hover:bg-oaxaca-yellow/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+                            onClick={() => handleProductClick(product)}
+                            className="flex items-center gap-2 px-4 py-2 bg-oaxaca-yellow text-white rounded-lg font-medium text-sm hover:bg-oaxaca-yellow/90 transition"
                           >
-                            <ShoppingCart className="w-4 h-4" />
-                            {isAddingToCart ? 'Agregando...' : product.stock === 0 ? 'Agotado' : 'Agregar'}
+                            Ver producto
                           </button>
                         </div>
                       </div>
@@ -212,7 +193,7 @@ export default function WishlistView({ onNavigate, onBack }: WishlistViewProps) 
             onClick={() => onNavigate(ViewState.TIENDA)}
             className="w-full py-3 border-2 border-oaxaca-pink text-oaxaca-pink rounded-lg font-medium hover:bg-oaxaca-pink-light transition"
           >
-            Seguir Comprando
+            Seguir explorando
           </button>
         </div>
       )}

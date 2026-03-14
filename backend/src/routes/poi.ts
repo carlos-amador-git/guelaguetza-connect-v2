@@ -2,6 +2,7 @@ import { FastifyPluginAsync } from 'fastify';
 import { ZodTypeProvider } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import { POIService } from '../services/poi.service.js';
+import { requireAdmin } from '../middleware/admin.js';
 import {
   CreatePOISchema,
   UpdatePOISchema,
@@ -148,13 +149,12 @@ const poiRoutes: FastifyPluginAsync = async (fastify) => {
   app.post(
     '/',
     {
-      onRequest: [fastify.authenticate],
+      preHandler: [fastify.authenticate, requireAdmin],
       schema: {
         body: CreatePOISchema,
       },
     },
     async (request, reply) => {
-      // TODO: Check admin role
       const poi = await poiService.createPOI(request.body);
       return reply.status(201).send(poi);
     }
@@ -164,7 +164,7 @@ const poiRoutes: FastifyPluginAsync = async (fastify) => {
   app.put(
     '/:id',
     {
-      onRequest: [fastify.authenticate],
+      preHandler: [fastify.authenticate, requireAdmin],
       schema: {
         params: z.object({ id: z.string().cuid() }),
         body: UpdatePOISchema,
@@ -172,7 +172,6 @@ const poiRoutes: FastifyPluginAsync = async (fastify) => {
     },
     async (request) => {
       const { id } = request.params;
-      // TODO: Check admin role
       return poiService.updatePOI(id, request.body);
     }
   );
@@ -181,14 +180,13 @@ const poiRoutes: FastifyPluginAsync = async (fastify) => {
   app.delete(
     '/:id',
     {
-      onRequest: [fastify.authenticate],
+      preHandler: [fastify.authenticate, requireAdmin],
       schema: {
         params: z.object({ id: z.string().cuid() }),
       },
     },
     async (request) => {
       const { id } = request.params;
-      // TODO: Check admin role
       return poiService.deletePOI(id);
     }
   );

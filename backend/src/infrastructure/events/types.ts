@@ -75,70 +75,6 @@ export interface BookingCompletedPayload {
 }
 
 // ============================================
-// MARKETPLACE EVENTS
-// ============================================
-export interface OrderCreatedPayload {
-  orderId: string;
-  userId: string;
-  userName: string;
-  sellerId: string;
-  sellerName: string;
-  total: number;
-  itemCount: number;
-  items: Array<{
-    productId: string;
-    productName: string;
-    quantity: number;
-    price: number;
-  }>;
-}
-
-export interface OrderPaidPayload {
-  orderId: string;
-  userId: string;
-  sellerId: string;
-  sellerName: string;
-  paymentId: string;
-  amount: number;
-  items: Array<{
-    productId: string;
-    productName: string;
-    quantity: number;
-  }>;
-}
-
-export interface OrderShippedPayload {
-  orderId: string;
-  userId: string;
-  sellerId: string;
-  trackingNumber?: string;
-  estimatedDelivery?: string;
-}
-
-export interface OrderDeliveredPayload {
-  orderId: string;
-  userId: string;
-  sellerId: string;
-  total: number;
-  deliveredAt: Date;
-}
-
-export interface OrderPaymentFailedPayload {
-  orderId: string;
-  userId: string;
-  sellerId: string;
-  error?: string;
-}
-
-export interface OrderRefundedPayload {
-  orderId: string;
-  userId: string;
-  sellerId: string;
-  amount: number;
-  itemsRestored: Array<{ productId: string; quantity: number }>;
-}
-
-// ============================================
 // USER EVENTS
 // ============================================
 export interface UserRegisteredPayload {
@@ -231,14 +167,6 @@ export const EventTypes = {
   BOOKING_CANCELLED: 'booking.cancelled',
   BOOKING_COMPLETED: 'booking.completed',
 
-  // Marketplace Events
-  ORDER_CREATED: 'order.created',
-  ORDER_PAID: 'order.paid',
-  ORDER_SHIPPED: 'order.shipped',
-  ORDER_DELIVERED: 'order.delivered',
-  ORDER_PAYMENT_FAILED: 'order.payment_failed',
-  ORDER_REFUNDED: 'order.refunded',
-
   // User Events
   USER_REGISTERED: 'user.registered',
   USER_BANNED: 'user.banned',
@@ -266,13 +194,6 @@ export type EventPayloadMap = {
   [EventTypes.BOOKING_CONFIRMED]: BookingConfirmedPayload;
   [EventTypes.BOOKING_CANCELLED]: BookingCancelledPayload;
   [EventTypes.BOOKING_COMPLETED]: BookingCompletedPayload;
-
-  [EventTypes.ORDER_CREATED]: OrderCreatedPayload;
-  [EventTypes.ORDER_PAID]: OrderPaidPayload;
-  [EventTypes.ORDER_SHIPPED]: OrderShippedPayload;
-  [EventTypes.ORDER_DELIVERED]: OrderDeliveredPayload;
-  [EventTypes.ORDER_PAYMENT_FAILED]: OrderPaymentFailedPayload;
-  [EventTypes.ORDER_REFUNDED]: OrderRefundedPayload;
 
   [EventTypes.USER_REGISTERED]: UserRegisteredPayload;
   [EventTypes.USER_BANNED]: UserBannedPayload;

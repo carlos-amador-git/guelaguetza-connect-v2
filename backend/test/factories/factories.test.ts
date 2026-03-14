@@ -29,12 +29,6 @@ import {
   resetProductCounter,
 } from './product.factory';
 import {
-  createOrder,
-  createPendingOrder,
-  createPaidOrder,
-  resetOrderCounter,
-} from './order.factory';
-import {
   createExperience,
   createPopularExperience,
   resetExperienceCounter,
@@ -192,46 +186,6 @@ describe('ProductFactory', () => {
 
     expect(products).toHaveLength(3);
     expect(products.every(p => p.category === 'MEZCAL')).toBe(true);
-  });
-});
-
-describe('OrderFactory', () => {
-  beforeEach(() => {
-    resetOrderCounter();
-  });
-
-  it('debe crear una orden básica', () => {
-    const order = createOrder();
-
-    expect(order.id).toBeDefined();
-    expect(order.userId).toBeDefined();
-    expect(order.sellerId).toBeDefined();
-    expect(order.status).toBe('PENDING');
-    expect(order.total).toBeDefined();
-    expect(order.shippingAddress).toBeDefined();
-  });
-
-  it('debe crear orden pendiente sin payment ID', () => {
-    const order = createPendingOrder();
-
-    expect(order.status).toBe('PENDING');
-    expect(order.stripePaymentId).toBeNull();
-  });
-
-  it('debe crear orden pagada con payment ID', () => {
-    const order = createPaidOrder();
-
-    expect(order.status).toBe('PAID');
-    expect(order.stripePaymentId).toBeDefined();
-    expect(order.stripePaymentId).toContain('pi_');
-  });
-
-  it('debe incluir dirección de envío válida', () => {
-    const order = createOrder();
-
-    expect(order.shippingAddress.calle).toBeDefined();
-    expect(order.shippingAddress.ciudad).toBe('Oaxaca de Juárez');
-    expect(order.shippingAddress.estado).toBe('Oaxaca');
   });
 });
 

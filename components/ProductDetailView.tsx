@@ -4,17 +4,13 @@ import {
   Star,
   Heart,
   Share2,
-  ShoppingCart,
-  Minus,
-  Plus,
   MessageSquare,
   MapPin,
-  Package,
   Check,
+  Phone,
 } from 'lucide-react';
 import {
   getProduct,
-  addToCart,
   addToWishlist,
   removeFromWishlist,
   isInWishlist,
@@ -42,9 +38,6 @@ export default function ProductDetailView({
   const toast = useToast();
   const [product, setProduct] = useState<(Product & { reviews: ProductReview[] }) | null>(null);
   const [loading, setLoading] = useState(true);
-  const [quantity, setQuantity] = useState(1);
-  const [addingToCart, setAddingToCart] = useState(false);
-  const [addedToCart, setAddedToCart] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [activeTab, setActiveTab] = useState<'description' | 'reviews'>('description');
   const [inWishlist, setInWishlist] = useState(false);
@@ -90,23 +83,6 @@ export default function ProductDetailView({
       toast.error('Error', 'No se pudo cargar el producto');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleAddToCart = async () => {
-    if (!product) return;
-
-    try {
-      setAddingToCart(true);
-      await addToCart(productId, quantity);
-      setAddedToCart(true);
-      toast.success('Agregado al carrito', `${quantity}x ${product.name}`);
-      setTimeout(() => setAddedToCart(false), 2000);
-    } catch (error) {
-      console.error('Error adding to cart:', error);
-      toast.error('Error', 'No se pudo agregar al carrito');
-    } finally {
-      setAddingToCart(false);
     }
   };
 
@@ -181,13 +157,6 @@ export default function ProductDetailView({
                 }`}
               />
             ))}
-          </div>
-        )}
-
-        {/* Out of stock overlay */}
-        {product.stock === 0 && (
-          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-            <span className="text-white text-xl font-bold">Agotado</span>
           </div>
         )}
       </div>
@@ -271,17 +240,6 @@ export default function ProductDetailView({
           {activeTab === 'description' ? (
             <div className="py-4">
               <p className="text-gray-600 whitespace-pre-line">{product.description}</p>
-
-              {/* Shipping info */}
-              <div className="mt-6 p-4 bg-gray-50 rounded-xl">
-                <div className="flex items-center gap-3">
-                  <Package className="w-6 h-6 text-oaxaca-yellow" />
-                  <div>
-                    <p className="font-medium text-gray-900">Envio a toda la republica</p>
-                    <p className="text-sm text-gray-500">Entrega estimada: 5-10 dias habiles</p>
-                  </div>
-                </div>
-              </div>
             </div>
           ) : (
             <div className="py-4">
@@ -326,53 +284,15 @@ export default function ProductDetailView({
         </div>
       </div>
 
-      {/* Add to Cart Bar */}
+      {/* Contact Seller Bar */}
       <div className="border-t bg-white p-4">
-        <div className="flex items-center gap-4">
-          {/* Quantity */}
-          <div className="flex items-center gap-2 border rounded-lg">
-            <button
-              onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              disabled={quantity <= 1}
-              className="p-3 disabled:opacity-50"
-            >
-              <Minus className="w-4 h-4" />
-            </button>
-            <span className="w-8 text-center font-medium">{quantity}</span>
-            <button
-              onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-              disabled={quantity >= product.stock}
-              className="p-3 disabled:opacity-50"
-            >
-              <Plus className="w-4 h-4" />
-            </button>
-          </div>
-
-          {/* Add to cart button */}
-          <button
-            onClick={handleAddToCart}
-            disabled={product.stock === 0 || addingToCart}
-            className={`flex-1 py-4 rounded-lg font-medium flex items-center justify-center gap-2 ${
-              addedToCart
-                ? 'bg-green-500 text-white'
-                : 'bg-oaxaca-yellow text-white disabled:bg-gray-300'
-            }`}
-          >
-            {addedToCart ? (
-              <>
-                <Check className="w-5 h-5" />
-                Agregado!
-              </>
-            ) : addingToCart ? (
-              'Agregando...'
-            ) : (
-              <>
-                <ShoppingCart className="w-5 h-5" />
-                Agregar al carrito
-              </>
-            )}
-          </button>
-        </div>
+        <button
+          onClick={() => onNavigate(ViewState.DIRECT_MESSAGES)}
+          className="w-full py-4 rounded-lg font-medium flex items-center justify-center gap-2 bg-oaxaca-yellow text-white hover:bg-oaxaca-yellow/90 transition"
+        >
+          <Phone className="w-5 h-5" />
+          Contactar vendedor
+        </button>
       </div>
     </div>
   );

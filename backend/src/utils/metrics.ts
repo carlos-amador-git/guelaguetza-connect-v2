@@ -31,7 +31,7 @@ collectDefaultMetrics({
 
 /**
  * Total de bookings creados
- * Labels: status (pending, confirmed, cancelled, completed, payment_failed)
+ * Labels: status (pending, confirmed, cancelled, completed)
  */
 export const bookingsCreatedTotal = new Counter({
   name: 'guelaguetza_bookings_created_total',
@@ -46,37 +46,6 @@ export const bookingsCreatedTotal = new Counter({
 export const bookingsCancelledTotal = new Counter({
   name: 'guelaguetza_bookings_cancelled_total',
   help: 'Total number of bookings cancelled',
-  registers: [register],
-});
-
-/**
- * Total de ordenes creadas
- * Labels: status (pending, confirmed, shipped, delivered, cancelled, payment_failed)
- */
-export const ordersCreatedTotal = new Counter({
-  name: 'guelaguetza_orders_created_total',
-  help: 'Total number of orders created',
-  labelNames: ['status'] as const,
-  registers: [register],
-});
-
-/**
- * Total de ordenes canceladas
- */
-export const ordersCancelledTotal = new Counter({
-  name: 'guelaguetza_orders_cancelled_total',
-  help: 'Total number of orders cancelled',
-  registers: [register],
-});
-
-/**
- * Total de pagos procesados
- * Labels: status (succeeded, failed, pending, refunded), type (booking, order)
- */
-export const paymentsProcessedTotal = new Counter({
-  name: 'guelaguetza_payments_processed_total',
-  help: 'Total number of payments processed',
-  labelNames: ['status', 'type'] as const,
   registers: [register],
 });
 
@@ -103,7 +72,7 @@ export const cleanupJobsExecutedTotal = new Counter({
 
 /**
  * Total de items limpiados por cleanup jobs
- * Labels: type (booking, order)
+ * Labels: type (booking)
  */
 export const cleanupItemsTotal = new Counter({
   name: 'guelaguetza_cleanup_items_total',
@@ -158,45 +127,12 @@ export const authRegistrationsTotal = new Counter({
 
 /**
  * Total de bookings fallidos
- * Labels: reason (payment_failed, slot_unavailable, validation_error, concurrency_conflict)
+ * Labels: reason (slot_unavailable, validation_error, concurrency_conflict)
  */
 export const bookingsFailedTotal = new Counter({
   name: 'guelaguetza_bookings_failed_total',
   help: 'Total number of failed bookings',
   labelNames: ['reason'] as const,
-  registers: [register],
-});
-
-/**
- * Total de ordenes fallidas
- * Labels: reason (payment_failed, out_of_stock, validation_error, concurrency_conflict)
- */
-export const ordersFailedTotal = new Counter({
-  name: 'guelaguetza_orders_failed_total',
-  help: 'Total number of failed orders',
-  labelNames: ['reason'] as const,
-  registers: [register],
-});
-
-/**
- * Total de webhooks recibidos
- * Labels: type (payment_intent.succeeded, payment_intent.payment_failed, etc.)
- */
-export const webhooksReceivedTotal = new Counter({
-  name: 'guelaguetza_webhooks_received_total',
-  help: 'Total number of webhooks received',
-  labelNames: ['type', 'status'] as const,
-  registers: [register],
-});
-
-/**
- * Revenue total procesado (en centavos)
- * Labels: type (booking, order)
- */
-export const revenueProcessedTotal = new Counter({
-  name: 'guelaguetza_revenue_processed_cents_total',
-  help: 'Total revenue processed in cents',
-  labelNames: ['type'] as const,
   registers: [register],
 });
 
@@ -211,28 +147,6 @@ export const bookingCreationDuration = new Histogram({
   name: 'guelaguetza_booking_creation_duration_seconds',
   help: 'Duration of booking creation in seconds',
   buckets: [0.1, 0.5, 1, 2, 5],
-  registers: [register],
-});
-
-/**
- * Duracion de creacion de ordenes en segundos
- */
-export const orderCreationDuration = new Histogram({
-  name: 'guelaguetza_order_creation_duration_seconds',
-  help: 'Duration of order creation in seconds',
-  buckets: [0.1, 0.5, 1, 2, 5],
-  registers: [register],
-});
-
-/**
- * Duracion de llamadas a Stripe API en segundos
- * Labels: operation (create_payment_intent, get_status, refund, cancel)
- */
-export const stripeApiDuration = new Histogram({
-  name: 'guelaguetza_stripe_api_duration_seconds',
-  help: 'Duration of Stripe API calls in seconds',
-  labelNames: ['operation'] as const,
-  buckets: [0.1, 0.25, 0.5, 1, 2, 5],
   registers: [register],
 });
 
@@ -284,33 +198,11 @@ export const activeBookingsCount = new Gauge({
 });
 
 /**
- * Cantidad de pagos pendientes
- * Labels: type (booking, order)
- */
-export const pendingPaymentsCount = new Gauge({
-  name: 'guelaguetza_pending_payments_count',
-  help: 'Number of pending payments',
-  labelNames: ['type'] as const,
-  registers: [register],
-});
-
-/**
  * Cantidad de productos con bajo stock (stock < 10)
  */
 export const productsLowStockCount = new Gauge({
   name: 'guelaguetza_products_low_stock_count',
   help: 'Number of products with low stock (< 10 units)',
-  registers: [register],
-});
-
-/**
- * Cantidad de ordenes activas por estado
- * Labels: status
- */
-export const activeOrdersCount = new Gauge({
-  name: 'guelaguetza_active_orders_count',
-  help: 'Number of active orders by status',
-  labelNames: ['status'] as const,
   registers: [register],
 });
 
@@ -391,9 +283,9 @@ export function startTimer(histogram: Histogram<string>): () => void {
  * Timer helper con labels para medir duracion de operaciones
  *
  * @example
- * const timer = startTimerWithLabels(stripeApiDuration);
+ * const timer = startTimerWithLabels(dbQueryDuration);
  * // ... operacion
- * timer({ operation: 'create_payment_intent' });
+ * timer({ operation: 'select' });
  */
 export function startTimerWithLabels<T extends string>(
   histogram: Histogram<T>

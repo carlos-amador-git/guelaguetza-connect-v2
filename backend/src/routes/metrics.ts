@@ -14,9 +14,7 @@ import {
   getMetrics,
   getContentType,
   activeBookingsCount,
-  pendingPaymentsCount,
   productsLowStockCount,
-  activeOrdersCount,
   activeExperiencesCount,
   availableSlotsTotal,
   totalUsersCount,
@@ -25,6 +23,10 @@ import {
 
 // Token opcional para proteger el endpoint de metricas
 const METRICS_TOKEN = process.env.METRICS_TOKEN;
+
+// In-memory cache for metrics to avoid hammering the DB on every scrape
+let metricsCache: { data: string; timestamp: number } | null = null;
+const CACHE_TTL = 60000; // 60 seconds
 
 /**
  * Hook para verificar token de metricas (si esta configurado)
@@ -59,10 +61,7 @@ async function updateDatabaseGauges(prisma: any): Promise<void> {
     // Ejecutar todas las consultas en paralelo
     const [
       activeBookings,
-      pendingBookingPayments,
-      pendingOrderPayments,
       lowStockProducts,
-      ordersByStatus,
       activeExperiences,
       availableSlots,
       totalUsers,
@@ -75,34 +74,11 @@ async function updateDatabaseGauges(prisma: any): Promise<void> {
         },
       }),
 
-      // Pending booking payments
-      prisma.booking.count({
-        where: {
-          status: { in: ['PENDING_PAYMENT', 'PENDING'] },
-        },
-      }),
-
-      // Pending order payments
-      prisma.order.count({
-        where: {
-          status: { in: ['PENDING_PAYMENT', 'PENDING'] },
-        },
-      }),
-
       // Products with low stock (< 10)
       prisma.product.count({
         where: {
           stock: { lt: 10 },
           status: 'ACTIVE',
-        },
-      }),
-
-      // Orders grouped by status
-      prisma.order.groupBy({
-        by: ['status'],
-        _count: { id: true },
-        where: {
-          status: { notIn: ['CANCELLED', 'DELIVERED'] },
         },
       }),
 
@@ -132,19 +108,9 @@ async function updateDatabaseGauges(prisma: any): Promise<void> {
     activeBookingsCount.set(activeBookings);
     totalUsersCount.set(totalUsers);
     totalProductsCount.set(totalActiveProducts);
-    pendingPaymentsCount.set({ type: 'booking' }, pendingBookingPayments);
-    pendingPaymentsCount.set({ type: 'order' }, pendingOrderPayments);
     productsLowStockCount.set(lowStockProducts);
     activeExperiencesCount.set(activeExperiences);
     availableSlotsTotal.set(availableSlots);
-
-    // Reset all order status counts first
-    activeOrdersCount.reset();
-
-    // Set order counts by status
-    for (const group of ordersByStatus) {
-      activeOrdersCount.set({ status: group.status.toLowerCase() }, group._count.id);
-    }
   } catch (error) {
     // Log error but don't fail the metrics endpoint
     console.error('[Metrics] Error updating database gauges:', error);
@@ -168,11 +134,20 @@ const metricsRoutes: FastifyPluginAsync = async (fastify) => {
       onRequest: checkMetricsAuth,
     },
     async (request, reply) => {
+      // Return cached metrics if still fresh
+      if (metricsCache && Date.now() - metricsCache.timestamp < CACHE_TTL) {
+        reply.header('Content-Type', getContentType());
+        return metricsCache.data;
+      }
+
       // Actualizar gauges de base de datos antes de responder
       await updateDatabaseGauges(fastify.prisma);
 
       // Obtener metricas en formato Prometheus
       const metrics = await getMetrics();
+
+      // Store result in cache
+      metricsCache = { data: metrics, timestamp: Date.now() };
 
       reply.header('Content-Type', getContentType());
       return metrics;
@@ -223,7 +198,7 @@ const metricsRoutes: FastifyPluginAsync = async (fastify) => {
    * Retorna estadisticas del cache Redis.
    * Incluye hit rate, misses, y estado de conexion.
    */
-  fastify.get('/metrics/cache', async (request, reply) => {
+  fastify.get('/metrics/cache', { onRequest: checkMetricsAuth }, async (request, reply) => {
     const cacheMetrics = fastify.cache.getMetrics();
     const hitRate = fastify.cache.getHitRate();
     const isReady = fastify.cache.isReady();

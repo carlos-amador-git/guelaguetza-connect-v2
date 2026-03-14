@@ -102,10 +102,6 @@ services:
       CORS_ORIGINS: ${CORS_ORIGINS:?CORS origins required}
       LOG_LEVEL: ${LOG_LEVEL:-warn}
       LOG_QUERIES: false
-      # Stripe (required in production)
-      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:?Stripe secret key required}
-      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY:?Stripe publishable key required}
-      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:?Stripe webhook secret required}
       # External services
       CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-}
       CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-}
@@ -113,7 +109,7 @@ services:
       SENDGRID_API_KEY: ${SENDGRID_API_KEY:-}
       SENDGRID_FROM_EMAIL: ${SENDGRID_FROM_EMAIL:-noreply@guelaguetzaconnect.com}
       # Feature flags
-      ENABLE_PAYMENTS: ${ENABLE_PAYMENTS:-true}
+      ENABLE_PAYMENTS: "false"
       ENABLE_NOTIFICATIONS: ${ENABLE_NOTIFICATIONS:-true}
       ENABLE_ANALYTICS: ${ENABLE_ANALYTICS:-true}
       # Performance
@@ -167,7 +163,6 @@ services:
       args:
         NODE_ENV: production
         VITE_API_URL: ${VITE_API_URL:?API URL required}
-        VITE_STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
     image: guelaguetza-frontend:latest
     container_name: guelaguetza-frontend-prod
     restart: always

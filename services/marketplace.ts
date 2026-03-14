@@ -4,7 +4,6 @@ import { MOCK_PRODUCTS, MOCK_USERS } from './mockData';
 // Types
 export type ProductCategory = 'ARTESANIA' | 'MEZCAL' | 'TEXTIL' | 'CERAMICA' | 'JOYERIA' | 'GASTRONOMIA' | 'OTRO';
 export type ProductStatus = 'DRAFT' | 'ACTIVE' | 'SOLD_OUT' | 'ARCHIVED';
-export type OrderStatus = 'PENDING_PAYMENT' | 'PAYMENT_FAILED' | 'PENDING' | 'PAID' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' | 'REFUNDED';
 
 export interface SellerProfile {
   id: string;
@@ -24,7 +23,6 @@ export interface SellerProfile {
   };
   _count?: {
     products: number;
-    orders: number;
   };
 }
 
@@ -59,71 +57,11 @@ export interface ProductReview {
   };
 }
 
-export interface CartItem {
-  id: string;
-  cartId: string;
-  productId: string;
-  quantity: number;
-  product: Product;
-}
-
-export interface Cart {
-  id: string;
-  userId: string;
-  items: CartItem[];
-  subtotal: number;
-  itemCount: number;
-}
-
-export interface ShippingAddress {
-  name: string;
-  street: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  phone: string;
-  notes?: string;
-}
-
-export interface OrderItem {
-  id: string;
-  orderId: string;
-  productId: string;
-  quantity: number;
-  price: string;
-  product: Product;
-}
-
-export interface Order {
-  id: string;
-  userId: string;
-  sellerId: string;
-  status: OrderStatus;
-  total: string;
-  shippingAddress: ShippingAddress;
-  stripePaymentId: string | null;
-  createdAt: string;
-  items: OrderItem[];
-  seller: SellerProfile;
-  user?: {
-    id: string;
-    nombre: string;
-    apellido: string;
-    email: string;
-  };
-}
-
 export interface ProductQuery {
   category?: ProductCategory;
   minPrice?: number;
   maxPrice?: number;
   search?: string;
-  page?: number;
-  limit?: number;
-}
-
-export interface OrderQuery {
-  status?: OrderStatus;
   page?: number;
   limit?: number;
 }
@@ -278,210 +216,6 @@ export async function getProduct(id: string) {
   }
 }
 
-// Cart (with localStorage fallback for demo mode)
-const CART_STORAGE_KEY = 'guelaguetza_cart';
-
-interface MockCartItem {
-  productId: string;
-  quantity: number;
-}
-
-function getMockCart(): MockCartItem[] {
-  try {
-    const stored = localStorage.getItem(CART_STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveMockCart(items: MockCartItem[]) {
-  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
-}
-
-function buildCartResponse(mockCartItems: MockCartItem[]): Cart {
-  const items: CartItem[] = mockCartItems.map((item, index) => {
-    const mockProduct = MOCK_PRODUCTS.find(p => p.id === item.productId);
-    return {
-      id: `cart_item_${index}`,
-      cartId: 'mock_cart',
-      productId: item.productId,
-      quantity: item.quantity,
-      product: mockProduct ? {
-        id: mockProduct.id,
-        sellerId: mockProduct.seller.id,
-        name: mockProduct.name,
-        description: mockProduct.description,
-        price: String(mockProduct.price),
-        category: mockProduct.category as ProductCategory,
-        status: 'ACTIVE' as ProductStatus,
-        stock: mockProduct.stock,
-        images: [mockProduct.imageUrl],
-        createdAt: new Date().toISOString(),
-        seller: {
-          id: mockProduct.seller.id,
-          userId: mockProduct.seller.id,
-          businessName: mockProduct.seller.nombre + ' Artesanías',
-          description: mockProduct.seller.bio || null,
-          bannerUrl: null,
-          location: mockProduct.seller.region || null,
-          rating: 4.5,
-          reviewCount: 12,
-          verified: true,
-          user: {
-            id: mockProduct.seller.id,
-            nombre: mockProduct.seller.nombre,
-            apellido: mockProduct.seller.apellido,
-            avatar: mockProduct.seller.avatar,
-          },
-        },
-      } : {} as Product,
-    };
-  }).filter(item => item.product.id);
-
-  const subtotal = items.reduce((sum, item) => {
-    return sum + (parseFloat(item.product.price) * item.quantity);
-  }, 0);
-
-  return {
-    id: 'mock_cart',
-    userId: 'mock_user',
-    items,
-    subtotal,
-    itemCount: items.reduce((sum, item) => sum + item.quantity, 0),
-  };
-}
-
-export async function getCart() {
-  try {
-    const response = await api.get<Cart>('/marketplace/cart');
-    return response;
-  } catch {
-    // Return mock cart from localStorage
-    const mockCartItems = getMockCart();
-    return buildCartResponse(mockCartItems);
-  }
-}
-
-export async function addToCart(productId: string, quantity: number = 1) {
-  try {
-    const response = await api.post<Cart>('/marketplace/cart/items', { productId, quantity });
-    return response;
-  } catch {
-    // Add to mock cart in localStorage
-    const mockCartItems = getMockCart();
-    const existingIndex = mockCartItems.findIndex(item => item.productId === productId);
-
-    if (existingIndex >= 0) {
-      mockCartItems[existingIndex].quantity += quantity;
-    } else {
-      mockCartItems.push({ productId, quantity });
-    }
-
-    saveMockCart(mockCartItems);
-    return buildCartResponse(mockCartItems);
-  }
-}
-
-export async function updateCartItem(itemId: string, quantity: number) {
-  try {
-    const response = await api.put<Cart>(`/marketplace/cart/items/${itemId}`, { quantity });
-    return response;
-  } catch {
-    // Update mock cart in localStorage
-    const mockCartItems = getMockCart();
-    const index = parseInt(itemId.replace('cart_item_', ''));
-
-    if (mockCartItems[index]) {
-      mockCartItems[index].quantity = quantity;
-    }
-
-    saveMockCart(mockCartItems);
-    return buildCartResponse(mockCartItems);
-  }
-}
-
-export async function removeFromCart(itemId: string) {
-  try {
-    const response = await api.delete<Cart>(`/marketplace/cart/items/${itemId}`);
-    return response;
-  } catch {
-    // Remove from mock cart in localStorage
-    const mockCartItems = getMockCart();
-    const index = parseInt(itemId.replace('cart_item_', ''));
-
-    if (index >= 0 && index < mockCartItems.length) {
-      mockCartItems.splice(index, 1);
-    }
-
-    saveMockCart(mockCartItems);
-    return buildCartResponse(mockCartItems);
-  }
-}
-
-export async function clearCart() {
-  try {
-    const response = await api.delete<{ message: string }>('/marketplace/cart');
-    return response;
-  } catch {
-    // Clear mock cart in localStorage
-    saveMockCart([]);
-    return { message: 'Cart cleared' };
-  }
-}
-
-// Orders
-export async function checkout(shippingAddress: ShippingAddress) {
-  const response = await api.post<Array<{ order: Order; clientSecret: string | null }>>('/marketplace/checkout', {
-    shippingAddress,
-  });
-  return response;
-}
-
-export async function getMyOrders(query: OrderQuery = {}) {
-  const params = new URLSearchParams();
-  Object.entries(query).forEach(([key, value]) => {
-    if (value !== undefined) params.append(key, String(value));
-  });
-
-  const response = await api.get<{
-    orders: Order[];
-    pagination: {
-      page: number;
-      limit: number;
-      total: number;
-      totalPages: number;
-    };
-  }>(`/marketplace/orders?${params}`);
-  return response;
-}
-
-export async function getOrder(id: string) {
-  const response = await api.get<Order>(`/marketplace/orders/${id}`);
-  return response;
-}
-
-export async function retryOrderPayment(id: string) {
-  try {
-    // En el futuro, esto llamará al backend para reintentar el pago
-    // Por ahora, creamos un nuevo intento de pago con Stripe
-    const response = await api.post<{
-      order: Order;
-      clientSecret: string | null;
-      paymentIntentId?: string;
-    }>(`/marketplace/orders/${id}/retry-payment`, {});
-    return response;
-  } catch (error) {
-    // Si el backend no tiene el endpoint aún, devolvemos un error descriptivo
-    throw new Error('El sistema de reintentos de pago no está disponible. Por favor, crea una nueva orden.');
-  }
-}
-
-export async function cancelOrder(id: string) {
-  const response = await api.post<Order>(`/marketplace/orders/${id}/cancel`, {});
-  return response;
-}
-
 // Seller
 export async function getSellerProfile() {
   const response = await api.get<SellerProfile | null>('/marketplace/seller/profile');
@@ -512,26 +246,6 @@ export const CATEGORY_LABELS: Record<ProductCategory, string> = {
   JOYERIA: 'Joyeria',
   GASTRONOMIA: 'Gastronomia',
   OTRO: 'Otro',
-};
-
-export const STATUS_LABELS: Record<OrderStatus, string> = {
-  PENDING: 'Pendiente',
-  PAID: 'Pagado',
-  PROCESSING: 'Procesando',
-  SHIPPED: 'Enviado',
-  DELIVERED: 'Entregado',
-  CANCELLED: 'Cancelado',
-  REFUNDED: 'Reembolsado',
-};
-
-export const STATUS_COLORS: Record<OrderStatus, string> = {
-  PENDING: '#FCD34D',
-  PAID: '#34D399',
-  PROCESSING: '#60A5FA',
-  SHIPPED: '#A78BFA',
-  DELIVERED: '#10B981',
-  CANCELLED: '#EF4444',
-  REFUNDED: '#F97316',
 };
 
 export function formatPrice(price: string | number): string {

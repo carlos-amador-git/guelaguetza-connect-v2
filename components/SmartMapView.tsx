@@ -1,3 +1,7 @@
+// TODO: API integration required. This component currently renders 100% hardcoded POI and
+// itinerary data (OAXACA_LOCATIONS constant, static transport options, etc.). When the
+// map/POI API is available, replace hardcoded location arrays with calls to the poi service
+// and load real data in useEffect. Until then, the component is demo-only.
 import React, { useState, useEffect } from 'react';
 import {
   ArrowLeft,

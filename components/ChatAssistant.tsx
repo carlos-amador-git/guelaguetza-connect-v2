@@ -461,7 +461,7 @@ Puedo ayudarte con:
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             placeholder="Pregunta sobre la Guelaguetza..."
-            className="flex-1 bg-white/20 text-white placeholder-white/50 border-0 rounded-full px-4 py-3 text-sm focus:ring-2 focus:ring-oaxaca-yellow outline-none transition"
+            className="flex-1 bg-white/20 text-white placeholder-white/70 border-0 rounded-full px-4 py-3 text-sm focus:ring-2 focus:ring-oaxaca-yellow outline-none transition"
           />
           <button
             onClick={() => handleSend()}

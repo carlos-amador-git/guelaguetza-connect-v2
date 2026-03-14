@@ -142,15 +142,17 @@ const HomeView: React.FC<HomeViewProps> = ({ setView }) => {
         {/* Carousel Controls */}
         <button
           onClick={prevHero}
+          aria-label="Imagen anterior"
           className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-black/30 hover:bg-black/50 rounded-full text-white transition z-10 hidden md:block"
         >
-          <ChevronLeft size={24} />
+          <ChevronLeft size={24} aria-hidden="true" />
         </button>
         <button
           onClick={nextHero}
+          aria-label="Imagen siguiente"
           className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-black/30 hover:bg-black/50 rounded-full text-white transition z-10 hidden md:block"
         >
-          <ChevronRight size={24} />
+          <ChevronRight size={24} aria-hidden="true" />
         </button>
 
         {/* Carousel Indicators */}
@@ -227,7 +229,7 @@ const HomeView: React.FC<HomeViewProps> = ({ setView }) => {
             className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 md:p-5 flex items-center justify-between border-l-4 border-oaxaca-yellow cursor-pointer hover:shadow-lg transition active:scale-[0.98]"
           >
             <div>
-              <h3 className="font-bold text-gray-800 dark:text-gray-100 md:text-lg">{t('next_event')}</h3>
+              <h2 className="font-bold text-gray-800 dark:text-gray-100 md:text-lg">{t('next_event')}</h2>
               <p className="text-sm md:text-base text-gray-500 dark:text-gray-400">{t('parade')} • 17:00</p>
             </div>
             <button className="bg-oaxaca-purple text-white p-2 md:p-3 rounded-full hover:bg-opacity-90 transition">
@@ -507,9 +509,10 @@ const HomeView: React.FC<HomeViewProps> = ({ setView }) => {
                     setShowGastroModal(false);
                     setSelectedGastroCategory('ALL');
                   }}
+                  aria-label="Cerrar"
                   className="p-1 rounded-full hover:bg-white/20 transition"
                 >
-                  <X size={24} />
+                  <X size={24} aria-hidden="true" />
                 </button>
               </div>
 
@@ -648,7 +651,7 @@ const HomeView: React.FC<HomeViewProps> = ({ setView }) => {
                 }}
                 className="w-full py-3 bg-oaxaca-pink text-white rounded-xl font-medium hover:bg-opacity-90 transition flex items-center justify-center gap-2"
               >
-                <MessageCircle size={18} />
+                <MessageCircle size={18} aria-hidden="true" />
                 {t('ask_guelabot')}
               </button>
             </div>
@@ -659,11 +662,12 @@ const HomeView: React.FC<HomeViewProps> = ({ setView }) => {
       {/* Floating GuelaBot Button - Mobile Only */}
       <button
         onClick={() => setView(ViewState.CHAT)}
+        aria-label={t('ask_guelabot_short')}
         className="md:hidden fixed bottom-24 right-4 bg-oaxaca-purple text-white p-4 rounded-full shadow-lg hover:bg-oaxaca-purple/90 transition-all hover:scale-110 active:scale-95 z-40 group"
       >
         <div className="relative">
-          <MessageCircle size={24} />
-          <Sparkles size={12} className="absolute -top-1 -right-1 text-oaxaca-yellow" />
+          <MessageCircle size={24} aria-hidden="true" />
+          <Sparkles size={12} className="absolute -top-1 -right-1 text-oaxaca-yellow" aria-hidden="true" />
         </div>
         <span className="absolute right-full mr-2 top-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 text-xs font-medium px-3 py-1.5 rounded-lg shadow-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
           {t('ask_guelabot_short')}

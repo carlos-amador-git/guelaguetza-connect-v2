@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { login, register } from './helpers/auth';
-import { REGULAR_USER, NEW_USER_DATA, STRIPE_TEST_CARDS, TIMEOUTS } from './fixtures/test-users';
+import { REGULAR_USER, NEW_USER_DATA, TIMEOUTS } from './fixtures/test-users';
 
 test.describe('Booking Flow - Reservar Experiencia', () => {
   test.beforeEach(async ({ page }) => {

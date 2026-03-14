@@ -275,7 +275,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, setView, onUserPro
       <nav
         className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 pb-safe z-50 transition-colors"
         role="navigation"
-        aria-label="Navegacion principal"
+        aria-label="Navegación principal"
       >
         {/* Minimum height of 64px ensures 44px touch targets with some padding */}
         <div className="flex justify-around items-center h-16 sm:h-[68px]">
@@ -324,7 +324,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, setView, onUserPro
               haptics.tap();
               setShowMoreMenu(true);
             }}
-            aria-label="Mas opciones"
+            aria-label="Más opciones"
             aria-expanded={showMoreMenu}
             aria-haspopup="dialog"
             className={`flex flex-col items-center justify-center w-full h-full min-h-[48px] transition-colors duration-200 focus-visible:bg-gray-100 dark:focus-visible:bg-gray-800 focus-visible:outline-none ${isMoreActive ? 'text-oaxaca-pink' : 'text-gray-500 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'

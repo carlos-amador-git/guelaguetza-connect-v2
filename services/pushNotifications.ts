@@ -1,6 +1,6 @@
 // Push Notifications Service
 
-const API_BASE = 'http://localhost:3005/api';
+const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:3001') + '/api';
 
 // VAPID public key - this should match the one in the backend
 // Generate with: npx web-push generate-vapid-keys
@@ -84,7 +84,7 @@ export async function subscribeToPush(token?: string): Promise<PushSubscriptionD
     // Send subscription to backend
     await sendSubscriptionToServer(data, token);
 
-    console.log('[Push] Successfully subscribed');
+    if (import.meta.env.DEV) console.log('[Push] Successfully subscribed');
     return data;
   } catch (error) {
     console.error('[Push] Error subscribing:', error);
@@ -99,7 +99,7 @@ export async function unsubscribeFromPush(): Promise<boolean> {
 
     if (subscription) {
       await subscription.unsubscribe();
-      console.log('[Push] Successfully unsubscribed');
+      if (import.meta.env.DEV) console.log('[Push] Successfully unsubscribed');
       return true;
     }
 

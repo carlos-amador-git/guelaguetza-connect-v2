@@ -153,32 +153,6 @@ describe('NotificationHandler', () => {
     });
   });
 
-  describe('onOrderCreated', () => {
-    it('should create notification for seller', async () => {
-      const event = createEvent(EventTypes.ORDER_CREATED, {
-        orderId: 'order-123',
-        userId: 'buyer-123',
-        userName: 'Juan Comprador',
-        sellerId: 'seller-123',
-        sellerName: 'María Vendedora',
-        total: 1500,
-        itemCount: 3,
-        items: [],
-      });
-
-      await (handler as any).onOrderCreated(event);
-
-      expect(mockCreate).toHaveBeenCalledWith({
-        data: expect.objectContaining({
-          userId: 'seller-123',
-          type: 'SYSTEM',
-          title: 'Nueva orden',
-          body: expect.stringContaining('3 producto(s)'),
-        }),
-      });
-    });
-  });
-
   describe('error handling', () => {
     it('should throw error if notification creation fails', async () => {
       mockCreate.mockRejectedValueOnce(new Error('Database error'));

@@ -18,18 +18,13 @@ export enum ViewState {
   EVENT_DETAIL = 'EVENT_DETAIL',
   ANALYTICS = 'ANALYTICS',
   ADMIN = 'ADMIN',
-  ADMIN_ADVANCED = 'ADMIN_ADVANCED',
   COMMUNITIES = 'COMMUNITIES',
   COMMUNITY_DETAIL = 'COMMUNITY_DETAIL',
   // Role-specific dashboards
-  GUIDE_DASHBOARD = 'GUIDE_DASHBOARD',
   SELLER_DASHBOARD = 'SELLER_DASHBOARD',
-  // Phase 6: Marketplace
+  // Phase 6: Vitrina Digital (showcase only)
   TIENDA = 'TIENDA',
   PRODUCT_DETAIL = 'PRODUCT_DETAIL',
-  CART = 'CART',
-  CHECKOUT = 'CHECKOUT',
-  ORDERS = 'ORDERS',
   WISHLIST = 'WISHLIST',
   // Phase 6: Streaming
   STREAMS = 'STREAMS',

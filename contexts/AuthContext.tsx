@@ -36,13 +36,14 @@ interface RegisterData {
   faceData?: string;
 }
 
-const API_BASE = 'http://localhost:3005/api';
+const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:3001') + '/api';
 
-// Demo users for testing without login
+// Demo users for testing without a real backend.
+// Passwords are intentionally omitted — demo mode sets user state directly
+// without sending credentials to any endpoint.
 const DEMO_USERS = {
   user: {
     email: 'demo@guelaguetza.mx',
-    password: 'password123',
     nombre: 'Usuario Demo',
     apellido: 'Oaxaca',
     region: 'Valles Centrales',
@@ -50,7 +51,6 @@ const DEMO_USERS = {
   },
   seller: {
     email: 'artesano@guelaguetza.mx',
-    password: 'password123',
     nombre: 'Maria',
     apellido: 'Gonzalez',
     region: 'Valles Centrales',
@@ -58,7 +58,6 @@ const DEMO_USERS = {
   },
   admin: {
     email: 'admin@guelaguetza.mx',
-    password: 'admin123',
     nombre: 'Admin',
     apellido: 'Guelaguetza',
     region: 'Valles Centrales',
@@ -99,31 +98,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setIsLoading(false);
   }, []);
 
-  // Function to login as demo user
+  // Function to login as demo user.
+  // Demo mode sets user state directly — no passwords are sent to any endpoint.
   const loginAsDemo = async (userType: 'user' | 'seller' | 'admin' = 'user'): Promise<boolean> => {
     const demoUser = DEMO_USERS[userType];
 
-    try {
-      // Try backend first
-      const res = await fetch(`${API_BASE}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: demoUser.email, password: demoUser.password }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setToken(data.token);
-        setUser(data.user);
-        setIsDemoMode(true);
-        localStorage.setItem('auto_demo_mode', 'true');
-        return true;
-      }
-    } catch {
-      // Backend unavailable, use local demo mode
-    }
-
-    // Fallback to local demo mode
+    // Always use local demo mode — no credentials to send
     const demoToken = `demo_${userType}_${Date.now()}`;
     const demoUserData: User = {
       id: `demo_${userType}_id`,
@@ -172,13 +152,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } catch (error) {
       console.error('Login error:', error);
 
-      // Demo mode: Check local registered users when backend unavailable
+      // Demo mode: Check local registered users (by email only) when backend unavailable.
+      // Passwords are never stored in localStorage — match by email as demo identity only.
       const savedUsers = localStorage.getItem('demo_users');
       if (savedUsers) {
         const users = JSON.parse(savedUsers);
-        const foundUser = users.find((u: { email: string; password: string }) =>
-          u.email === email && u.password === password
-        );
+        const foundUser = users.find((u: { email: string }) => u.email === email);
         if (foundUser) {
           const demoToken = 'demo_token_' + Date.now();
           setToken(demoToken);
@@ -198,6 +177,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  // Face authentication: calls a dedicated backend endpoint — no hardcoded password bypass.
+  // In demo mode (no backend), sets user state directly from locally registered face data.
   const loginWithFace = async (faceImage: string): Promise<boolean> => {
     // Get all users with face data from local storage (demo mode)
     const savedFaces = localStorage.getItem('registered_faces');
@@ -211,15 +192,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const matchedFace = faces.find(f => f.faceData);
 
       if (matchedFace) {
-        // Try backend first
+        // Try backend face-auth endpoint (sends face image, not a password)
         try {
-          const res = await fetch(`${API_BASE}/auth/login`, {
+          const res = await fetch(`${API_BASE}/auth/face-login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               email: matchedFace.email,
-              password: 'face_auth_bypass',
-              faceAuth: true
+              faceImage,
             }),
           });
 
@@ -233,7 +213,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           // Backend unavailable, use demo mode
         }
 
-        // Demo mode: find user in local storage
+        // Demo mode: find user in local storage and set state directly
         const savedUsers = localStorage.getItem('demo_users');
         if (savedUsers) {
           const users = JSON.parse(savedUsers);
@@ -295,11 +275,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } catch (error) {
       console.error('Register error:', error);
 
-      // Demo mode: Save user locally when backend unavailable
+      // Demo mode: Save user locally when backend unavailable.
+      // Passwords are never stored in localStorage.
       const newUser = {
         id: 'demo_' + Date.now(),
         email: data.email,
-        password: data.password,
         nombre: data.nombre,
         apellido: data.apellido,
         region: data.region,

@@ -5,7 +5,6 @@ import cookie from '@fastify/cookie';
 import helmet from '@fastify/helmet';
 import multipart from '@fastify/multipart';
 import websocket from '@fastify/websocket';
-import rawBody from 'fastify-raw-body';
 import {
   serializerCompiler,
   validatorCompiler,
@@ -36,7 +35,6 @@ import poiRoutes from './routes/poi.js';
 import marketplaceRoutes from './routes/marketplace.js';
 import uploadRoutes from './routes/upload.js';
 import streamsRoutes from './routes/streams.js';
-import webhooksRoutes from './routes/webhooks.js';
 import metricsRoutes from './routes/metrics.js';
 import { ZodError } from 'zod';
 import {
@@ -64,7 +62,12 @@ export async function buildApp(): Promise<FastifyInstance> {
 
   // Register security headers
   await app.register(helmet, {
-    contentSecurityPolicy: false, // Disable CSP for API-only backend
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'none'"],
+        frameAncestors: ["'none'"],
+      },
+    },
   });
 
   // Register response compression
@@ -86,17 +89,13 @@ export async function buildApp(): Promise<FastifyInstance> {
     },
   });
 
-  // Register raw body support for webhooks (must be before routes)
-  await app.register(rawBody, {
-    field: 'rawBody',
-    global: false, // Solo para rutas que lo soliciten
-    encoding: 'utf8',
-    runFirst: true,
-  });
-
   // Register cookie support for httpOnly refresh tokens
+  const cookieSecret = process.env.COOKIE_SECRET || process.env.JWT_SECRET;
+  if (!cookieSecret && process.env.NODE_ENV === 'production') {
+    throw new Error('COOKIE_SECRET or JWT_SECRET environment variable required in production');
+  }
   await app.register(cookie, {
-    secret: process.env.COOKIE_SECRET || process.env.JWT_SECRET || 'dev-cookie-secret',
+    secret: cookieSecret || 'dev-cookie-secret',
   });
 
   // Register WebSocket support
@@ -165,9 +164,6 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(uploadRoutes, { prefix: '/api/upload' });
   await app.register(streamsRoutes, { prefix: '/api/streams' });
 
-  // Webhooks (must NOT use auth middleware)
-  await app.register(webhooksRoutes, { prefix: '/api/webhooks' });
-
   // Metrics endpoint (no prefix, accessed as /metrics)
   await app.register(metricsRoutes);
 
@@ -224,7 +220,6 @@ export async function buildApp(): Promise<FastifyInstance> {
         marketplace: '/api/marketplace',
         upload: '/api/upload',
         streams: '/api/streams',
-        webhooks: '/api/webhooks',
         metrics: '/metrics',
       },
     };

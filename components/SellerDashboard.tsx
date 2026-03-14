@@ -1,3 +1,7 @@
+// TODO: API integration required. This component currently renders 100% mock/hardcoded data
+// (MOCK_SELLER_PRODUCTS, MOCK_SELLER_EXPERIENCES, inline stats). When the seller API is
+// available, replace the local constants below with calls to the marketplace/bookings
+// services and load data in a useEffect. Until then, the component is demo-only.
 import React, { useState } from 'react';
 import {
   ArrowLeft,
@@ -12,17 +16,14 @@ import {
   ChevronRight,
   Plus,
   Bell,
-  DollarSign,
   TrendingUp,
   CheckCircle,
   Phone,
   Camera,
-  ShoppingBag,
   Ticket,
   Edit,
   Trash2,
   Eye,
-  Send,
 } from 'lucide-react';
 import { ViewState } from '../types';
 import { useAuth } from '../contexts/AuthContext';
@@ -33,7 +34,7 @@ interface SellerDashboardProps {
   onNavigate?: (view: ViewState) => void;
 }
 
-type TabType = 'products' | 'experiences' | 'orders' | 'stats';
+type TabType = 'products' | 'experiences' | 'stats';
 
 // Mock data for seller products - Productos oaxaquenos reales
 const MOCK_SELLER_PRODUCTS = [
@@ -42,7 +43,6 @@ const MOCK_SELLER_PRODUCTS = [
     name: 'Alebrije Jaguar Multicolor',
     price: 1850,
     stock: 3,
-    sales: 47,
     views: 1234,
     image: '/images/product_alebrije.png',
     category: 'ARTESANIA',
@@ -53,7 +53,6 @@ const MOCK_SELLER_PRODUCTS = [
     name: 'Mezcal Tobala Reposado 750ml',
     price: 1200,
     stock: 8,
-    sales: 89,
     views: 2456,
     image: '/images/product_mezcal.png',
     category: 'MEZCAL',
@@ -64,7 +63,6 @@ const MOCK_SELLER_PRODUCTS = [
     name: 'Rebozo de Seda San Juan',
     price: 3500,
     stock: 2,
-    sales: 12,
     views: 567,
     image: '/images/product_textiles.png',
     category: 'TEXTIL',
@@ -75,7 +73,6 @@ const MOCK_SELLER_PRODUCTS = [
     name: 'Jarra Barro Negro Dona Rosa',
     price: 950,
     stock: 6,
-    sales: 34,
     views: 890,
     image: '/images/product_barro_negro.png',
     category: 'CERAMICA',
@@ -86,7 +83,6 @@ const MOCK_SELLER_PRODUCTS = [
     name: 'Chocolate de Metate 1kg',
     price: 280,
     stock: 25,
-    sales: 156,
     views: 3421,
     image: '/images/product_chocolate.png',
     category: 'GASTRONOMIA',
@@ -97,7 +93,6 @@ const MOCK_SELLER_PRODUCTS = [
     name: 'Huipil Bordado a Mano',
     price: 4200,
     stock: 1,
-    sales: 8,
     views: 445,
     image: '/images/product_textiles.png',
     category: 'TEXTIL',
@@ -108,7 +103,6 @@ const MOCK_SELLER_PRODUCTS = [
     name: 'Mezcal Espadin Joven 750ml',
     price: 450,
     stock: 15,
-    sales: 203,
     views: 4567,
     image: '/images/product_mezcal.png',
     category: 'MEZCAL',
@@ -119,7 +113,6 @@ const MOCK_SELLER_PRODUCTS = [
     name: 'Tapete Zapoteco 2x3m',
     price: 8500,
     stock: 2,
-    sales: 5,
     views: 234,
     image: '/images/product_textiles.png',
     category: 'TEXTIL',
@@ -138,7 +131,6 @@ const MOCK_SELLER_EXPERIENCES = [
     maxGuests: 8,
     location: 'Santiago Matatlan',
     status: 'confirmed' as const,
-    earnings: 9000,
     pricePerPerson: 1500,
     duration: '6 horas',
     image: '/images/product_mezcal.png',
@@ -152,7 +144,6 @@ const MOCK_SELLER_EXPERIENCES = [
     maxGuests: 6,
     location: 'San Martin Tilcajete',
     status: 'confirmed' as const,
-    earnings: 3800,
     pricePerPerson: 950,
     duration: '4 horas',
     image: '/images/product_alebrije.png',
@@ -166,7 +157,6 @@ const MOCK_SELLER_EXPERIENCES = [
     maxGuests: 6,
     location: 'Centro Historico',
     status: 'pending' as const,
-    earnings: 4750,
     pricePerPerson: 950,
     duration: '5 horas',
     image: '/images/poi_santo_domingo.png',
@@ -180,7 +170,6 @@ const MOCK_SELLER_EXPERIENCES = [
     maxGuests: 10,
     location: 'Hierve el Agua',
     status: 'confirmed' as const,
-    earnings: 12000,
     pricePerPerson: 1500,
     duration: '10 horas',
     image: '/images/poi_monte_alban.png',
@@ -194,106 +183,9 @@ const MOCK_SELLER_EXPERIENCES = [
     maxGuests: 8,
     location: 'Teotitlan del Valle',
     status: 'pending' as const,
-    earnings: 2400,
     pricePerPerson: 800,
     duration: '5 horas',
     image: '/images/product_textiles.png',
-  },
-];
-
-// Mock orders - Pedidos y reservas variados
-const MOCK_ORDERS = [
-  {
-    id: 'ORD-2847',
-    type: 'product' as const,
-    item: 'Alebrije Jaguar Multicolor',
-    customer: 'Sarah Johnson',
-    avatar: 'sarah/100',
-    amount: 1850,
-    status: 'pending' as const,
-    date: 'Hace 15 min',
-    location: 'CDMX, Mexico',
-  },
-  {
-    id: 'RES-1923',
-    type: 'experience' as const,
-    item: 'Ruta del Mezcal',
-    customer: 'Michael Chen',
-    avatar: 'michael/100',
-    amount: 4500,
-    guests: 3,
-    status: 'confirmed' as const,
-    date: 'Hoy 9:00 AM',
-    location: 'Hotel Quinta Real',
-  },
-  {
-    id: 'ORD-2845',
-    type: 'product' as const,
-    item: 'Mezcal Tobala Reposado x2',
-    customer: 'Ana Martinez',
-    avatar: 'ana2/100',
-    amount: 2400,
-    status: 'shipped' as const,
-    date: 'Ayer 18:00',
-    location: 'Guadalajara, JAL',
-  },
-  {
-    id: 'RES-1920',
-    type: 'experience' as const,
-    item: 'Taller de Alebrijes',
-    customer: 'Emma Wilson',
-    avatar: 'emma2/100',
-    amount: 1900,
-    guests: 2,
-    status: 'pending' as const,
-    date: 'Manana 10:00 AM',
-    location: 'Airbnb Centro',
-  },
-  {
-    id: 'ORD-2843',
-    type: 'product' as const,
-    item: 'Chocolate de Metate 1kg x5',
-    customer: 'Roberto Sanchez',
-    avatar: 'roberto/100',
-    amount: 1400,
-    status: 'shipped' as const,
-    date: 'Hace 2 dias',
-    location: 'Monterrey, NL',
-  },
-  {
-    id: 'RES-1918',
-    type: 'experience' as const,
-    item: 'Clase de Cocina Oaxaquena',
-    customer: 'Lisa Thompson',
-    avatar: 'lisa/100',
-    amount: 4750,
-    guests: 5,
-    status: 'confirmed' as const,
-    date: 'Dom 26, 11:00 AM',
-    location: 'Hotel Parador',
-  },
-  {
-    id: 'ORD-2840',
-    type: 'product' as const,
-    item: 'Huipil Bordado a Mano',
-    customer: 'Jennifer Davis',
-    avatar: 'jennifer/100',
-    amount: 4200,
-    status: 'pending' as const,
-    date: 'Hace 1 hora',
-    location: 'Austin, TX, USA',
-  },
-  {
-    id: 'RES-1915',
-    type: 'experience' as const,
-    item: 'Tour Hierve el Agua',
-    customer: 'David Kim',
-    avatar: 'david/100',
-    amount: 3000,
-    guests: 2,
-    status: 'confirmed' as const,
-    date: 'Sab 25, 7:00 AM',
-    location: 'Holiday Inn Express',
   },
 ];
 
@@ -322,12 +214,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ onBack, onNavigate })
   // Calculate stats
   const totalProducts = MOCK_SELLER_PRODUCTS.length;
   const totalExperiences = MOCK_SELLER_EXPERIENCES.length;
-  const todayEarnings = MOCK_SELLER_EXPERIENCES
-    .filter(e => e.date === 'Hoy')
-    .reduce((acc, e) => acc + e.earnings, 0);
-  const pendingOrders = MOCK_ORDERS.filter(o => o.status === 'pending').length;
-  const totalSales = MOCK_SELLER_PRODUCTS.reduce((acc, p) => acc + p.sales, 0);
-  const monthlyEarnings = 28450; // Mock monthly earnings
+  const totalViews = MOCK_SELLER_PRODUCTS.reduce((acc, p) => acc + p.views, 0);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -335,8 +222,6 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ onBack, onNavigate })
         return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
       case 'pending':
         return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400';
-      case 'shipped':
-        return 'bg-oaxaca-sky-light text-oaxaca-sky dark:bg-oaxaca-sky/20 dark:text-oaxaca-sky';
       default:
         return 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300';
     }
@@ -346,7 +231,6 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ onBack, onNavigate })
     switch (status) {
       case 'confirmed': return 'Confirmado';
       case 'pending': return 'Pendiente';
-      case 'shipped': return 'Enviado';
       default: return status;
     }
   };
@@ -365,18 +249,13 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ onBack, onNavigate })
                 <ArrowLeft size={20} />
               </button>
               <div>
-                <h1 className="font-bold text-xl">Panel de Vendedor</h1>
-                <p className="text-xs text-white/70">Bienvenido, {user?.nombre || 'Vendedor'}</p>
+                <h1 className="font-bold text-xl">Panel de Artesano</h1>
+                <p className="text-xs text-white/70">Bienvenido, {user?.nombre || 'Artesano'}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <button className="p-2 hover:bg-white/10 rounded-full transition relative">
+              <button className="p-2 hover:bg-white/10 rounded-full transition">
                 <Bell size={18} />
-                {pendingOrders > 0 && (
-                  <span className="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center font-bold">
-                    {pendingOrders}
-                  </span>
-                )}
               </button>
               {onNavigate && (
                 <button
@@ -390,16 +269,11 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ onBack, onNavigate })
           </div>
 
           {/* Quick Stats */}
-          <div className="grid grid-cols-4 gap-2 mb-4">
+          <div className="grid grid-cols-3 gap-2 mb-4">
             <div className="bg-white/10 backdrop-blur rounded-xl p-2 text-center">
               <Package size={16} className="mx-auto mb-0.5" />
               <div className="text-lg font-bold">{totalProducts}</div>
               <div className="text-[10px] text-white/70">Productos</div>
-            </div>
-            <div className="bg-white/10 backdrop-blur rounded-xl p-2 text-center">
-              <DollarSign size={16} className="mx-auto mb-0.5" />
-              <div className="text-lg font-bold">${(monthlyEarnings / 1000).toFixed(1)}k</div>
-              <div className="text-[10px] text-white/70">Ventas</div>
             </div>
             <div className="bg-white/10 backdrop-blur rounded-xl p-2 text-center">
               <Ticket size={16} className="mx-auto mb-0.5" />
@@ -416,10 +290,9 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ onBack, onNavigate })
           {/* Tabs */}
           <div className="flex gap-1 overflow-x-auto">
             {([
-              { key: 'products', label: 'Productos' },
+              { key: 'products', label: 'Vitrina' },
               { key: 'experiences', label: 'Experiencias' },
-              { key: 'orders', label: 'Pedidos' },
-              { key: 'stats', label: 'Stats' },
+              { key: 'stats', label: 'Estadisticas' },
             ] as const).map((tab) => (
               <button
                 key={tab.key}
@@ -431,11 +304,6 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ onBack, onNavigate })
                 }`}
               >
                 {tab.label}
-                {tab.key === 'orders' && pendingOrders > 0 && (
-                  <span className="ml-1 bg-red-500 text-white text-[10px] px-1.5 rounded-full">
-                    {pendingOrders}
-                  </span>
-                )}
               </button>
             ))}
           </div>
@@ -461,11 +329,11 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ onBack, onNavigate })
           ))}
         </div>
 
-        {/* Products Tab */}
+        {/* Products (Vitrina) Tab */}
         {activeTab === 'products' && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="font-semibold text-gray-900 dark:text-white">Mis Productos</h2>
+              <h2 className="font-semibold text-gray-900 dark:text-white">Mi Vitrina</h2>
               <button className="text-sm text-oaxaca-yellow dark:text-oaxaca-yellow font-medium flex items-center gap-1">
                 <Plus size={16} /> Agregar
               </button>
@@ -530,12 +398,8 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ onBack, onNavigate })
                       Stock: {product.stock}
                     </span>
                     <span className="flex items-center gap-1">
-                      <ShoppingBag size={12} />
-                      {product.sales} ventas
-                    </span>
-                    <span className="flex items-center gap-1">
                       <Eye size={12} />
-                      {product.views}
+                      {product.views} vistas
                     </span>
                   </div>
                 </div>
@@ -587,7 +451,6 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ onBack, onNavigate })
                         {exp.duration}
                       </span>
                       <span className="flex items-center gap-1">
-                        <DollarSign size={12} />
                         ${exp.pricePerPerson}/persona
                       </span>
                     </div>
@@ -621,11 +484,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ onBack, onNavigate })
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-2 border-t dark:border-gray-700">
-                    <div className="text-sm">
-                      <span className="text-gray-500">Ganancias: </span>
-                      <span className="font-semibold text-green-600">${exp.earnings.toLocaleString()}</span>
-                    </div>
+                  <div className="flex items-center justify-end pt-2 border-t dark:border-gray-700">
                     <div className="flex gap-2">
                       <button className="p-2 bg-gray-100 dark:bg-gray-700 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition">
                         <Phone size={14} className="text-gray-600 dark:text-gray-300" />
@@ -636,122 +495,6 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ onBack, onNavigate })
                       <button className="p-2 bg-oaxaca-purple rounded-full hover:bg-oaxaca-purple/90 transition">
                         <Edit size={14} className="text-white" />
                       </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Orders Tab */}
-        {activeTab === 'orders' && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="font-semibold text-gray-900 dark:text-white">Pedidos y Reservas</h2>
-              {pendingOrders > 0 && (
-                <span className="text-xs bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 px-2 py-1 rounded-full">
-                  {pendingOrders} pendientes
-                </span>
-              )}
-            </div>
-
-            {/* Order Type Filter Pills */}
-            <div className="flex gap-2">
-              <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-oaxaca-yellow text-white">
-                Todos ({MOCK_ORDERS.length})
-              </span>
-              <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
-                Productos ({MOCK_ORDERS.filter(o => o.type === 'product').length})
-              </span>
-              <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
-                Experiencias ({MOCK_ORDERS.filter(o => o.type === 'experience').length})
-              </span>
-            </div>
-
-            {MOCK_ORDERS.map((order) => (
-              <div
-                key={order.id}
-                className={`bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm ${
-                  order.status === 'pending' ? 'border-l-4 border-yellow-500' : ''
-                } ${order.status === 'shipped' ? 'border-l-4 border-oaxaca-sky' : ''}`}
-              >
-                <div className="flex items-start gap-3">
-                  {order.avatar ? (
-                    <img
-                      src={order.avatar}
-                      alt={order.customer}
-                      className="w-12 h-12 rounded-full object-cover border-2 border-gray-100 dark:border-gray-700"
-                    />
-                  ) : (
-                    <GradientPlaceholder variant="community" className="w-12 h-12 rounded-full border-2 border-gray-100 dark:border-gray-700" alt={order.customer} />
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="font-medium text-gray-900 dark:text-white text-sm">
-                          {order.customer}
-                        </h3>
-                        <p className="text-[10px] text-gray-400 font-mono">{order.id}</p>
-                      </div>
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${getStatusColor(order.status)}`}>
-                        {getStatusLabel(order.status)}
-                      </span>
-                    </div>
-
-                    <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                      {order.type === 'product' ? (
-                        <div className="flex items-center gap-2 text-sm">
-                          <Package size={14} className="text-oaxaca-yellow" />
-                          <span className="text-gray-700 dark:text-gray-200">{order.item}</span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2 text-sm">
-                          <Ticket size={14} className="text-oaxaca-purple" />
-                          <span className="text-gray-700 dark:text-gray-200">{order.item}</span>
-                          <span className="text-xs bg-oaxaca-purple-light dark:bg-oaxaca-purple/20 text-oaxaca-purple dark:text-oaxaca-pink px-1.5 py-0.5 rounded">
-                            {order.guests} persona{order.guests !== 1 ? 's' : ''}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Location */}
-                    <div className="flex items-center gap-1 mt-2 text-xs text-gray-500 dark:text-gray-400">
-                      <MapPin size={12} />
-                      <span>{order.location}</span>
-                    </div>
-
-                    <div className="flex items-center justify-between mt-3 pt-2 border-t dark:border-gray-700">
-                      <div className="flex items-center gap-3">
-                        <span className="text-sm font-bold text-oaxaca-yellow dark:text-oaxaca-yellow">
-                          ${order.amount.toLocaleString()}
-                        </span>
-                        <span className="text-xs text-gray-400">{order.date}</span>
-                      </div>
-                      <div className="flex gap-1">
-                        <button className="p-1.5 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">
-                          <MessageCircle size={12} className="text-gray-600 dark:text-gray-300" />
-                        </button>
-                        {order.status === 'pending' && order.type === 'product' && (
-                          <button className="p-1.5 bg-oaxaca-sky rounded-lg hover:bg-oaxaca-sky/90 transition flex items-center gap-1">
-                            <Send size={12} className="text-white" />
-                            <span className="text-[10px] text-white font-medium pr-1">Enviar</span>
-                          </button>
-                        )}
-                        {order.status === 'pending' && order.type === 'experience' && (
-                          <button className="p-1.5 bg-green-500 rounded-lg hover:bg-green-600 transition flex items-center gap-1">
-                            <CheckCircle size={12} className="text-white" />
-                            <span className="text-[10px] text-white font-medium pr-1">Confirmar</span>
-                          </button>
-                        )}
-                        {order.status === 'shipped' && (
-                          <span className="px-2 py-1 bg-oaxaca-sky-light dark:bg-oaxaca-sky/20 text-oaxaca-sky dark:text-oaxaca-sky text-[10px] rounded-lg flex items-center gap-1">
-                            <Send size={10} />
-                            En camino
-                          </span>
-                        )}
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -777,12 +520,12 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ onBack, onNavigate })
               <div className="text-xs text-gray-500">Basado en 89 resenas (productos + experiencias)</div>
             </div>
 
-            {/* Monthly Stats Grid */}
+            {/* Stats Grid */}
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm text-center">
                 <Package size={20} className="mx-auto mb-1 text-oaxaca-yellow" />
-                <div className="text-2xl font-bold text-gray-900 dark:text-white">{totalSales}</div>
-                <div className="text-xs text-gray-500">Productos vendidos</div>
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">{totalProducts}</div>
+                <div className="text-xs text-gray-500">Productos en vitrina</div>
                 <div className="text-[10px] text-green-500 flex items-center justify-center gap-1 mt-1">
                   <TrendingUp size={10} />
                   +15% vs anterior
@@ -791,7 +534,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ onBack, onNavigate })
               <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm text-center">
                 <Ticket size={20} className="mx-auto mb-1 text-oaxaca-purple" />
                 <div className="text-2xl font-bold text-gray-900 dark:text-white">47</div>
-                <div className="text-xs text-gray-500">Experiencias</div>
+                <div className="text-xs text-gray-500">Experiencias ofrecidas</div>
                 <div className="text-[10px] text-green-500 flex items-center justify-center gap-1 mt-1">
                   <TrendingUp size={10} />
                   +12% vs anterior
@@ -800,7 +543,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ onBack, onNavigate })
               <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm text-center">
                 <Users size={20} className="mx-auto mb-1 text-oaxaca-sky" />
                 <div className="text-2xl font-bold text-gray-900 dark:text-white">284</div>
-                <div className="text-xs text-gray-500">Clientes atendidos</div>
+                <div className="text-xs text-gray-500">Visitantes atendidos</div>
                 <div className="text-[10px] text-green-500 flex items-center justify-center gap-1 mt-1">
                   <TrendingUp size={10} />
                   +18% vs anterior
@@ -808,32 +551,12 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ onBack, onNavigate })
               </div>
               <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm text-center">
                 <Eye size={20} className="mx-auto mb-1 text-oaxaca-pink" />
-                <div className="text-2xl font-bold text-gray-900 dark:text-white">2.3k</div>
-                <div className="text-xs text-gray-500">Vistas totales</div>
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">{(totalViews / 1000).toFixed(1)}k</div>
+                <div className="text-xs text-gray-500">Vistas en vitrina</div>
                 <div className="text-[10px] text-green-500 flex items-center justify-center gap-1 mt-1">
                   <TrendingUp size={10} />
                   +24% vs anterior
                 </div>
-              </div>
-            </div>
-
-            {/* Monthly Earnings */}
-            <div className="bg-gradient-to-r from-oaxaca-yellow to-oaxaca-pink rounded-xl p-4 text-white">
-              <div className="text-sm text-white/80 mb-1">Ganancias del mes</div>
-              <div className="text-3xl font-bold">${monthlyEarnings.toLocaleString()}</div>
-              <div className="flex items-center gap-4 mt-2 text-sm">
-                <div className="flex items-center gap-1 text-white/80">
-                  <Package size={14} />
-                  <span>Productos: $18,450</span>
-                </div>
-                <div className="flex items-center gap-1 text-white/80">
-                  <Ticket size={14} />
-                  <span>Experiencias: $10,000</span>
-                </div>
-              </div>
-              <div className="flex items-center gap-1 text-sm text-white/80 mt-2">
-                <TrendingUp size={14} />
-                <span>+23% comparado con mes anterior</span>
               </div>
             </div>
 
@@ -843,11 +566,11 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ onBack, onNavigate })
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <CheckCircle size={18} className="text-green-500" />
-                  <span className="text-sm text-gray-600 dark:text-gray-300">Vendedor Verificado</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-300">Artesano Verificado</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <CheckCircle size={18} className="text-green-500" />
-                  <span className="text-sm text-gray-600 dark:text-gray-300">100+ Ventas completadas</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-300">Vitrina con 8 productos</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <CheckCircle size={18} className="text-green-500" />

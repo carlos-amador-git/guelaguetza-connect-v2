@@ -1,7 +1,7 @@
 // Admin Service - API calls for dashboard and user management
 import { MOCK_ADMIN_STATS, MOCK_USERS } from './mockData';
 
-const API_BASE = 'http://localhost:3005/api';
+const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:3001') + '/api';
 
 // ==========================================
 // Advanced Dashboard Types
@@ -323,17 +323,18 @@ function buildQueryParams(filters: AdminFilters): string {
   return params.toString();
 }
 
-export async function getAdvancedStats(filters: AdminFilters, token: string): Promise<AdvancedAdminStats> {
+export async function getAdvancedStats(filters: AdminFilters, token: string): Promise<AdvancedAdminStats & { isUsingMockData?: boolean }> {
   try {
     const queryParams = buildQueryParams(filters);
     const response = await fetch(`${API_BASE}/admin/advanced/stats?${queryParams}`, {
       headers: { 'Authorization': `Bearer ${token}` },
     });
-    if (!response.ok) throw new Error('API unavailable');
+    if (!response.ok) throw new Error(`API unavailable: ${response.status}`);
     const data = await response.json();
     return data.data;
-  } catch {
-    return generateAdvancedMockStats(filters);
+  } catch (err) {
+    if (import.meta.env.DEV) console.warn('[admin] getAdvancedStats falling back to mock data:', err);
+    return { ...generateAdvancedMockStats(filters), isUsingMockData: true };
   }
 }
 
@@ -343,10 +344,11 @@ export async function getAdvancedTrends(filters: AdminFilters, token: string): P
     const response = await fetch(`${API_BASE}/admin/advanced/trends?${queryParams}`, {
       headers: { 'Authorization': `Bearer ${token}` },
     });
-    if (!response.ok) throw new Error('API unavailable');
+    if (!response.ok) throw new Error(`API unavailable: ${response.status}`);
     const data = await response.json();
     return data.data;
-  } catch {
+  } catch (err) {
+    if (import.meta.env.DEV) console.warn('[admin] getAdvancedTrends falling back to mock data:', err);
     return generateAdvancedMockTrends(filters);
   }
 }
@@ -357,10 +359,11 @@ export async function getAdvancedRegionData(filters: AdminFilters, token: string
     const response = await fetch(`${API_BASE}/admin/advanced/regions?${queryParams}`, {
       headers: { 'Authorization': `Bearer ${token}` },
     });
-    if (!response.ok) throw new Error('API unavailable');
+    if (!response.ok) throw new Error(`API unavailable: ${response.status}`);
     const data = await response.json();
     return data.data;
-  } catch {
+  } catch (err) {
+    if (import.meta.env.DEV) console.warn('[admin] getAdvancedRegionData falling back to mock data:', err);
     return generateAdvancedMockRegionData();
   }
 }
@@ -371,10 +374,11 @@ export async function getAdvancedCategoryDistribution(filters: AdminFilters, tok
     const response = await fetch(`${API_BASE}/admin/advanced/categories?${queryParams}`, {
       headers: { 'Authorization': `Bearer ${token}` },
     });
-    if (!response.ok) throw new Error('API unavailable');
+    if (!response.ok) throw new Error(`API unavailable: ${response.status}`);
     const data = await response.json();
     return data.data;
-  } catch {
+  } catch (err) {
+    if (import.meta.env.DEV) console.warn('[admin] getAdvancedCategoryDistribution falling back to mock data:', err);
     return generateAdvancedMockCategoryDistribution();
   }
 }
@@ -385,10 +389,11 @@ export async function getStatusDistribution(filters: AdminFilters, token: string
     const response = await fetch(`${API_BASE}/admin/advanced/status-distribution?${queryParams}`, {
       headers: { 'Authorization': `Bearer ${token}` },
     });
-    if (!response.ok) throw new Error('API unavailable');
+    if (!response.ok) throw new Error(`API unavailable: ${response.status}`);
     const data = await response.json();
     return data.data;
-  } catch {
+  } catch (err) {
+    if (import.meta.env.DEV) console.warn('[admin] getStatusDistribution falling back to mock data:', err);
     return generateMockStatusDistribution(filters);
   }
 }
@@ -399,10 +404,11 @@ export async function getAdvancedRevenueData(filters: AdminFilters, token: strin
     const response = await fetch(`${API_BASE}/admin/advanced/revenue?${queryParams}`, {
       headers: { 'Authorization': `Bearer ${token}` },
     });
-    if (!response.ok) throw new Error('API unavailable');
+    if (!response.ok) throw new Error(`API unavailable: ${response.status}`);
     const data = await response.json();
     return data.data;
-  } catch {
+  } catch (err) {
+    if (import.meta.env.DEV) console.warn('[admin] getAdvancedRevenueData falling back to mock data:', err);
     return generateAdvancedMockRevenueData(filters);
   }
 }
@@ -413,10 +419,11 @@ export async function getAdvancedTopExperiences(filters: AdminFilters, token: st
     const response = await fetch(`${API_BASE}/admin/advanced/top-experiences?${queryParams}`, {
       headers: { 'Authorization': `Bearer ${token}` },
     });
-    if (!response.ok) throw new Error('API unavailable');
+    if (!response.ok) throw new Error(`API unavailable: ${response.status}`);
     const data = await response.json();
     return data.data;
-  } catch {
+  } catch (err) {
+    if (import.meta.env.DEV) console.warn('[admin] getAdvancedTopExperiences falling back to mock data:', err);
     return generateAdvancedMockTopExperiences();
   }
 }
@@ -427,10 +434,11 @@ export async function getAdvancedTopSellers(filters: AdminFilters, token: string
     const response = await fetch(`${API_BASE}/admin/advanced/top-sellers?${queryParams}`, {
       headers: { 'Authorization': `Bearer ${token}` },
     });
-    if (!response.ok) throw new Error('API unavailable');
+    if (!response.ok) throw new Error(`API unavailable: ${response.status}`);
     const data = await response.json();
     return data.data;
-  } catch {
+  } catch (err) {
+    if (import.meta.env.DEV) console.warn('[admin] getAdvancedTopSellers falling back to mock data:', err);
     return generateAdvancedMockTopSellers();
   }
 }
@@ -441,10 +449,11 @@ export async function getRecentActivity(filters: AdminFilters, token: string): P
     const response = await fetch(`${API_BASE}/admin/advanced/recent-activity?${queryParams}`, {
       headers: { 'Authorization': `Bearer ${token}` },
     });
-    if (!response.ok) throw new Error('API unavailable');
+    if (!response.ok) throw new Error(`API unavailable: ${response.status}`);
     const data = await response.json();
     return data.data;
-  } catch {
+  } catch (err) {
+    if (import.meta.env.DEV) console.warn('[admin] getRecentActivity falling back to mock data:', err);
     return generateMockRecentActivity(filters);
   }
 }
@@ -516,7 +525,7 @@ export interface ReportsData {
 }
 
 // Get dashboard stats
-export async function getDashboardStats(token: string): Promise<DashboardStats> {
+export async function getDashboardStats(token: string): Promise<DashboardStats & { isUsingMockData?: boolean }> {
   try {
     const response = await fetch(`${API_BASE}/admin/dashboard`, {
       headers: {
@@ -525,14 +534,15 @@ export async function getDashboardStats(token: string): Promise<DashboardStats> 
     });
 
     if (!response.ok) {
-      throw new Error('Error al obtener dashboard');
+      throw new Error(`Error al obtener dashboard: ${response.status}`);
     }
 
     const data = await response.json();
     return data.data;
-  } catch {
-    // Return mock data when backend is unavailable
-    return MOCK_ADMIN_STATS;
+  } catch (err) {
+    // Return mock data when backend is unavailable; flag so callers can detect this
+    if (import.meta.env.DEV) console.warn('[admin] getDashboardStats falling back to mock data:', err);
+    return { ...MOCK_ADMIN_STATS, isUsingMockData: true };
   }
 }
 
@@ -569,8 +579,9 @@ export async function getUsers(
 
     const data = await response.json();
     return data.data;
-  } catch {
+  } catch (err) {
     // Return mock data when backend is unavailable
+    if (import.meta.env.DEV) console.warn('[admin] getUsers falling back to mock data:', err);
     let filteredUsers = MOCK_USERS.map(u => ({
       ...u,
       bannedAt: null,

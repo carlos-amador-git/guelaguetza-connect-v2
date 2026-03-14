@@ -116,7 +116,7 @@ export function connectWebSocket(token: string): void {
   ws = new WebSocket(wsUrl);
 
   ws.onopen = () => {
-    console.log('WebSocket connected');
+    if (import.meta.env.DEV) console.log('[notifications] WebSocket connected');
     if (reconnectTimeout) {
       clearTimeout(reconnectTimeout);
       reconnectTimeout = null;
@@ -140,7 +140,7 @@ export function connectWebSocket(token: string): void {
   };
 
   ws.onclose = () => {
-    console.log('WebSocket disconnected');
+    if (import.meta.env.DEV) console.log('[notifications] WebSocket disconnected');
     ws = null;
 
     // Try to reconnect after 5 seconds

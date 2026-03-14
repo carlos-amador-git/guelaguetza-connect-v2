@@ -28,10 +28,13 @@ const NotificationBell: React.FC<NotificationBellProps> = ({ onClick }) => {
     // Connect WebSocket
     connectWebSocket(token);
 
-    // Get initial count
+    // Get initial count; failure is non-critical — badge simply stays at 0
     getUnreadCount(token)
       .then(setUnreadCount)
-      .catch(console.error);
+      .catch((err) => {
+        if (import.meta.env.DEV) console.warn('[NotificationBell] Could not fetch unread count:', err);
+        setUnreadCount(0);
+      });
 
     // Listen for real-time updates
     const unsubNotification = onNotification((notification: Notification) => {

@@ -217,7 +217,7 @@ const LandingView: React.FC<LandingViewProps> = ({ onUserSelected }) => {
               <span>Guelaguetza 2025</span>
             </div>
           </div>
-          <p className="text-white/40 text-[10px] sm:text-xs">
+          <p className="text-white/70 text-[10px] sm:text-xs">
             {t('celebrating_culture')}
           </p>
         </footer>

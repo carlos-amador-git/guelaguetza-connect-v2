@@ -3,14 +3,11 @@ import {
   ArrowLeft,
   Search,
   Filter,
-  ShoppingCart,
   Star,
-  Package,
   Heart,
 } from 'lucide-react';
 import {
   getProducts,
-  getCart,
   getWishlistCount,
   Product,
   ProductCategory,
@@ -37,14 +34,12 @@ export default function TiendaView({ onNavigate, onBack }: TiendaViewProps) {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState<ProductCategory | ''>('');
   const [showFilters, setShowFilters] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
     loadProducts();
-    loadCartCount();
     loadWishlistCount();
   }, [category]);
 
@@ -74,15 +69,6 @@ export default function TiendaView({ onNavigate, onBack }: TiendaViewProps) {
     }
   };
 
-  const loadCartCount = async () => {
-    try {
-      const cart = await getCart();
-      setCartCount(cart.itemCount);
-    } catch {
-      // Not logged in or error
-    }
-  };
-
   const loadWishlistCount = async () => {
     try {
       const count = await getWishlistCount();
@@ -100,7 +86,6 @@ export default function TiendaView({ onNavigate, onBack }: TiendaViewProps) {
   const handleRefresh = useCallback(async () => {
     setPage(1);
     await loadProducts();
-    await loadCartCount();
     await loadWishlistCount();
   }, [category, search]);
 
@@ -120,7 +105,7 @@ export default function TiendaView({ onNavigate, onBack }: TiendaViewProps) {
               </button>
               <img src="/images/ui/icon_market.png" alt="Tienda" className="w-10 h-10 md:w-12 md:h-12 object-contain drop-shadow-md" />
               <div>
-                <h1 className="text-xl md:text-2xl font-bold">Tienda</h1>
+                <h1 className="text-xl md:text-2xl font-bold">Vitrina Digital</h1>
                 <p className="text-sm md:text-base text-white/80">Artesanias y productos oaxaquenos</p>
               </div>
             </div>
@@ -133,17 +118,6 @@ export default function TiendaView({ onNavigate, onBack }: TiendaViewProps) {
                 {wishlistCount > 0 && (
                   <span className="absolute -top-1 -right-1 w-5 h-5 bg-oaxaca-pink text-white text-xs rounded-full flex items-center justify-center">
                     {wishlistCount}
-                  </span>
-                )}
-              </button>
-              <button
-                onClick={() => onNavigate(ViewState.CART)}
-                className="relative p-2 md:p-3 bg-white/20 rounded-full hover:bg-white/30 transition"
-              >
-                <ShoppingCart className="w-6 h-6" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                    {cartCount}
                   </span>
                 )}
               </button>
@@ -247,17 +221,6 @@ export default function TiendaView({ onNavigate, onBack }: TiendaViewProps) {
           </div>
         </div>
       </PullToRefresh>
-
-      {/* Orders Button */}
-      <div className="p-4 bg-white dark:bg-gray-800 border-t dark:border-gray-700 md:hidden">
-        <button
-          onClick={() => onNavigate(ViewState.ORDERS)}
-          className="w-full py-3 border-2 border-oaxaca-yellow text-oaxaca-yellow rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-oaxaca-yellow-light transition"
-        >
-          <Package className="w-5 h-5" />
-          Mis Pedidos
-        </button>
-      </div>
     </div>
   );
 }
@@ -285,11 +248,6 @@ function ProductCard({ product, onClick }: ProductCardProps) {
         ) : (
           <GradientPlaceholder variant="shop" className="w-full h-full" alt={product.name} />
         )}
-        {product.stock === 0 && (
-          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-            <span className="text-white font-medium">Agotado</span>
-          </div>
-        )}
         <div className="absolute top-2 left-2">
           <span className="px-2 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-medium text-oaxaca-yellow">
             {CATEGORY_LABELS[product.category]}
@@ -311,7 +269,7 @@ function ProductCard({ product, onClick }: ProductCardProps) {
             )}
           </div>
           <span className="text-xs text-gray-500 dark:text-gray-400">
-            {product.stock > 0 ? `${product.stock} disponibles` : 'Agotado'}
+            {product.seller.businessName}
           </span>
         </div>
       </div>

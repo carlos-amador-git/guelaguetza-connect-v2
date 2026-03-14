@@ -7,18 +7,14 @@ import {
   Users,
   Ticket,
   Star,
-  RefreshCw,
 } from 'lucide-react';
 import LoadingSpinner from './ui/LoadingSpinner';
-import LoadingButton from './ui/LoadingButton';
 import GradientPlaceholder from './ui/GradientPlaceholder';
 import { useToast } from './ui/Toast';
-import PaymentErrorModal from './ui/PaymentErrorModal';
 import {
   getMyBookings,
   cancelBooking,
   createExperienceReview,
-  retryBookingPayment,
   Booking,
   BookingStatus,
   formatDuration,
@@ -27,7 +23,6 @@ import {
 import {
   BookingStatusBadge,
   canCancelBooking,
-  canRetryBookingPayment,
   canReviewBooking,
 } from './ui/StatusBadge';
 import { ViewState } from '../types';
@@ -49,9 +44,6 @@ export default function MyBookingsView({ onNavigate, onBack }: MyBookingsViewPro
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewComment, setReviewComment] = useState('');
   const [reviewLoading, setReviewLoading] = useState(false);
-  const [showPaymentErrorModal, setShowPaymentErrorModal] = useState(false);
-  const [paymentErrorBooking, setPaymentErrorBooking] = useState<Booking | null>(null);
-  const [retryingPayment, setRetryingPayment] = useState(false);
 
   useEffect(() => {
     loadBookings();
@@ -108,41 +100,8 @@ export default function MyBookingsView({ onNavigate, onBack }: MyBookingsViewPro
     }
   };
 
-  const handleRetryPayment = async (booking: Booking) => {
-    setPaymentErrorBooking(booking);
-    setShowPaymentErrorModal(true);
-  };
-
-  const handleRetryPaymentConfirm = async () => {
-    if (!paymentErrorBooking) return;
-
-    try {
-      setRetryingPayment(true);
-      const result = await retryBookingPayment(paymentErrorBooking.id);
-
-      // Si tenemos un clientSecret, redirigir a Stripe Checkout
-      if (result.clientSecret) {
-        toast.info('Redirigiendo a pago', 'Serás redirigido a completar el pago');
-        setShowPaymentErrorModal(false);
-        // TODO: Integrar con Stripe Checkout
-        // window.location.href = `/checkout?payment_intent=${result.clientSecret}`;
-      } else {
-        toast.success('Pago procesado', 'Tu pago ha sido procesado exitosamente');
-        setShowPaymentErrorModal(false);
-        loadBookings(); // Recargar la lista
-      }
-    } catch (error) {
-      console.error('Error retrying payment:', error);
-      toast.error('Error al procesar pago', error instanceof Error ? error.message : 'No se pudo procesar el pago');
-    } finally {
-      setRetryingPayment(false);
-    }
-  };
-
   const tabs: { key: TabStatus; label: string }[] = [
     { key: 'all', label: 'Todas' },
-    { key: 'PENDING_PAYMENT', label: 'Procesando' },
-    { key: 'PAYMENT_FAILED', label: 'Error pago' },
     { key: 'PENDING', label: 'Pendientes' },
     { key: 'CONFIRMED', label: 'Confirmadas' },
     { key: 'COMPLETED', label: 'Completadas' },
@@ -213,7 +172,6 @@ export default function MyBookingsView({ onNavigate, onBack }: MyBookingsViewPro
                   setSelectedBooking(booking);
                   setShowReviewModal(true);
                 }}
-                onRetryPayment={() => handleRetryPayment(booking)}
                 onClick={() => onNavigate(ViewState.EXPERIENCE_DETAIL, { experienceId: booking.experienceId })}
               />
             ))}
@@ -221,21 +179,6 @@ export default function MyBookingsView({ onNavigate, onBack }: MyBookingsViewPro
         )}
         </div>
       </div>
-
-      {/* Payment Error Modal */}
-      {showPaymentErrorModal && paymentErrorBooking && (
-        <PaymentErrorModal
-          isOpen={showPaymentErrorModal}
-          onClose={() => {
-            setShowPaymentErrorModal(false);
-            setPaymentErrorBooking(null);
-          }}
-          onRetry={handleRetryPaymentConfirm}
-          bookingId={paymentErrorBooking.id}
-          amount={formatPrice(paymentErrorBooking.totalPrice)}
-          retrying={retryingPayment}
-        />
-      )}
 
       {/* Review Modal */}
       {showReviewModal && selectedBooking && (
@@ -305,24 +248,12 @@ interface BookingCardProps {
   booking: Booking;
   onCancel: () => void;
   onReview: () => void;
-  onRetryPayment: () => void;
   onClick: () => void;
 }
 
-function BookingCard({ booking, onCancel, onReview, onRetryPayment, onClick }: BookingCardProps) {
-  const [isRetrying, setIsRetrying] = useState(false);
+function BookingCard({ booking, onCancel, onReview, onClick }: BookingCardProps) {
   const experience = booking.experience;
   const slot = booking.timeSlot;
-
-  const handleRetryPayment = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsRetrying(true);
-    try {
-      await onRetryPayment();
-    } finally {
-      setIsRetrying(false);
-    }
-  };
 
   return (
     <article className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden transition-shadow hover:shadow-md">
@@ -389,38 +320,12 @@ function BookingCard({ booking, onCancel, onReview, onRetryPayment, onClick }: B
 
         {/* Total */}
         <div className="flex justify-between items-center mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-100 dark:border-gray-700">
-          <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Total pagado</span>
+          <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Total reservado</span>
           <span className="text-base sm:text-lg font-bold text-oaxaca-purple dark:text-oaxaca-purple">{formatPrice(booking.totalPrice)}</span>
         </div>
 
         {/* Actions */}
         <div className="flex gap-2 mt-3 sm:mt-4">
-          {/* Estado: PAYMENT_FAILED - Boton de reintentar pago */}
-          {canRetryBookingPayment(booking.status) && (
-            <LoadingButton
-              onClick={handleRetryPayment}
-              isLoading={isRetrying}
-              variant="primary"
-              className="flex-1 py-2 sm:py-2.5 bg-oaxaca-purple text-white rounded-lg font-medium flex items-center justify-center gap-1.5 sm:gap-2 hover:bg-oaxaca-purple/90 transition-colors disabled:opacity-50 min-h-[40px] sm:min-h-[44px] text-xs sm:text-sm"
-              aria-label="Reintentar pago"
-            >
-              <RefreshCw className="w-3.5 sm:w-4 h-3.5 sm:h-4" aria-hidden="true" />
-              {isRetrying ? 'Procesando...' : 'Reintentar'}
-            </LoadingButton>
-          )}
-
-          {/* Estado: PENDING_PAYMENT - Mostrar estado de procesamiento */}
-          {booking.status === 'PENDING_PAYMENT' && (
-            <div
-              className="flex-1 py-2 sm:py-2.5 bg-oaxaca-yellow-light dark:bg-oaxaca-yellow/20 border border-oaxaca-yellow/30 dark:border-oaxaca-yellow/30 text-oaxaca-yellow dark:text-oaxaca-yellow rounded-lg font-medium flex items-center justify-center gap-1.5 sm:gap-2 min-h-[40px] sm:min-h-[44px] text-xs sm:text-sm"
-              role="status"
-              aria-live="polite"
-            >
-              <RefreshCw className="w-3.5 sm:w-4 h-3.5 sm:h-4 animate-spin" aria-hidden="true" />
-              <span>Procesando...</span>
-            </div>
-          )}
-
           {/* Estado: PENDING o CONFIRMED - Boton de cancelar */}
           {canCancelBooking(booking.status) && (
             <button

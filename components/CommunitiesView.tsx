@@ -131,9 +131,10 @@ const CommunitiesView: React.FC<CommunitiesViewProps> = ({ onCommunityClick, onB
           {isAuthenticated && (
             <button
               onClick={() => setShowCreateModal(true)}
+              aria-label="Crear comunidad"
               className="p-2 bg-white/20 hover:bg-white/30 rounded-full text-white transition-colors"
             >
-              <Plus size={24} />
+              <Plus size={24} aria-hidden="true" />
             </button>
           )}
         </div>
@@ -153,14 +154,16 @@ const CommunitiesView: React.FC<CommunitiesViewProps> = ({ onCommunityClick, onB
         <div className="mt-4 relative">
           <Search
             size={18}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-white/70"
+            aria-hidden="true"
           />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar comunidades..."
-            className="w-full pl-10 pr-4 py-2.5 bg-white/20 text-white placeholder-white/50 rounded-full focus:outline-none focus:ring-2 focus:ring-white/50"
+            aria-label="Buscar comunidades"
+            className="w-full pl-10 pr-4 py-2.5 bg-white/20 text-white placeholder-white/70 rounded-full focus:outline-none focus:ring-2 focus:ring-white/50"
           />
         </div>
 
@@ -246,9 +249,10 @@ const CommunitiesView: React.FC<CommunitiesViewProps> = ({ onCommunityClick, onB
               </h2>
               <button
                 onClick={() => setShowCreateModal(false)}
+                aria-label="Cerrar"
                 className="p-2 text-gray-400 hover:text-gray-600"
               >
-                <X size={20} />
+                <X size={20} aria-hidden="true" />
               </button>
             </div>
 

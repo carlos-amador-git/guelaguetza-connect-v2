@@ -7,7 +7,7 @@ export function registerServiceWorker(): void {
         const registration = await navigator.serviceWorker.register('/sw.js', {
           scope: '/',
         });
-        console.log('[PWA] Service Worker registered:', registration.scope);
+        if (import.meta.env.DEV) console.log('[PWA] Service Worker registered:', registration.scope);
 
         // Listen for updates
         registration.addEventListener('updatefound', () => {

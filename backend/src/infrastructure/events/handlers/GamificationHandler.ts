@@ -3,7 +3,6 @@ import {
   DomainEvent,
   EventTypes,
   BookingCompletedPayload,
-  OrderDeliveredPayload,
   ReviewCreatedPayload,
   StoryCreatedPayload,
   UserFollowedPayload,
@@ -23,7 +22,6 @@ import {
 // XP Awards por acción
 const XP_REWARDS = {
   COMPLETE_BOOKING: 50,
-  RECEIVE_ORDER: 30,
   CREATE_REVIEW: 20,
   RECEIVE_REVIEW: 10,
   CREATE_STORY: 15,
@@ -57,9 +55,6 @@ export class GamificationHandler {
     // Booking Events
     eventBus.on(EventTypes.BOOKING_COMPLETED, this.onBookingCompleted.bind(this), 'GamificationHandler.onBookingCompleted');
 
-    // Marketplace Events
-    eventBus.on(EventTypes.ORDER_DELIVERED, this.onOrderDelivered.bind(this), 'GamificationHandler.onOrderDelivered');
-
     // Review Events
     eventBus.on(EventTypes.REVIEW_CREATED, this.onReviewCreated.bind(this), 'GamificationHandler.onReviewCreated');
 
@@ -86,33 +81,6 @@ export class GamificationHandler {
 
     // Check for booking-related badges
     await this.checkBookingBadges(userId);
-  }
-
-  private async onOrderDelivered(event: DomainEvent<OrderDeliveredPayload>): Promise<void> {
-    const { userId, sellerId } = event.payload;
-
-    // Award XP to buyer
-    await this.awardXP(
-      userId,
-      XP_REWARDS.RECEIVE_ORDER,
-      'RECEIVE_ORDER',
-      'ORDER',
-      event.payload.orderId,
-      event.correlationId
-    );
-
-    // Award XP to seller
-    await this.awardXP(
-      sellerId,
-      XP_REWARDS.RECEIVE_ORDER,
-      'SELL_ORDER',
-      'ORDER',
-      event.payload.orderId,
-      event.correlationId
-    );
-
-    // Check for marketplace badges
-    await this.checkMarketplaceBadges(sellerId);
   }
 
   private async onReviewCreated(event: DomainEvent<ReviewCreatedPayload>): Promise<void> {
@@ -344,25 +312,6 @@ export class GamificationHandler {
     if (completedCount >= 5) await this.unlockBadge(userId, 'EXPLORER');
     if (completedCount >= 10) await this.unlockBadge(userId, 'ADVENTURER');
     if (completedCount >= 25) await this.unlockBadge(userId, 'CULTURE_LOVER');
-  }
-
-  private async checkMarketplaceBadges(sellerId: string): Promise<void> {
-    const sellerProfile = await this.prisma.sellerProfile.findUnique({
-      where: { userId: sellerId },
-      include: {
-        orders: {
-          where: { status: 'DELIVERED' },
-        },
-      },
-    });
-
-    if (!sellerProfile) return;
-
-    const salesCount = sellerProfile.orders.length;
-
-    if (salesCount >= 1) await this.unlockBadge(sellerId, 'FIRST_SALE');
-    if (salesCount >= 10) await this.unlockBadge(sellerId, 'MERCHANT');
-    if (salesCount >= 50) await this.unlockBadge(sellerId, 'MASTER_CRAFTSMAN');
   }
 
   private async checkStoryBadges(userId: string): Promise<void> {

@@ -74,37 +74,6 @@ export const NEW_USER_DATA = {
 };
 
 /**
- * Datos de tarjeta de prueba de Stripe
- * @see https://stripe.com/docs/testing
- */
-export const STRIPE_TEST_CARDS = {
-  SUCCESS: {
-    number: '4242424242424242',
-    expiry: '12/34',
-    cvc: '123',
-    zip: '12345'
-  },
-  DECLINED: {
-    number: '4000000000000002',
-    expiry: '12/34',
-    cvc: '123',
-    zip: '12345'
-  },
-  INSUFFICIENT_FUNDS: {
-    number: '4000000000009995',
-    expiry: '12/34',
-    cvc: '123',
-    zip: '12345'
-  },
-  REQUIRES_AUTHENTICATION: {
-    number: '4000002500003155',
-    expiry: '12/34',
-    cvc: '123',
-    zip: '12345'
-  }
-};
-
-/**
  * Datos de prueba para experiencias
  */
 export const TEST_EXPERIENCE = {
@@ -136,5 +105,5 @@ export const TIMEOUTS = {
   MEDIUM: 5000,
   LONG: 10000,
   API_CALL: 15000,
-  PAYMENT: 30000
+  API_LONG: 30000
 };

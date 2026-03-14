@@ -12,7 +12,6 @@ export { TokenBlacklistService, getTokenBlacklistService } from './token-blackli
 export { BookingService } from './booking.service.js';
 export { MarketplaceService } from './marketplace.service.js';
 export { CacheService, getCacheService } from './cache.service.js';
-export { StripeService, stripeService } from './stripe.service.js';
 export { UploadService } from './upload.service.js';
 
 // Features
@@ -36,6 +35,3 @@ export { StoryService } from './story.service.js';
 export { SocialService } from './social.service.js';
 export { TransportService } from './transport.service.js';
 
-// Event-aware wrappers
-export { BookingWithEventsService } from './booking-with-events.service.js';
-export { MarketplaceWithEventsService } from './marketplace-with-events.service.js';

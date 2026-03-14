@@ -1,75 +1,21 @@
-// Haptic Feedback Service using Navigator.vibrate API
-// Provides tactile feedback for user interactions
-
-export type HapticPattern = 'light' | 'medium' | 'success' | 'error' | 'warning' | 'selection';
-
-// Check if vibration is supported
-const isSupported = (): boolean => {
-  return typeof navigator !== 'undefined' && 'vibrate' in navigator;
-};
-
-// Vibration patterns (in milliseconds)
-// For arrays: [vibrate, pause, vibrate, pause, ...]
-const patterns: Record<HapticPattern, number | number[]> = {
-  light: 10,           // Quick tap - buttons, toggles
-  medium: 25,          // Standard tap - navigation, actions
-  success: [10, 50, 10], // Double pulse - likes, confirmations
-  error: [50, 30, 50, 30, 50], // Triple pulse - errors, warnings
-  warning: [30, 20, 30], // Double warning pulse
-  selection: 15,       // Selection feedback
-};
-
 /**
- * Trigger haptic feedback
- * @param pattern - The haptic pattern to use
- * @returns boolean - Whether the vibration was triggered
+ * Haptic Feedback Service
+ *
+ * Thin wrapper over utils/haptics — single source of truth.
+ * All haptic logic lives in utils/haptics.ts.
  */
-export const haptic = (pattern: HapticPattern = 'light'): boolean => {
-  if (!isSupported()) {
-    return false;
-  }
+export { triggerHaptic, cancelHaptic, supportsHaptics, useHaptics, withHaptic, createHapticHandler, hapticFeedback } from '../utils/haptics';
 
-  try {
-    const vibrationPattern = patterns[pattern];
-    return navigator.vibrate(vibrationPattern);
-  } catch {
-    return false;
-  }
-};
+// Convenience object matching the legacy API used by Navigation, Onboarding, etc.
+import { triggerHaptic } from '../utils/haptics';
 
-/**
- * Stop any ongoing vibration
- */
-export const stopHaptic = (): void => {
-  if (isSupported()) {
-    navigator.vibrate(0);
-  }
-};
-
-/**
- * Custom vibration pattern
- * @param pattern - Array of vibration/pause durations in ms
- */
-export const customHaptic = (pattern: number[]): boolean => {
-  if (!isSupported()) {
-    return false;
-  }
-
-  try {
-    return navigator.vibrate(pattern);
-  } catch {
-    return false;
-  }
-};
-
-// Convenience functions for common interactions
-export const haptics = {
-  tap: () => haptic('light'),
-  click: () => haptic('medium'),
-  success: () => haptic('success'),
-  error: () => haptic('error'),
-  warning: () => haptic('warning'),
-  selection: () => haptic('selection'),
+const haptics = {
+  tap: () => triggerHaptic('light'),
+  click: () => triggerHaptic('impact'),
+  success: () => triggerHaptic('success'),
+  error: () => triggerHaptic('error'),
+  warning: () => triggerHaptic('warning'),
+  selection: () => triggerHaptic('selection'),
 };
 
 export default haptics;

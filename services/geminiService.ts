@@ -5,9 +5,15 @@ let client: GoogleGenAI | null = null;
 
 const getClient = () => {
   if (!client) {
-    // In a real production app, this key should be proxied or handled securely.
-    // Assuming process.env.API_KEY is available as per instructions.
-    client = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    // TODO: This key should be proxied through the backend, not used directly in the client.
+    // For now, read from VITE_GEMINI_API_KEY in .env (only set in local dev, never committed).
+    // Do NOT use process.env here — that requires a vite `define` entry which embeds secrets
+    // into the bundle at build time.
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error('VITE_GEMINI_API_KEY is not set. Configure a backend proxy for production.');
+    }
+    client = new GoogleGenAI({ apiKey });
   }
   return client;
 };
@@ -15,7 +21,7 @@ const getClient = () => {
 export const sendMessageToGemini = async (message: string, history: { role: string; parts: { text: string }[] }[] = []) => {
   try {
     const ai = getClient();
-    const model = 'gemini-3-flash-preview'; 
+    const model = 'gemini-2.0-flash';
 
     // Transform history to format expected by @google/genai if necessary, 
     // or use the Chat session feature. Here we use a fresh generateContent for simplicity

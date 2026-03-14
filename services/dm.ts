@@ -179,7 +179,7 @@ export function connectDMWebSocket(token: string): void {
   ws = new WebSocket(wsUrl);
 
   ws.onopen = () => {
-    console.log('DM WebSocket connected');
+    if (import.meta.env.DEV) console.log('[dm] WebSocket connected');
     if (reconnectTimeout) {
       clearTimeout(reconnectTimeout);
       reconnectTimeout = null;
@@ -201,7 +201,7 @@ export function connectDMWebSocket(token: string): void {
   };
 
   ws.onclose = () => {
-    console.log('DM WebSocket disconnected');
+    if (import.meta.env.DEV) console.log('[dm] WebSocket disconnected');
     ws = null;
 
     // Try to reconnect after 5 seconds

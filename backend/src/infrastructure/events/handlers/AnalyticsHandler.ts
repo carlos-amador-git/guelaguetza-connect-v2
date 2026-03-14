@@ -6,10 +6,6 @@ import {
   BookingConfirmedPayload,
   BookingCancelledPayload,
   BookingCompletedPayload,
-  OrderCreatedPayload,
-  OrderPaidPayload,
-  OrderShippedPayload,
-  OrderDeliveredPayload,
   ReviewCreatedPayload,
   StoryCreatedPayload,
   UserFollowedPayload,
@@ -37,12 +33,6 @@ export class AnalyticsHandler {
     eventBus.on(EventTypes.BOOKING_CONFIRMED, this.onBookingConfirmed.bind(this), 'AnalyticsHandler.onBookingConfirmed');
     eventBus.on(EventTypes.BOOKING_CANCELLED, this.onBookingCancelled.bind(this), 'AnalyticsHandler.onBookingCancelled');
     eventBus.on(EventTypes.BOOKING_COMPLETED, this.onBookingCompleted.bind(this), 'AnalyticsHandler.onBookingCompleted');
-
-    // Marketplace Events
-    eventBus.on(EventTypes.ORDER_CREATED, this.onOrderCreated.bind(this), 'AnalyticsHandler.onOrderCreated');
-    eventBus.on(EventTypes.ORDER_PAID, this.onOrderPaid.bind(this), 'AnalyticsHandler.onOrderPaid');
-    eventBus.on(EventTypes.ORDER_SHIPPED, this.onOrderShipped.bind(this), 'AnalyticsHandler.onOrderShipped');
-    eventBus.on(EventTypes.ORDER_DELIVERED, this.onOrderDelivered.bind(this), 'AnalyticsHandler.onOrderDelivered');
 
     // User Events
     eventBus.on(EventTypes.USER_REGISTERED, this.onUserRegistered.bind(this), 'AnalyticsHandler.onUserRegistered');
@@ -134,83 +124,6 @@ export class AnalyticsHandler {
         experienceId: event.payload.experienceId,
         guestCount: event.payload.guestCount,
         totalPrice: event.payload.totalPrice,
-        correlationId: event.correlationId,
-      },
-    });
-  }
-
-  // ============================================
-  // MARKETPLACE EVENT HANDLERS
-  // ============================================
-
-  private async onOrderCreated(event: DomainEvent<OrderCreatedPayload>): Promise<void> {
-    await this.logActivity({
-      userId: event.payload.userId,
-      action: 'CREATE_ORDER',
-      targetType: 'ORDER',
-      targetId: event.payload.orderId,
-      metadata: {
-        sellerId: event.payload.sellerId,
-        total: event.payload.total,
-        itemCount: event.payload.itemCount,
-        items: event.payload.items,
-        correlationId: event.correlationId,
-      },
-    });
-  }
-
-  private async onOrderPaid(event: DomainEvent<OrderPaidPayload>): Promise<void> {
-    await this.logActivity({
-      userId: event.payload.userId,
-      action: 'PAY_ORDER',
-      targetType: 'ORDER',
-      targetId: event.payload.orderId,
-      metadata: {
-        paymentId: event.payload.paymentId,
-        amount: event.payload.amount,
-        sellerId: event.payload.sellerId,
-        correlationId: event.correlationId,
-      },
-    });
-
-    // Log for seller
-    await this.logActivity({
-      userId: event.payload.sellerId,
-      action: 'RECEIVE_PAYMENT',
-      targetType: 'ORDER',
-      targetId: event.payload.orderId,
-      metadata: {
-        amount: event.payload.amount,
-        buyerId: event.payload.userId,
-        correlationId: event.correlationId,
-      },
-    });
-  }
-
-  private async onOrderShipped(event: DomainEvent<OrderShippedPayload>): Promise<void> {
-    await this.logActivity({
-      userId: event.payload.sellerId,
-      action: 'SHIP_ORDER',
-      targetType: 'ORDER',
-      targetId: event.payload.orderId,
-      metadata: {
-        trackingNumber: event.payload.trackingNumber,
-        buyerId: event.payload.userId,
-        correlationId: event.correlationId,
-      },
-    });
-  }
-
-  private async onOrderDelivered(event: DomainEvent<OrderDeliveredPayload>): Promise<void> {
-    await this.logActivity({
-      userId: event.payload.userId,
-      action: 'RECEIVE_ORDER',
-      targetType: 'ORDER',
-      targetId: event.payload.orderId,
-      metadata: {
-        sellerId: event.payload.sellerId,
-        total: event.payload.total,
-        deliveredAt: event.payload.deliveredAt,
         correlationId: event.correlationId,
       },
     });

@@ -19,7 +19,7 @@ import {
 import LoadingSpinner from './ui/LoadingSpinner';
 import GradientPlaceholder from './ui/GradientPlaceholder';
 import { useToast } from './ui/Toast';
-import { BookingConflictModal } from './ui/ConcurrencyErrorModal';
+import { BookingConflictModal } from './ui/BookingConflictModal';
 import {
   getExperience,
   getTimeSlots,

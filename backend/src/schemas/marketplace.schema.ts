@@ -18,16 +18,6 @@ export const ProductStatusEnum = z.enum([
   'ARCHIVED',
 ]);
 
-export const OrderStatusEnum = z.enum([
-  'PENDING',
-  'PAID',
-  'PROCESSING',
-  'SHIPPED',
-  'DELIVERED',
-  'CANCELLED',
-  'REFUNDED',
-]);
-
 // Product schemas
 export const CreateProductSchema = z.object({
   name: z.string().min(3).max(100),
@@ -54,41 +44,6 @@ export const ProductQuerySchema = z.object({
   limit: z.coerce.number().int().positive().max(50).default(20),
 });
 
-// Cart schemas
-export const AddToCartSchema = z.object({
-  productId: z.string().cuid(),
-  quantity: z.number().int().positive().default(1),
-});
-
-export const UpdateCartItemSchema = z.object({
-  quantity: z.number().int().positive(),
-});
-
-// Order schemas
-export const ShippingAddressSchema = z.object({
-  name: z.string().min(2).max(100),
-  street: z.string().min(5).max(200),
-  city: z.string().min(2).max(100),
-  state: z.string().min(2).max(100),
-  postalCode: z.string().min(4).max(10),
-  phone: z.string().min(10).max(15),
-  notes: z.string().max(500).optional(),
-});
-
-export const CreateOrderSchema = z.object({
-  shippingAddress: ShippingAddressSchema,
-});
-
-export const UpdateOrderStatusSchema = z.object({
-  status: OrderStatusEnum,
-});
-
-export const OrderQuerySchema = z.object({
-  status: OrderStatusEnum.optional(),
-  page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().positive().max(50).default(10),
-});
-
 // Review schema
 export const CreateProductReviewSchema = z.object({
   rating: z.number().int().min(1).max(5),
@@ -110,10 +65,6 @@ export const UpdateSellerProfileSchema = CreateSellerProfileSchema.partial().ext
 export type CreateProductInput = z.infer<typeof CreateProductSchema>;
 export type UpdateProductInput = z.infer<typeof UpdateProductSchema>;
 export type ProductQuery = z.infer<typeof ProductQuerySchema>;
-export type AddToCartInput = z.infer<typeof AddToCartSchema>;
-export type UpdateCartItemInput = z.infer<typeof UpdateCartItemSchema>;
-export type CreateOrderInput = z.infer<typeof CreateOrderSchema>;
-export type OrderQuery = z.infer<typeof OrderQuerySchema>;
 export type CreateProductReviewInput = z.infer<typeof CreateProductReviewSchema>;
 export type CreateSellerProfileInput = z.infer<typeof CreateSellerProfileSchema>;
 export type UpdateSellerProfileInput = z.infer<typeof UpdateSellerProfileSchema>;

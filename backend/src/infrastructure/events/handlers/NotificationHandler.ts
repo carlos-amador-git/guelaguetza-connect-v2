@@ -6,11 +6,6 @@ import {
   BookingConfirmedPayload,
   BookingCancelledPayload,
   BookingCompletedPayload,
-  OrderCreatedPayload,
-  OrderPaidPayload,
-  OrderShippedPayload,
-  OrderPaymentFailedPayload,
-  OrderRefundedPayload,
   BadgeUnlockedPayload,
   LevelUpPayload,
   ReviewCreatedPayload,
@@ -35,13 +30,6 @@ export class NotificationHandler {
     eventBus.on(EventTypes.BOOKING_CONFIRMED, this.onBookingConfirmed.bind(this), 'NotificationHandler.onBookingConfirmed');
     eventBus.on(EventTypes.BOOKING_CANCELLED, this.onBookingCancelled.bind(this), 'NotificationHandler.onBookingCancelled');
     eventBus.on(EventTypes.BOOKING_COMPLETED, this.onBookingCompleted.bind(this), 'NotificationHandler.onBookingCompleted');
-
-    // Marketplace Events
-    eventBus.on(EventTypes.ORDER_CREATED, this.onOrderCreated.bind(this), 'NotificationHandler.onOrderCreated');
-    eventBus.on(EventTypes.ORDER_PAID, this.onOrderPaid.bind(this), 'NotificationHandler.onOrderPaid');
-    eventBus.on(EventTypes.ORDER_SHIPPED, this.onOrderShipped.bind(this), 'NotificationHandler.onOrderShipped');
-    eventBus.on(EventTypes.ORDER_PAYMENT_FAILED, this.onOrderPaymentFailed.bind(this), 'NotificationHandler.onOrderPaymentFailed');
-    eventBus.on(EventTypes.ORDER_REFUNDED, this.onOrderRefunded.bind(this), 'NotificationHandler.onOrderRefunded');
 
     // Gamification Events
     eventBus.on(EventTypes.BADGE_UNLOCKED, this.onBadgeUnlocked.bind(this), 'NotificationHandler.onBadgeUnlocked');
@@ -151,112 +139,6 @@ export class NotificationHandler {
         experienceId,
         type: 'booking_completed',
         action: 'request_review',
-      },
-    });
-  }
-
-  // ============================================
-  // MARKETPLACE EVENT HANDLERS
-  // ============================================
-
-  private async onOrderCreated(event: DomainEvent<OrderCreatedPayload>): Promise<void> {
-    const { sellerId, userName, total, itemCount } = event.payload;
-
-    await this.createNotification({
-      userId: sellerId,
-      type: 'SYSTEM',
-      title: 'Nueva orden',
-      body: `${userName} realizó una orden de ${itemCount} producto(s) por $${total.toFixed(2)}`,
-      data: {
-        orderId: event.payload.orderId,
-        type: 'order_created',
-      },
-    });
-  }
-
-  private async onOrderPaid(event: DomainEvent<OrderPaidPayload>): Promise<void> {
-    const { userId, sellerId, orderId, amount, sellerName } = event.payload;
-
-    // Notificar al comprador
-    await this.createNotification({
-      userId,
-      type: 'SYSTEM',
-      title: 'Pago confirmado',
-      body: `Tu pago de $${amount.toFixed(2)} ha sido procesado exitosamente`,
-      data: {
-        orderId,
-        type: 'order_paid',
-      },
-    });
-
-    // Notificar al vendedor
-    await this.createNotification({
-      userId: sellerId,
-      type: 'SYSTEM',
-      title: 'Pago recibido',
-      body: `Se ha confirmado el pago de una orden por $${amount.toFixed(2)}`,
-      data: {
-        orderId,
-        type: 'order_paid_seller',
-      },
-    });
-  }
-
-  private async onOrderShipped(event: DomainEvent<OrderShippedPayload>): Promise<void> {
-    const { userId, trackingNumber } = event.payload;
-
-    await this.createNotification({
-      userId,
-      type: 'SYSTEM',
-      title: 'Orden enviada',
-      body: trackingNumber
-        ? `Tu orden ha sido enviada. Número de rastreo: ${trackingNumber}`
-        : 'Tu orden ha sido enviada',
-      data: {
-        orderId: event.payload.orderId,
-        trackingNumber,
-        type: 'order_shipped',
-      },
-    });
-  }
-
-  private async onOrderPaymentFailed(event: DomainEvent<OrderPaymentFailedPayload>): Promise<void> {
-    const { userId, orderId, error } = event.payload;
-
-    await this.createNotification({
-      userId,
-      type: 'SYSTEM',
-      title: 'Error en el pago',
-      body: `No se pudo procesar el pago de tu orden${error ? `. ${error}` : ''}. Intenta nuevamente.`,
-      data: {
-        orderId,
-        type: 'order_payment_failed',
-      },
-    });
-  }
-
-  private async onOrderRefunded(event: DomainEvent<OrderRefundedPayload>): Promise<void> {
-    const { userId, sellerId, orderId, amount } = event.payload;
-
-    await this.createNotification({
-      userId,
-      type: 'SYSTEM',
-      title: 'Reembolso procesado',
-      body: `Se ha procesado un reembolso de $${amount.toFixed(2)} para tu orden`,
-      data: {
-        orderId,
-        type: 'order_refunded',
-      },
-    });
-
-    await this.createNotification({
-      userId: sellerId,
-      type: 'SYSTEM',
-      title: 'Orden reembolsada',
-      body: `Se ha procesado un reembolso de $${amount.toFixed(2)} para una orden`,
-      data: {
-        orderId,
-        type: 'order_refunded_seller',
       },
     });
   }

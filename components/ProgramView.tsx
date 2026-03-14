@@ -141,8 +141,8 @@ const ProgramView: React.FC<ProgramViewProps> = ({ onBack }) => {
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2">
             {onBack && (
-              <button onClick={onBack} className="p-2 -ml-2 rounded-full hover:bg-white/10 transition">
-                <ArrowLeft size={20} />
+              <button onClick={onBack} aria-label="Volver" className="p-2 -ml-2 rounded-full hover:bg-white/10 transition">
+                <ArrowLeft size={20} aria-hidden="true" />
               </button>
             )}
             <img src="/images/ui/icon_events.png" alt="Programa" className="w-10 h-10 md:w-12 md:h-12 object-contain drop-shadow-md" />
@@ -152,9 +152,9 @@ const ProgramView: React.FC<ProgramViewProps> = ({ onBack }) => {
             onClick={handleRefresh}
             disabled={isRefreshing}
             className="p-2 rounded-full hover:bg-white/10 transition-colors disabled:opacity-50"
-            title="Actualizar"
+            aria-label="Actualizar programa"
           >
-            <RefreshCw size={20} className={isRefreshing ? 'animate-spin' : ''} />
+            <RefreshCw size={20} className={isRefreshing ? 'animate-spin' : ''} aria-hidden="true" />
           </button>
         </div>
         <p className="text-sm text-white/70">Julio 21 - 28, Oaxaca de Juárez</p>

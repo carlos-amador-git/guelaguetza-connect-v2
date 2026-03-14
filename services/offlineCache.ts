@@ -124,7 +124,7 @@ export async function syncPendingActions(apiBase: string, token?: string): Promi
 
       if (response.ok) {
         clearPendingAction(action.id);
-        console.log(`[OfflineCache] Synced action: ${action.type}`);
+        if (import.meta.env.DEV) console.log(`[OfflineCache] Synced action: ${action.type}`);
       }
     } catch (error) {
       console.error(`[OfflineCache] Error syncing action ${action.id}:`, error);

@@ -18,7 +18,6 @@ import SearchView from './components/SearchView';
 import EventsView from './components/EventsView';
 import EventDetailView from './components/EventDetailView';
 import AnalyticsDashboard from './components/AnalyticsDashboard';
-import AdminDashboard from './components/admin/AdminDashboard';
 import MetricsDashboard from './components/admin/MetricsDashboard';
 import CommunitiesView from './components/CommunitiesView';
 import CommunityDetailView from './components/CommunityDetailView';
@@ -30,8 +29,6 @@ import ARMapView from './components/ARMapView';
 import POIDetailView from './components/POIDetailView';
 import TiendaView from './components/TiendaView';
 import ProductDetailView from './components/ProductDetailView';
-import CartView from './components/CartView';
-import CheckoutView from './components/CheckoutView';
 import WishlistView from './components/WishlistView';
 import StreamsView from './components/StreamsView';
 import StreamWatchView from './components/StreamWatchView';
@@ -42,7 +39,6 @@ import Onboarding from './components/Onboarding';
 import DemoUserSelector from './components/DemoUserSelector';
 // Landing and role-specific views
 import LandingView from './components/LandingView';
-import GuideDashboard from './components/GuideDashboard';
 import SellerDashboard from './components/SellerDashboard';
 import SmartMapView from './components/SmartMapView';
 import { ViewState } from './types';
@@ -52,6 +48,36 @@ import { useAuth } from './contexts/AuthContext';
 
 // Lazy load ARScanner for code splitting
 const ARScanner = lazy(() => import('./components/ARScanner'));
+
+// ErrorBoundary catches unhandled render errors and shows a recoverable fallback UI.
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error: Error | null }
+> {
+  state = { hasError: false, error: null as Error | null };
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Algo salió mal</h2>
+          <p className="text-gray-600 mb-4">{this.state.error?.message}</p>
+          <button
+            onClick={() => this.setState({ hasError: false, error: null })}
+            className="px-4 py-2 bg-oaxaca-red text-white rounded-lg"
+          >
+            Reintentar
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 const App: React.FC = () => {
   const { isAuthenticated, isDemoMode, user } = useAuth();
@@ -249,14 +275,6 @@ const App: React.FC = () => {
             onNavigate={(view: ViewState) => setCurrentView(view)}
           />
         );
-      case ViewState.GUIDE_DASHBOARD:
-        // Legacy: redirect to SellerDashboard
-        return (
-          <SellerDashboard
-            onBack={() => setShowLanding(true)}
-            onNavigate={(view: ViewState) => setCurrentView(view)}
-          />
-        );
       case ViewState.COMMUNITIES:
         return (
           <CommunitiesView
@@ -331,7 +349,7 @@ const App: React.FC = () => {
             onBack={() => setCurrentView(ViewState.HOME)}
           />
         );
-      // Phase 6: Marketplace
+      // Phase 6: Vitrina Digital (showcase)
       case ViewState.TIENDA:
         return (
           <TiendaView
@@ -350,27 +368,6 @@ const App: React.FC = () => {
           <TiendaView
             onNavigate={handleNavigate}
             onBack={() => setCurrentView(ViewState.HOME)}
-          />
-        );
-      case ViewState.CART:
-        return (
-          <CartView
-            onNavigate={handleNavigate}
-            onBack={() => setCurrentView(ViewState.TIENDA)}
-          />
-        );
-      case ViewState.CHECKOUT:
-        return (
-          <CheckoutView
-            onNavigate={handleNavigate}
-            onBack={() => setCurrentView(ViewState.CART)}
-          />
-        );
-      case ViewState.ORDERS:
-        return (
-          <CartView
-            onNavigate={handleNavigate}
-            onBack={() => setCurrentView(ViewState.TIENDA)}
           />
         );
       case ViewState.WISHLIST:
@@ -420,7 +417,6 @@ const App: React.FC = () => {
     ViewState.EVENT_DETAIL,
     ViewState.ANALYTICS,
     ViewState.ADMIN,
-    ViewState.GUIDE_DASHBOARD,
     ViewState.SELLER_DASHBOARD,
     ViewState.COMMUNITIES,
     ViewState.COMMUNITY_DETAIL,
@@ -433,9 +429,6 @@ const App: React.FC = () => {
     ViewState.SMART_MAP,
     ViewState.TIENDA,
     ViewState.PRODUCT_DETAIL,
-    ViewState.CART,
-    ViewState.CHECKOUT,
-    ViewState.ORDERS,
     ViewState.STREAMS,
     ViewState.STREAM_WATCH,
   ].includes(currentView);
@@ -447,6 +440,14 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-950 font-sans transition-colors">
+      {/* Skip to main content link for keyboard/screen reader users */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:text-gray-900 focus:rounded-lg focus:shadow-lg"
+      >
+        Saltar al contenido principal
+      </a>
+
       {/* Demo Mode Indicator */}
       {isDemoMode && !adminViewingAsUser && (
         <div className="fixed top-0 left-0 right-0 bg-gradient-to-r from-oaxaca-sky to-oaxaca-purple text-white text-xs py-1.5 px-4 z-50 flex items-center justify-between">
@@ -506,9 +507,9 @@ const App: React.FC = () => {
           {/* PWA Offline Indicator */}
           <OfflineIndicator />
 
-          <div className="flex-1 overflow-y-auto no-scrollbar scroll-smooth bg-white dark:bg-gray-900 lg:rounded-tl-2xl">
+          <div id="main-content" className="flex-1 overflow-y-auto no-scrollbar scroll-smooth bg-white dark:bg-gray-900 lg:rounded-tl-2xl">
             <PageTransition key={currentView} type="fade" duration={200}>
-              {renderView()}
+              <ErrorBoundary>{renderView()}</ErrorBoundary>
             </PageTransition>
           </div>
 

@@ -66,10 +66,8 @@ model User {
   communityMembers   CommunityMember[]
   communityPosts     CommunityPost[]
 
-  // Marketplace relations
+  // Vitrina Digital relations
   sellerProfile   SellerProfile?
-  cart            Cart?
-  orders          Order[]
   productReviews  ProductReview[]
 
   // Streaming relations
@@ -519,35 +517,21 @@ enum ProductStatus {
   ARCHIVED
 }
 
-enum OrderStatus {
-  PENDING_PAYMENT
-  PENDING
-  PAYMENT_FAILED
-  PAID
-  PROCESSING
-  SHIPPED
-  DELIVERED
-  CANCELLED
-  REFUNDED
-}
-
 model SellerProfile {
-  id              String   @id @default(cuid())
-  userId          String   @unique
-  businessName    String
-  description     String?
-  bannerUrl       String?
-  location        String?
-  rating          Float    @default(0)
-  reviewCount     Int      @default(0)
-  verified        Boolean  @default(false)
-  stripeAccountId String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  businessName String
+  description  String?
+  bannerUrl    String?
+  location     String?
+  rating       Float    @default(0)
+  reviewCount  Int      @default(0)
+  verified     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   products Product[]
-  orders   Order[]
 
   @@index([userId])
 }
@@ -562,14 +546,11 @@ model Product {
   status      ProductStatus   @default(DRAFT)
   stock       Int             @default(0)
   images      String[]
-  version     Int             @default(1)
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 
-  seller     SellerProfile   @relation(fields: [sellerId], references: [id], onDelete: Cascade)
-  cartItems  CartItem[]
-  orderItems OrderItem[]
-  reviews    ProductReview[]
+  seller  SellerProfile   @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  reviews ProductReview[]
 
   @@index([sellerId])
   @@index([sellerId, status])
@@ -579,64 +560,6 @@ model Product {
   @@index([createdAt])
 }
 
-model Cart {
-  id        String     @id @default(cuid())
-  userId    String     @unique
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-
-  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items CartItem[]
-}
-
-model CartItem {
-  id        String @id @default(cuid())
-  cartId    String
-  productId String
-  quantity  Int    @default(1)
-
-  cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-
-  @@unique([cartId, productId])
-}
-
-model Order {
-  id              String      @id @default(cuid())
-  userId          String
-  sellerId        String
-  status          OrderStatus @default(PENDING)
-  total           Decimal     @db.Decimal(10, 2)
-  shippingAddress Json
-  stripePaymentId String?
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-
-  user   User          @relation(fields: [userId], references: [id])
-  seller SellerProfile @relation(fields: [sellerId], references: [id])
-  items  OrderItem[]
-
-  @@index([userId])
-  @@index([userId, status])
-  @@index([userId, createdAt])
-  @@index([sellerId])
-  @@index([sellerId, status])
-  @@index([sellerId, createdAt])
-  @@index([status])
-  @@index([createdAt])
-  @@index([stripePaymentId])
-}
-
-model OrderItem {
-  id        String  @id @default(cuid())
-  orderId   String
-  productId String
-  quantity  Int
-  price     Decimal @db.Decimal(10, 2)
-
-  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id])
-}
 
 model ProductReview {
   id        String   @id @default(cuid())
@@ -872,7 +795,6 @@ model Booking {
   guestCount      Int           @default(1)
   totalPrice      Decimal       @db.Decimal(10, 2)
   specialRequests String?
-  stripePaymentId String?
   confirmedAt     DateTime?
   cancelledAt     DateTime?
   createdAt       DateTime      @default(now())
@@ -892,7 +814,6 @@ model Booking {
   @@index([status])
   @@index([status, createdAt])
   @@index([createdAt])
-  @@index([stripePaymentId])
 }
 
 model ExperienceReview {
@@ -909,19 +830,3 @@ model ExperienceReview {
   @@unique([userId, experienceId])
 }
 
-// ============================================
-// WEBHOOKS: Event Processing Log
-// ============================================
-model WebhookEvent {
-  id            String   @id @default(cuid())
-  stripeEventId String   @unique // Stripe event.id for idempotency
-  eventType     String   // payment_intent.succeeded, charge.refunded, etc.
-  processed     Boolean  @default(false)
-  processedAt   DateTime?
-  payload       Json?    // Optional: store full event payload for debugging
-  error         String?  // Store error message if processing failed
-  createdAt     DateTime @default(now())
-
-  @@index([stripeEventId])
-  @@index([eventType, createdAt])
-}

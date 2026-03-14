@@ -33,7 +33,7 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
 
   if (fullScreen) {
     return (
-      <div className="fixed inset-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm flex flex-col items-center justify-center z-50">
+      <div role="status" aria-live="polite" aria-label={text || 'Cargando'} className="fixed inset-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm flex flex-col items-center justify-center z-50">
         {spinner}
         {text && (
           <p className="mt-4 text-gray-600 dark:text-gray-400 font-medium">{text}</p>
@@ -43,7 +43,7 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   }
 
   return (
-    <div className="flex flex-col items-center justify-center py-8">
+    <div role="status" aria-live="polite" aria-label={text || 'Cargando'} className="flex flex-col items-center justify-center py-8">
       {spinner}
       {text && (
         <p className="mt-3 text-gray-500 dark:text-gray-400 text-sm">{text}</p>
