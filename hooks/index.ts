@@ -1,5 +1,8 @@
 // Hooks exportados
 
+// AR module hooks
+export * from './ar';
+
 // Booking hook (experience reservations — no payments)
 export { useCreateBooking, isConcurrencyError } from './useCreateBooking';
 export type { ConcurrencyError, UseCreateBookingResult } from './useCreateBooking';

@@ -27,6 +27,12 @@ import ExperienceDetailView from './components/ExperienceDetailView';
 import MyBookingsView from './components/MyBookingsView';
 import ARMapView from './components/ARMapView';
 import POIDetailView from './components/POIDetailView';
+import { ARPointDetailView } from './components/ar/ARPointDetailView';
+import { ARHomeView } from './components/ar/ARHomeView';
+import { VestimentasView } from './components/ar/VestimentasView';
+import { VestimentaDetailView } from './components/ar/VestimentaDetailView';
+import { QuestView } from './components/ar/QuestView';
+import { AlebrijeView } from './components/ar/AlebrijeView';
 import TiendaView from './components/TiendaView';
 import ProductDetailView from './components/ProductDetailView';
 import WishlistView from './components/WishlistView';
@@ -103,6 +109,12 @@ const App: React.FC = () => {
   const [selectedPoiId, setSelectedPoiId] = useState<string | null>(null);
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
   const [selectedStreamId, setSelectedStreamId] = useState<string | null>(null);
+  // AR module: selected AR point ID (numeric, stored as string)
+  const [selectedArPointId, setSelectedArPointId] = useState<string | null>(null);
+  // AR module: selected Vestimenta ID
+  const [selectedVestimentaId, setSelectedVestimentaId] = useState<string | null>(null);
+  // AR module: selected Quest ID
+  const [selectedQuestId, setSelectedQuestId] = useState<string | null>(null);
 
   // Handle user selection from landing - receives role directly to avoid race condition
   const handleUserSelected = (selectedRole?: string) => {
@@ -149,6 +161,28 @@ const App: React.FC = () => {
     if (d?.poiId) setSelectedPoiId(d.poiId as string);
     if (d?.productId) setSelectedProductId(d.productId as string);
     if (d?.streamId) setSelectedStreamId(d.streamId as string);
+    if (d?.vestimentaId) setSelectedVestimentaId(d.vestimentaId as string);
+    if (d?.questId) setSelectedQuestId(d.questId as string);
+
+    // AR module: store AR point ID and proximity data for ARPointDetailView
+    if (d?.pointId !== undefined) {
+      const arPointId = String(d.pointId);
+      setSelectedArPointId(arPointId);
+      // Persist proximity data so ARPointDetailView can read it without prop-drilling
+      const proximity = {
+        isWithinActivation: !!(d as { isWithinActivation?: boolean }).isWithinActivation,
+        distanceMeters: (d as { distanceMeters?: number }).distanceMeters ?? null,
+      };
+      try {
+        sessionStorage.setItem(
+          `ar_point_proximity_${arPointId}`,
+          JSON.stringify(proximity)
+        );
+      } catch {
+        // sessionStorage unavailable — proximity indicator will be hidden
+      }
+    }
+
     setCurrentView(view);
   };
 
@@ -322,7 +356,71 @@ const App: React.FC = () => {
             onBack={() => setCurrentView(ViewState.EXPERIENCES)}
           />
         );
-      // Phase 6: AR Map
+      // AR Module views
+      case ViewState.AR_HOME:
+        return (
+          <ARHomeView
+            onNavigate={handleNavigate}
+            onBack={() => setCurrentView(ViewState.HOME)}
+          />
+        );
+      case ViewState.AR_POINT_DETAIL:
+        return selectedArPointId ? (
+          <ARPointDetailView
+            pointId={selectedArPointId}
+            onNavigate={handleNavigate}
+            onBack={() => setCurrentView(ViewState.AR_HOME)}
+          />
+        ) : (
+          <ARHomeView
+            onNavigate={handleNavigate}
+            onBack={() => setCurrentView(ViewState.HOME)}
+          />
+        );
+      // Sprint 3.1: Vestimentas Catalog
+      case ViewState.AR_VESTIMENTAS:
+        return (
+          <VestimentasView
+            onNavigate={handleNavigate}
+            onBack={() => setCurrentView(ViewState.AR_HOME)}
+          />
+        );
+      case ViewState.AR_VESTIMENTA_DETAIL:
+        return selectedVestimentaId ? (
+          <VestimentaDetailView
+            vestimentaId={selectedVestimentaId}
+            onNavigate={handleNavigate}
+            onBack={() => setCurrentView(ViewState.AR_VESTIMENTAS)}
+          />
+        ) : (
+          <VestimentasView
+            onNavigate={handleNavigate}
+            onBack={() => setCurrentView(ViewState.AR_HOME)}
+          />
+        );
+      // Sprint 4.1: Quests
+      case ViewState.AR_QUEST:
+        return selectedQuestId ? (
+          <QuestView
+            questId={selectedQuestId}
+            onNavigate={handleNavigate}
+            onBack={() => setCurrentView(ViewState.AR_HOME)}
+          />
+        ) : (
+          <ARHomeView
+            onNavigate={handleNavigate}
+            onBack={() => setCurrentView(ViewState.HOME)}
+          />
+        );
+      // Sprint 4.1: Alebrije
+      case ViewState.AR_ALEBRIJE:
+        return (
+          <AlebrijeView
+            onBack={() => setCurrentView(ViewState.AR_HOME)}
+            userId={user?.id ?? null}
+          />
+        );
+      // Phase 6: AR Map (legacy)
       case ViewState.AR_MAP:
         return (
           <ARMapView
@@ -431,6 +529,13 @@ const App: React.FC = () => {
     ViewState.PRODUCT_DETAIL,
     ViewState.STREAMS,
     ViewState.STREAM_WATCH,
+    // AR Module views
+    ViewState.AR_HOME,
+    ViewState.AR_POINT_DETAIL,
+    ViewState.AR_VESTIMENTAS,
+    ViewState.AR_VESTIMENTA_DETAIL,
+    ViewState.AR_QUEST,
+    ViewState.AR_ALEBRIJE,
   ].includes(currentView);
 
   // Show landing page if not authenticated or showLanding is true

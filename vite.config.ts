@@ -71,6 +71,30 @@ export default defineConfig(({ mode }) => {
                   },
                 },
               },
+              {
+                // AR catalog endpoints — stale-while-revalidate for fast loads
+                urlPattern: /\/api\/ar\/(points|vestimentas|regions)/,
+                handler: 'StaleWhileRevalidate',
+                options: {
+                  cacheName: 'ar-catalog',
+                  expiration: {
+                    maxEntries: 50,
+                    maxAgeSeconds: 60 * 60 * 24, // 24h
+                  },
+                },
+              },
+              {
+                // 3D model files — cache-first, long TTL
+                urlPattern: /\.glb$/,
+                handler: 'CacheFirst',
+                options: {
+                  cacheName: 'ar-models',
+                  expiration: {
+                    maxEntries: 30,
+                    maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
+                  },
+                },
+              },
             ],
           },
           devOptions: {

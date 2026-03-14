@@ -43,7 +43,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, setView, onUserPro
     { view: ViewState.SMART_MAP, icon: '/images/ui/icon_plan.png', label: 'Mapa', isImage: true },
     { view: ViewState.EXPERIENCES, icon: '/images/ui/icon_events.png', label: 'Tours', isImage: true },
     { view: ViewState.COMMUNITIES, icon: '/images/ui/icon_community.png', label: 'Comunidad', isImage: true },
-    { view: ViewState.AR_SCANNER, icon: '/images/ui/icon_ar.png', label: 'AR Scanner', isImage: true },
+    { view: ViewState.AR_HOME, icon: '/images/ui/icon_ar.png', label: 'AR Guelaguetza', isImage: true },
     { view: ViewState.CHAT, icon: MessageCircle, label: 'GuelaBot' },
   ];
 

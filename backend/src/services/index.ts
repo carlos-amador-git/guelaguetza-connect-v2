@@ -35,3 +35,7 @@ export { StoryService } from './story.service.js';
 export { SocialService } from './social.service.js';
 export { TransportService } from './transport.service.js';
 
+// AR Module
+export { ARPointsService } from './ar-points.service.js';
+export { ARVestimentasService } from './ar-vestimentas.service.js';
+

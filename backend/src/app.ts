@@ -35,6 +35,7 @@ import poiRoutes from './routes/poi.js';
 import marketplaceRoutes from './routes/marketplace.js';
 import uploadRoutes from './routes/upload.js';
 import streamsRoutes from './routes/streams.js';
+import arRoutes from './routes/ar.js';
 import metricsRoutes from './routes/metrics.js';
 import { ZodError } from 'zod';
 import {
@@ -163,6 +164,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(marketplaceRoutes, { prefix: '/api/marketplace' });
   await app.register(uploadRoutes, { prefix: '/api/upload' });
   await app.register(streamsRoutes, { prefix: '/api/streams' });
+  await app.register(arRoutes, { prefix: '/api/ar' });
 
   // Metrics endpoint (no prefix, accessed as /metrics)
   await app.register(metricsRoutes);
@@ -220,6 +222,7 @@ export async function buildApp(): Promise<FastifyInstance> {
         marketplace: '/api/marketplace',
         upload: '/api/upload',
         streams: '/api/streams',
+        ar: '/api/ar',
         metrics: '/metrics',
       },
     };

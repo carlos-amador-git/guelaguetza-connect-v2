@@ -1,8 +1,9 @@
 # Plan de Desarrollo: Modulo AR Guelaguetza Connect
 
 **Fecha:** 2026-03-13
+**Actualizado:** 2026-03-13 (post cross-review Gemini)
 **Estado:** Aprobado para inicio
-**Origen:** ZIP `Guelaguetza AR.zip` + analisis de gaps
+**Origen:** ZIP `Guelaguetza AR.zip` + analisis de gaps + cross-review Gemini
 **Decision arquitectural:** INTEGRAR al stack actual (React 19 + Vite + Fastify + Prisma), NO migrar a Next.js
 
 ---
@@ -11,7 +12,9 @@
 
 El ZIP contiene ~40% del modulo AR completo. La BD es la pieza mas madura (~90%).
 El frontend tiene componentes solidos pero le faltan 5 paginas y la logica de negocio.
-Este plan completa el modulo en 4 fases / 8 sprints cortos.
+Este plan completa el modulo en 5 fases / 10 sprints.
+
+**Estimacion ajustada post-review:** ~14 semanas (buffer para R&D en Try-On e Image-to-3D).
 
 ---
 
@@ -25,8 +28,8 @@ Este plan completa el modulo en 4 fases / 8 sprints cortos.
 | # | Tarea | Detalle |
 |---|-------|---------|
 | 1 | Ejecutar `ar_migration_complete.sql` | Crea schema `ar` con 18 tablas, vistas, funciones, triggers, seed data |
-| 2 | Configurar Prisma para schema `ar` | Agregar `@@schema("ar")` o usar `$queryRawUnsafe` para queries PostGIS complejas |
-| 3 | Adaptar `db.ts` | Reusar el pool existente de Prisma (`prisma.$queryRaw`) en vez de crear pool `pg` separado |
+| 2 | Configurar Prisma para schema `ar` | Usar `$queryRaw` para queries PostGIS complejas |
+| 3 | Crear schemas Zod para respuestas | Tipar las respuestas de `$queryRaw` con Zod (recomendacion Gemini) |
 | 4 | Portar `points.service.ts` | Adaptar queries de `pg` raw a `prisma.$queryRaw` manteniendo PostGIS helpers |
 | 5 | Portar `vestimentas.service.ts` | Igual que anterior |
 | 6 | Crear rutas Fastify | Convertir 3 Next.js API routes a Fastify: `GET /api/ar/nearby`, `GET /api/ar/points`, `GET|POST /api/ar/collection` |
@@ -36,6 +39,7 @@ Este plan completa el modulo en 4 fases / 8 sprints cortos.
 - [ ] `SELECT * FROM ar.get_nearby_points(17.0617, -96.7245, 500)` retorna datos
 - [ ] `GET /api/ar/nearby?lat=17.06&lng=-96.72&radius=500` responde 200 con puntos
 - [ ] `POST /api/ar/collection` registra coleccion y retorna puntos ganados
+- [ ] Respuestas tipadas con Zod
 - [ ] Tests: minimo 10 tests de integracion pasando
 
 ### Sprint 0.2 — Porteo de Componentes y Hooks (2-3 dias)
@@ -51,19 +55,41 @@ Este plan completa el modulo en 4 fases / 8 sprints cortos.
 | 5 | Portar VestimentaViewer | Sin cambios necesarios |
 | 6 | Portar ARPointsMapPreview | Evaluar si fusionar con ARMapView existente (Leaflet) |
 | 7 | Integrar en navegacion | Agregar ViewStates AR al sistema de navegacion actual |
-| 8 | Tests de componentes | Smoke tests de renderizado para cada componente portado |
+| 8 | Quick win: Alebrije 3D en landing | Mostrar un modelo 3D rotando con `model-viewer` en la LandingView (impacto visual inmediato) |
+| 9 | Tests de componentes | Smoke tests de renderizado para cada componente portado |
 
 **Criterios de aceptacion:**
 - [ ] `ModelViewer` renderiza con un modelo .glb de prueba
 - [ ] `ARPointCard` muestra datos de un punto seed
 - [ ] Hooks `useGeolocation` y `useNearbyPoints` funcionan en dev
 - [ ] Navegacion a vistas AR funciona desde la app principal
+- [ ] Alebrije 3D visible en landing page
 - [ ] Tests: minimo 8 tests de componentes pasando
 
 ---
 
-## Fase 1: Core AR Experience
-> **La experiencia minima viable** — Explorar, descubrir, colectar
+## Fase 1: Core AR + Offline Foundation
+> **La experiencia minima viable** — Explorar, descubrir, colectar — con soporte offline desde el dia 1
+
+### Sprint 1.0 — Offline Foundation (3-4 dias) [NUEVO — recomendacion Gemini]
+
+**Objetivo:** Infraestructura offline que todos los sprints posteriores usan
+
+| # | Tarea | Detalle |
+|---|-------|---------|
+| 1 | Workbox config para AR | Estrategias de cache: cache-first para modelos .glb y catalogo de puntos, network-first para coleccion/progreso |
+| 2 | IndexedDB con `idb` | Cache local de: puntos AR, vestimentas, coleccion del usuario, progreso de quests |
+| 3 | Offline queue | Cola de operaciones pendientes (colecciones, progreso) que se sincronizan al reconectar |
+| 4 | Conflict resolution | Last-write-wins para colecciones, merge para progreso de quests |
+| 5 | Hook `useOfflineAR` | Abstraccion que lee de IndexedDB cuando no hay red, sync automatico al reconectar |
+| 6 | Indicador de estado | Componente que muestra: online, offline, sincronizando |
+
+**Criterios de aceptacion:**
+- [ ] Con WiFi cortado, la app abre y muestra puntos AR cacheados
+- [ ] Colecciones hechas offline se encolan y sincronizan al reconectar
+- [ ] Hook `useOfflineAR` usado por los componentes AR en vez de fetch directo
+
+**Razon del cambio:** Gemini identifico que offline no es polish de produccion — es una decision arquitectural que afecta como se disenan los hooks de datos desde el dia 1. En la Guelaguetza real (Cerro del Fortin), la saturacion de celdas hace que offline sea obligatorio.
 
 ### Sprint 1.1 — Home AR + Mapa Integrado (1 semana)
 
@@ -76,13 +102,15 @@ Este plan completa el modulo en 4 fases / 8 sprints cortos.
 | 3 | Geolocation + nearby | Conectar `useGeolocation` + `useNearbyPoints` al mapa |
 | 4 | Cards de puntos cercanos | Lista scrolleable debajo del mapa con distancia en tiempo real |
 | 5 | Tab "Mi Coleccion" | Grid de items colectados con progreso por region |
-| 6 | Indicador offline | Banner cuando no hay conexion |
-| 7 | Deep link desde nav principal | Boton AR en navegacion principal abre ARHomeView |
+| 6 | Onboarding de permisos | Flujo UX para solicitar GPS y camara (especialmente iOS Safari) |
+| 7 | QR fallback para GPS | Soporte para escanear QR fisicos en puntos clave cuando GPS falla en calles estrechas |
+| 8 | Deep link desde nav principal | Boton AR en navegacion principal abre ARHomeView |
 
 **Criterios de aceptacion:**
 - [ ] Mapa muestra los 12 puntos AR del seed centrado en Oaxaca
 - [ ] Puntos cambian de color cuando el usuario esta dentro del radio de activacion
 - [ ] Tab coleccion muestra progreso 0/N al inicio
+- [ ] Onboarding de permisos funciona en iOS Safari y Android Chrome
 - [ ] Funciona en mobile (touch, zoom, pan)
 
 ### Sprint 1.2 — Detalle de Punto + ModelViewer + Coleccion (1 semana)
@@ -95,17 +123,19 @@ Este plan completa el modulo en 4 fases / 8 sprints cortos.
 | 2 | Integrar ModelViewer | Mostrar modelo 3D del punto (con placeholder .glb inicialmente) |
 | 3 | Boton "Ver en AR" | Activar `<model-viewer>` en modo AR (WebXR/Scene Viewer/Quick Look) |
 | 4 | Logica de coleccion | Boton "Colectar" activo solo si `isWithinActivation`, llama a API, muestra confetti/feedback |
-| 5 | Modelos placeholder | Obtener 4-6 modelos .glb open-source tematicos (artesanias, figuras) de Sketchfab/Poly Haven |
-| 6 | Poblar `ar.assets` | INSERT en BD con URLs de modelos placeholder |
-| 7 | Screenshot de coleccion | Captura de pantalla automatica al colectar (canvas.toBlob) |
+| 5 | Asset pipeline | Script con `gltf-transform` para comprimir modelos .glb (Draco compression) antes de subir |
+| 6 | Modelos placeholder | Obtener 4-6 modelos .glb open-source tematicos, comprimidos con Draco |
+| 7 | Poblar `ar.assets` | INSERT en BD con URLs de modelos placeholder (CDN-ready) |
+| 8 | Screenshot de coleccion | Captura de pantalla automatica al colectar (canvas.toBlob) |
 
 **Criterios de aceptacion:**
 - [ ] Al tocar un punto en el mapa/lista, se abre detalle con modelo 3D rotable
 - [ ] En dispositivos compatibles, "Ver en AR" abre experiencia AR nativa
 - [ ] Colectar funciona: API retorna puntos, UI actualiza progreso
+- [ ] Modelos .glb comprimidos (<2MB cada uno)
 - [ ] Minimo 4 puntos tienen modelo 3D placeholder visible
 
-**Dependencias:** Sprint 0.1, 0.2
+**Dependencias:** Sprint 0.1, 0.2, 1.0
 
 ---
 
@@ -124,13 +154,15 @@ Este plan completa el modulo en 4 fases / 8 sprints cortos.
 | 4 | API routes quest | `GET /api/ar/quests`, `GET /api/ar/quests/:id/progress`, `POST /api/ar/quests/:id/start` |
 | 5 | Narrativa interactiva | Mostrar fragmentos de la historia de Donaji al encontrar cada lirio |
 | 6 | Quest completion | Animacion/feedback al completar, reward de puntos |
-| 7 | Crear `QuestListView.tsx` | Lista de quests disponibles (inicialmente solo Donaji) |
+| 7 | Offline quest sync | Progreso de quest se guarda en IndexedDB y sincroniza al reconectar |
+| 8 | Crear `QuestListView.tsx` | Lista de quests disponibles (inicialmente solo Donaji) |
 
 **Criterios de aceptacion:**
 - [ ] Usuario puede iniciar quest de Donaji
 - [ ] Al colectar un quest_item, progreso se actualiza (1/4, 2/4...)
 - [ ] Al completar 4/4, quest se marca como completada con reward
 - [ ] Narrativa se muestra progresivamente
+- [ ] Progreso persiste offline
 
 ### Sprint 2.2 — Logros + Perfil + Leaderboard (1 semana)
 
@@ -170,7 +202,7 @@ Este plan completa el modulo en 4 fases / 8 sprints cortos.
 | 3 | Crear `VestimentaDetailView.tsx` | Detalle con VestimentaViewer (modelo 3D), info cultural, artesano |
 | 4 | API routes vestimentas | `GET /api/ar/vestimentas`, `GET /api/ar/vestimentas/:id`, favoritos CRUD |
 | 5 | Sistema de favoritos | Heart toggle, persistencia, vista de favoritos |
-| 6 | Modelos placeholder | 3-4 modelos de ropa/accesorios .glb open-source |
+| 6 | Modelos placeholder | 3-4 modelos de ropa/accesorios .glb open-source, comprimidos |
 | 7 | Sets de vestimenta | Vista de set completo (cabeza + torso + falda + accesorios) |
 
 **Criterios de aceptacion:**
@@ -189,10 +221,11 @@ Este plan completa el modulo en 4 fases / 8 sprints cortos.
 | 2 | Integrar `react-sketch-canvas` | Canvas de dibujo con colores vibrantes, brushes, undo/redo |
 | 3 | Servicio Image-to-3D | Integracion con API externa (Meshy.ai, Tripo3D, o similar) |
 | 4 | API route | `POST /api/ar/alebrije/generate` (recibe imagen base64, retorna task_id) |
-| 5 | Polling de resultado | `GET /api/ar/alebrije/status/:taskId` con estados pending/processing/completed |
-| 6 | Galeria de creaciones | Grid de alebrijes creados por el usuario con ModelViewer |
-| 7 | Compartir | Boton para compartir screenshot del alebrije 3D |
-| 8 | Fallback sin API | Si no hay API de 3D disponible, mostrar el dibujo en un marco decorativo |
+| 5 | Webhook endpoint | `POST /api/ar/alebrije/webhook` para recibir modelo completado de Meshy/Tripo (async, 30-90s) |
+| 6 | Push notification | Notificar al usuario via Web Push cuando su alebrije 3D esta listo |
+| 7 | Galeria de creaciones | Grid de alebrijes creados por el usuario con ModelViewer |
+| 8 | Compartir | Boton para compartir screenshot del alebrije 3D |
+| 9 | Fallback sin API | Si no hay API de 3D disponible, mostrar el dibujo en un marco decorativo |
 
 **Criterios de aceptacion:**
 - [ ] Canvas de dibujo funcional con 6+ colores y 3 grosores
@@ -204,55 +237,54 @@ Este plan completa el modulo en 4 fases / 8 sprints cortos.
 **Dependencias:** Sprint 0.2 (ModelViewer portado)
 **Nota:** La API de Image-to-3D tiene costo. Evaluar Meshy.ai (free tier: 5/mes) o Tripo3D.
 
-### Sprint 3.3 — Try-On de Vestimentas (2 semanas) [PREMIUM]
+### Sprint 3.3 — Try-On de Vestimentas (2 semanas) [PREMIUM / R&D]
 
 **Objetivo:** Probarse vestimentas con camara y tracking
 
 | # | Tarea | Detalle |
 |---|-------|---------|
 | 1 | Crear `TryOnView.tsx` | Vista de camara con overlay de vestimenta |
-| 2 | Integracion MediaPipe | Face/body tracking con @mediapipe/tasks-vision |
+| 2 | Integracion MediaPipe | Face/hands tracking con @mediapipe/tasks-vision (limitar a face/hands — body tracking inestable) |
 | 3 | Overlay de vestimentas | Posicionar modelo/imagen sobre landmarks detectados |
-| 4 | Captura de foto | Boton para tomar foto con vestimenta |
-| 5 | Selector de vestimenta | Carousel horizontal para cambiar vestimenta sin salir de camara |
-| 6 | UI de camara | Controles: flip camera, flash, timer |
-| 7 | Compartir foto | Share API o download |
+| 4 | Deteccion de gama | Si dispositivo low-end, desactivar tracking y ofrecer "Foto con marco" estatica |
+| 5 | Captura de foto | Boton para tomar foto con vestimenta |
+| 6 | Selector de vestimenta | Carousel horizontal para cambiar vestimenta sin salir de camara |
+| 7 | UI de camara | Controles: flip camera, flash, timer |
+| 8 | Compartir foto | Share API o download |
 
 **Criterios de aceptacion:**
 - [ ] Camara frontal muestra rostro del usuario
 - [ ] Al seleccionar vestimenta tipo "cabeza", se posiciona sobre la cabeza
 - [ ] Foto se puede capturar y compartir
 - [ ] Funciona en iOS Safari y Android Chrome
+- [ ] Fallback estatico en dispositivos low-end
 
 **Dependencias:** Sprint 3.1
-**Riesgo:** MediaPipe tracking puede ser impreciso en dispositivos low-end. Plan B: overlay estatico posicionado manualmente.
+**Riesgo:** MediaPipe tracking puede ser impreciso en dispositivos low-end.
+**Plan B:** Overlay estatico posicionado manualmente / "Foto con alebrije".
 
 ---
 
-## Fase 4: Offline + Polish + Production
-> **Lo que lo hace robusto** — Funcionar en la Guelaguetza real
+## Fase 4: Polish + Production
+> **Lo que lo hace robusto** — Pulido final y metricas
 
-### Sprint 4.1 — Offline Support + Service Worker (1 semana)
+### Sprint 4.1 — Offline Bundles + Zonas WiFi (3-4 dias)
 
-**Objetivo:** La app funciona sin internet en el cerro del Fortin
+**Objetivo:** Descarga proactiva de assets y mapa de zonas WiFi
 
 | # | Tarea | Detalle |
 |---|-------|---------|
-| 1 | Service Worker con Workbox | Cache de assets estaticos, modelos 3D, datos de puntos |
-| 2 | API caching | Cache-first para catalogo de puntos/vestimentas, network-first para coleccion |
-| 3 | Sync de colecciones | Queue de colecciones pendientes, sync cuando hay conexion |
-| 4 | Offline bundles | Descargar paquete de modelos 3D por region cuando hay WiFi |
-| 5 | Zonas WiFi | Mostrar mapa de zonas WiFi (5 del seed) para descarga |
-| 6 | IndexedDB | Cache local de datos del usuario (coleccion, favoritos, progreso) |
-| 7 | Indicadores UX | Iconos de estado: descargado, pendiente de sync, error |
+| 1 | Offline bundles por region | Descargar paquete de modelos 3D por region cuando hay WiFi |
+| 2 | Zonas WiFi | Mostrar mapa de zonas WiFi (5 del seed) para descarga proactiva |
+| 3 | Progreso de descarga | UI que muestra % de descarga de cada bundle |
+| 4 | Storage management | Mostrar espacio usado, permitir borrar bundles viejos |
 
 **Criterios de aceptacion:**
-- [ ] Con WiFi cortado, la app abre y muestra datos cacheados
-- [ ] Colecciones hechas offline se sincronizan al reconectar
+- [ ] Usuario puede descargar bundle de una region completa
+- [ ] Mapa de zonas WiFi visible con indicador de velocidad
 - [ ] Modelos 3D descargados se ven sin conexion
-- [ ] Mapa de zonas WiFi visible
 
-### Sprint 4.2 — Analytics + Metricas + Tests Finales (1 semana)
+### Sprint 4.2 — Analytics + Tests Finales (1 semana)
 
 **Objetivo:** Instrumentar la app y cubrir tests
 
@@ -274,67 +306,75 @@ Este plan completa el modulo en 4 fases / 8 sprints cortos.
 
 ---
 
-## Resumen de Fases
+## Resumen de Fases (Actualizado)
 
 | Fase | Sprints | Duracion Est. | Entregable |
 |------|---------|---------------|------------|
-| **0: Integracion** | 0.1, 0.2 | 1 semana | ZIP funcionando en stack actual |
-| **1: Core AR** | 1.1, 1.2 | 2 semanas | Explorar mapa, ver 3D, colectar |
+| **0: Integracion** | 0.1, 0.2 | 1 semana | ZIP funcionando en stack actual + alebrije en landing |
+| **1: Core AR + Offline** | 1.0, 1.1, 1.2 | 3 semanas | Offline foundation, mapa, 3D, coleccion |
 | **2: Gamificacion** | 2.1, 2.2 | 2 semanas | Quests, logros, perfil, leaderboard |
 | **3: Premium** | 3.1, 3.2, 3.3 | 4-5 semanas | Vestimentas, alebrije, try-on |
-| **4: Production** | 4.1, 4.2 | 2 semanas | Offline, analytics, tests |
-| **TOTAL** | 8 sprints | ~11-12 semanas | Modulo AR completo |
+| **4: Production** | 4.1, 4.2 | 2 semanas | Offline bundles, analytics, tests |
+| **TOTAL** | 10 sprints | ~14 semanas | Modulo AR completo |
 
 ---
 
-## Dependencias Criticas
+## Dependencias Criticas (Actualizado)
 
 ```
 Sprint 0.1 (BD) ─────────┐
-                          ├── Sprint 1.1 (Home AR)
-Sprint 0.2 (Componentes) ─┤
-                          ├── Sprint 1.2 (Detalle + Coleccion)
-                          │        │
-                          │        ├── Sprint 2.1 (Quests)
-                          │        ├── Sprint 2.2 (Logros)
-                          │        │
-                          │        └── Sprint 3.1 (Vestimentas)
-                          │                 │
-                          │                 └── Sprint 3.3 (Try-On)
-                          │
+                          ├── Sprint 1.0 (Offline Foundation) ──┐
+Sprint 0.2 (Componentes) ─┤                                     │
+                          │                                     ├── Sprint 1.1 (Home AR)
+                          │                                     │
+                          │                                     ├── Sprint 1.2 (Detalle + Coleccion)
+                          │                                     │        │
+                          │                                     │        ├── Sprint 2.1 (Quests)
+                          │                                     │        ├── Sprint 2.2 (Logros)
+                          │                                     │        │
+                          │                                     │        └── Sprint 3.1 (Vestimentas)
+                          │                                     │                 │
+                          │                                     │                 └── Sprint 3.3 (Try-On)
+                          │                                     │
                           └── Sprint 3.2 (Alebrije) [independiente]
 
-Sprint 4.1 (Offline) ── despues de Fase 1 minimo
-Sprint 4.2 (Tests) ──── paralelo con cualquier fase
+Sprint 4.1 (Offline Bundles) ── despues de Fase 1
+Sprint 4.2 (Tests) ──────────── paralelo con cualquier fase
 ```
 
 ---
 
-## Decisiones Tecnicas Clave
+## Decisiones Tecnicas Clave (Actualizado)
 
 | Decision | Opcion Elegida | Alternativa Descartada | Razon |
 |----------|---------------|----------------------|-------|
 | Framework | Mantener React+Vite | Migrar a Next.js | 5 sprints de trabajo existente, riesgo alto |
 | BD AR | Schema `ar` separado | Extender schema principal con Prisma | Migracion SQL ya lista, queries PostGIS complejas |
-| Queries PostGIS | `prisma.$queryRaw` | Pool `pg` separado | Un solo pool, consistencia con el resto del proyecto |
+| Queries PostGIS | `prisma.$queryRaw` + Zod | Pool `pg` separado | Un solo pool, tipado con Zod (Gemini) |
 | Visor 3D | Google `<model-viewer>` | Three.js + R3F | model-viewer tiene AR nativo built-in, menor complejidad |
-| Modelos 3D | Placeholders open-source | Esperar modelos reales | No bloquear desarrollo por assets |
-| Try-on tracking | MediaPipe | TensorFlow.js | MediaPipe es mas rapido en mobile, API mas simple |
-| Image-to-3D | API externa (Meshy/Tripo) | Generacion local | No hay solucion local viable para mobile |
-| Offline | Workbox + IndexedDB | Custom SW | Workbox es el estandar, bien integrado con Vite |
+| Modelos 3D | Placeholders open-source + Draco | Esperar modelos reales | No bloquear desarrollo; comprimir con gltf-transform (Gemini) |
+| Try-on tracking | MediaPipe (face/hands only) | TensorFlow.js / body full | Body tracking inestable en browser (Gemini) |
+| Image-to-3D | API externa (Meshy/Tripo) + webhook | Generacion local | No hay solucion local; webhook para async (Gemini) |
+| Offline | Workbox + IndexedDB desde Fase 1 | Offline al final | Arquitectura, no polish — afecta hooks desde dia 1 (Gemini) |
+| GPS fallback | QR fisicos en puntos clave | Solo GPS | GPS drift en calles estrechas de Oaxaca (Gemini) |
+| Low-end devices | Deteccion de gama + fallback estatico | Forzar tracking | Prevenir crashes en dispositivos baratos (Gemini) |
 
 ---
 
-## Riesgos y Mitigaciones
+## Riesgos y Mitigaciones (Actualizado)
 
 | Riesgo | Probabilidad | Impacto | Mitigacion |
 |--------|-------------|---------|------------|
-| MediaPipe tracking impreciso en low-end | Alta | Medio | Plan B: overlay estatico sin tracking |
-| API Image-to-3D costosa o lenta | Media | Medio | Free tier + fallback a galeria de alebrijes pre-hechos |
-| Modelos 3D pesados en mobile | Media | Alto | Comprimir con glTF-Transform, LOD, lazy loading |
-| PostGIS queries lentas sin indices | Baja | Alto | Indices GIST ya incluidos en migracion |
+| MediaPipe tracking impreciso en low-end | Alta | Medio | Limitar a face/hands; fallback estatico en low-end |
+| API Image-to-3D costosa o lenta | Media | Medio | Free tier + fallback a galeria pre-hecha + webhook async |
+| Modelos 3D pesados en mobile (~20MB) | Alta | Alto | Draco compression con gltf-transform, CDN con cache agresivo |
+| GPS drift en calles estrechas de Oaxaca | Alta | Alto | QR fisicos como fallback, radio de activacion generoso |
+| iOS Safari permisos caprichosos | Alta | Medio | Onboarding de permisos dedicado antes de AR |
+| PostGIS queries sin tipado TypeScript | Media | Medio | Zod schemas para todas las respuestas de $queryRaw |
+| Saturacion de celdas en Guelaguetza | Alta | Critico | Offline desde dia 1, bundles descargables, zonas WiFi |
 | AR no soportado en navegador | Media | Bajo | Fallback a visor 3D sin AR (model-viewer lo maneja) |
-| Offline sync conflicts | Media | Medio | Last-write-wins + cola de operaciones idempotentes |
+| Offline sync conflicts en quests | Media | Medio | Last-write-wins + cola idempotente + merge de progreso |
+| Sprint 3.2-3.3 se extienden (R&D) | Alta | Medio | Buffer de 2 semanas en estimacion total |
 
 ---
 
@@ -344,22 +384,30 @@ Sprint 4.2 (Tests) ──── paralelo con cualquier fase
 - Sketchfab: Buscar "mexican folk art", "alebrije", "oaxaca" (licencia CC)
 - Poly Haven: Modelos gratis con licencia CC0
 - Google Poly (archive): Modelos tematicos
+- **Pipeline:** Descargar → `gltf-transform` (Draco) → CDN/storage
 
 ### APIs Externas
 - **Meshy.ai** — Image-to-3D (free tier: 5 generaciones/mes, plan basico ~$10/mes)
 - **Tripo3D** — Alternativa (free tier: 3/dia)
-- **MediaPipe** — Face/body tracking (gratis, client-side)
+- **MediaPipe** — Face/hands tracking (gratis, client-side)
 
 ### Dependencias NPM Nuevas
 ```
 @google/model-viewer     # Ya en ZIP
 react-sketch-canvas      # Ya en ZIP
 @mediapipe/tasks-vision  # Sprint 3.3
-workbox-*                # Sprint 4.1
+workbox-*                # Sprint 1.0 (movido de 4.1)
 idb                      # Ya en ZIP
+zod                      # Ya en proyecto (tipar $queryRaw)
 ```
+
+### Infraestructura
+- CDN (Cloudflare/Cloudfront) con cache agresivo para modelos .glb
+- QR codes fisicos impresos para puntos AR en Centro Historico
 
 ---
 
 *Plan generado: 2026-03-13*
+*Cross-review: Gemini (2026-03-13)*
+*Cambios post-review: Offline a Fase 1, asset pipeline, QR fallback, Zod, webhook Image-to-3D, device detection, buffer 14 sem*
 *Proxima revision: Al completar Fase 0*
