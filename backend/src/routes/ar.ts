@@ -3,6 +3,7 @@ import { ZodTypeProvider } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import { ARPointsService } from '../services/ar-points.service.js';
 import { ARVestimentasService } from '../services/ar-vestimentas.service.js';
+import { Tripo3DService } from '../services/tripo3d.service.js';
 import {
   NearbyQuerySchema,
   PointsQuerySchema,
@@ -21,6 +22,7 @@ const arRoutes: FastifyPluginAsync = async (fastify) => {
 
   const pointsService = new ARPointsService(fastify.prisma);
   const vestimentasService = new ARVestimentasService(fastify.prisma);
+  const tripo3d = new Tripo3DService();
 
   // ============================================================================
   // NEARBY POINTS (Public)
@@ -502,7 +504,7 @@ const arRoutes: FastifyPluginAsync = async (fastify) => {
 
   /**
    * POST /api/ar/alebrije/generate
-   * Stub: saves intent + returns a mock taskId.
+   * Calls Tripo3DService when TRIPO3D_API_KEY is configured; falls back to stub.
    */
   app.post(
     '/alebrije/generate',
@@ -512,38 +514,50 @@ const arRoutes: FastifyPluginAsync = async (fastify) => {
       },
     },
     async (request, reply) => {
-      const { userId, nombreCreacion } = request.body;
+      const { image, style, userId, nombreCreacion } = request.body;
 
-      // Generate a deterministic-ish mock taskId
-      const taskId = `alebrije-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      let taskId: string;
+      let initialStatus: string;
 
-      // Attempt to persist to user_creations — silently ignore if table absent
+      if (tripo3d.isEnabled()) {
+        // Real Tripo3D generation
+        const result = await tripo3d.generateFromImage(image, { style });
+        taskId = result.taskId;
+        initialStatus = result.status;
+      } else {
+        // Stub fallback — preserve original behaviour
+        taskId = `alebrije-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+        initialStatus = 'pending';
+      }
+
+      // Persist to user_creations — silently ignore if table absent
       try {
         await fastify.prisma.$executeRawUnsafe(
           `INSERT INTO ar.user_creations
              (uuid, user_id, nombre_creacion, ai_task_id, status, created_at)
-           VALUES ($1, $2, $3, $4, 'pending', NOW())
+           VALUES ($1, $2, $3, $4, $5, NOW())
            ON CONFLICT DO NOTHING`,
           taskId,
           userId ?? null,
           nombreCreacion ?? 'Mi Alebrije',
-          taskId
+          taskId,
+          initialStatus
         );
       } catch {
-        // Table may not exist yet — stub still works
+        // Table may not exist yet — endpoint still works
       }
 
       return reply.status(202).send({
         success: true,
         taskId,
-        status: 'pending',
+        status: initialStatus,
       });
     }
   );
 
   /**
    * GET /api/ar/alebrije/status/:taskId
-   * Stub: always returns 'completed' with a placeholder GLB URL.
+   * Queries Tripo3D API for real status; falls back to timestamp-based stub.
    */
   app.get(
     '/alebrije/status/:taskId',
@@ -552,28 +566,111 @@ const arRoutes: FastifyPluginAsync = async (fastify) => {
         params: z.object({ taskId: z.string().min(1) }),
       },
     },
-    async (request) => {
+    async (request, reply) => {
       const { taskId } = request.params;
 
-      // Simulate processing: tasks created less than 5 s ago are still 'processing'
-      const createdMs = parseInt(taskId.split('-')[1] ?? '0', 10);
-      const elapsedMs = Date.now() - createdMs;
-      const isReady = elapsedMs >= 5_000;
+      const result = await tripo3d.getTaskStatus(taskId);
 
-      return {
-        success: true,
+      // Map Tripo3D statuses to the legacy frontend-facing names
+      const statusMap: Record<string, string> = {
+        queued: 'processing',
+        running: 'processing',
+        success: 'completed',
+        failed: 'failed',
+      };
+
+      const isCompleted = result.status === 'success';
+      const isFailed = result.status === 'failed';
+
+      // If generation completed and we have a real model URL, update DB
+      if (isCompleted && result.output?.model_url) {
+        try {
+          await fastify.prisma.$executeRawUnsafe(
+            `UPDATE ar.user_creations
+             SET status = 'completed',
+                 model_url_glb = $2,
+                 updated_at = NOW()
+             WHERE ai_task_id = $1`,
+            taskId,
+            result.output.model_url
+          );
+        } catch {
+          // Table may not exist yet
+        }
+      }
+
+      return reply.status(isFailed ? 422 : 200).send({
+        success: !isFailed,
         taskId,
-        status: isReady ? 'completed' : 'processing',
-        modelUrl: isReady
-          ? 'https://modelviewer.dev/shared-assets/models/Astronaut.glb'
+        status: statusMap[result.status] ?? result.status,
+        progress: result.progress,
+        modelUrl: isCompleted
+          ? (result.output?.model_url ?? 'https://modelviewer.dev/shared-assets/models/Astronaut.glb')
           : undefined,
-        modelUrlUsdz: isReady
+        modelUrlUsdz: isCompleted
           ? 'https://modelviewer.dev/shared-assets/models/Astronaut.usdz'
           : undefined,
-        thumbnailUrl: isReady
-          ? 'https://modelviewer.dev/shared-assets/models/Astronaut.webp'
+        thumbnailUrl: isCompleted
+          ? (result.output?.rendered_image_url ?? 'https://modelviewer.dev/shared-assets/models/Astronaut.webp')
           : undefined,
-      };
+      });
+    }
+  );
+
+  /**
+   * POST /api/ar/alebrije/webhook
+   * Receives asynchronous callbacks from Tripo3D when a generation task completes.
+   * Updates the user_creations record accordingly.
+   */
+  const WebhookBodySchema = z.object({
+    task_id: z.string().min(1),
+    status: z.enum(['success', 'failed']),
+    output: z
+      .object({
+        model: z.string().optional(),
+        rendered_image: z.string().optional(),
+      })
+      .optional(),
+  });
+
+  app.post(
+    '/alebrije/webhook',
+    {
+      schema: {
+        body: WebhookBodySchema,
+      },
+    },
+    async (request, reply) => {
+      const { task_id, status, output } = request.body;
+
+      try {
+        if (status === 'success' && output?.model) {
+          await fastify.prisma.$executeRawUnsafe(
+            `UPDATE ar.user_creations
+             SET status = 'completed',
+                 model_url_glb = $2,
+                 thumbnail_url = $3,
+                 updated_at = NOW()
+             WHERE ai_task_id = $1`,
+            task_id,
+            output.model,
+            output.rendered_image ?? null
+          );
+        } else if (status === 'failed') {
+          await fastify.prisma.$executeRawUnsafe(
+            `UPDATE ar.user_creations
+             SET status = 'failed',
+                 updated_at = NOW()
+             WHERE ai_task_id = $1`,
+            task_id
+          );
+        }
+      } catch {
+        // Table may not exist — still acknowledge the webhook
+        fastify.log.warn({ task_id }, 'Tripo3D webhook: user_creations table not available');
+      }
+
+      return reply.status(200).send({ received: true });
     }
   );
 

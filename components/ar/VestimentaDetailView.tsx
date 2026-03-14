@@ -7,12 +7,14 @@ import {
   Shirt,
   Info,
   AlertCircle,
+  Sparkles,
 } from 'lucide-react';
 import { ViewState } from '../../types';
 import type { Vestimenta, Region, TrackingType, VestimentaCategoria } from '../../types/ar';
 import { useDeviceId } from '../../hooks/ar/useDeviceId';
 import { useFavorites } from '../../hooks/ar/useFavorites';
 import { VestimentaViewer } from './ModelViewer';
+import { TryOnView } from './TryOnView';
 
 // ============================================================================
 // TYPES
@@ -25,6 +27,7 @@ interface VestimentaDetailViewProps {
 }
 
 type LoadState = 'loading' | 'loaded' | 'error';
+type DetailMode = 'view' | 'tryon';
 
 // ============================================================================
 // CONSTANTS
@@ -94,6 +97,7 @@ export function VestimentaDetailView({
   >(null);
   const [loadState, setLoadState] = useState<LoadState>('loading');
   const [arActive, setArActive] = useState(false);
+  const [mode, setMode] = useState<DetailMode>('view');
 
   // Fetch single vestimenta by ID
   useEffect(() => {
@@ -129,6 +133,10 @@ export function VestimentaDetailView({
   // AR callbacks
   const handleARStart = useCallback(() => setArActive(true), []);
   const handleAREnd = useCallback(() => setArActive(false), []);
+
+  // Try-on handlers
+  const handleOpenTryOn = useCallback(() => setMode('tryon'), []);
+  const handleCloseTryOn = useCallback(() => setMode('view'), []);
 
   // Navigate to set item
   const handleSetItemSelect = useCallback(
@@ -218,6 +226,20 @@ export function VestimentaDetailView({
   const showTraditionalName =
     vestimenta.nombreTradicional && vestimenta.nombreTradicional !== vestimenta.nombre;
 
+  // ── Render: try-on overlay (full-screen modal) ──────────────────────────────
+
+  if (mode === 'tryon') {
+    return (
+      <div className="fixed inset-0 z-50 bg-black" data-testid="tryon-overlay">
+        <TryOnView
+          vestimentaId={vestimentaId}
+          onNavigate={onNavigate}
+          onBack={handleCloseTryOn}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full bg-gray-50 overflow-hidden" data-testid="vestimenta-detail-view">
       {/* Header */}
@@ -247,20 +269,36 @@ export function VestimentaDetailView({
             </div>
           </div>
 
-          {/* Favorite button (large) */}
-          <button
-            onClick={handleToggleFavorite}
-            className={`p-2.5 rounded-full transition-colors focus:outline-none focus:ring-2
-              focus:ring-red-500
-              ${isFavorite ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-400 hover:text-red-600 hover:bg-red-50'}`}
-            aria-label={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
-            aria-pressed={isFavorite}
-          >
-            <Heart
-              className="w-6 h-6"
-              fill={isFavorite ? 'currentColor' : 'none'}
-            />
-          </button>
+          {/* Action buttons */}
+          <div className="flex items-center gap-2">
+            {/* Try-On button */}
+            <button
+              onClick={handleOpenTryOn}
+              aria-label="Probarse esta vestimenta"
+              data-testid="probarse-button"
+              className="flex items-center gap-1.5 px-3 py-2 bg-red-600 text-white rounded-lg
+                         text-sm font-semibold hover:bg-red-700 focus:outline-none
+                         focus:ring-2 focus:ring-red-500 transition-colors"
+            >
+              <Sparkles className="w-4 h-4" aria-hidden="true" />
+              <span>Probar</span>
+            </button>
+
+            {/* Favorite button */}
+            <button
+              onClick={handleToggleFavorite}
+              className={`p-2.5 rounded-full transition-colors focus:outline-none focus:ring-2
+                focus:ring-red-500
+                ${isFavorite ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-400 hover:text-red-600 hover:bg-red-50'}`}
+              aria-label={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+              aria-pressed={isFavorite}
+            >
+              <Heart
+                className="w-6 h-6"
+                fill={isFavorite ? 'currentColor' : 'none'}
+              />
+            </button>
+          </div>
         </div>
       </header>
 

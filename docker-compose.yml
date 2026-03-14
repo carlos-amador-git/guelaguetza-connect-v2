@@ -12,7 +12,7 @@ services:
   # DATABASE: PostgreSQL 15
   # ============================================
   postgres:
-    image: postgres:15-alpine
+    image: postgis/postgis:16-3.4
     container_name: guelaguetza-postgres
     restart: unless-stopped
     environment:
@@ -74,6 +74,8 @@ services:
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
       CORS_ORIGINS: http://localhost:3000,http://localhost:5173
       LOG_LEVEL: ${LOG_LEVEL:-info}
+      # External AI services
+      TRIPO3D_API_KEY: ${TRIPO3D_API_KEY:-}
       # Feature flags
       ENABLE_PAYMENTS: "false"
       ENABLE_NOTIFICATIONS: ${ENABLE_NOTIFICATIONS:-true}

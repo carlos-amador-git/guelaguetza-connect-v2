@@ -12,7 +12,7 @@ services:
   # DATABASE: PostgreSQL 15 (Production)
   # ============================================
   postgres:
-    image: postgres:15-alpine
+    image: postgis/postgis:16-3.4
     container_name: guelaguetza-postgres-prod
     restart: always
     environment:
@@ -108,6 +108,7 @@ services:
       CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-}
       SENDGRID_API_KEY: ${SENDGRID_API_KEY:-}
       SENDGRID_FROM_EMAIL: ${SENDGRID_FROM_EMAIL:-noreply@guelaguetzaconnect.com}
+      TRIPO3D_API_KEY: ${TRIPO3D_API_KEY:-}
       # Feature flags
       ENABLE_PAYMENTS: "false"
       ENABLE_NOTIFICATIONS: ${ENABLE_NOTIFICATIONS:-true}

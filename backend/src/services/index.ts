@@ -38,4 +38,6 @@ export { TransportService } from './transport.service.js';
 // AR Module
 export { ARPointsService } from './ar-points.service.js';
 export { ARVestimentasService } from './ar-vestimentas.service.js';
+export { Tripo3DService } from './tripo3d.service.js';
+export type { Tripo3DGenerateResult, Tripo3DTaskStatus } from './tripo3d.service.js';
 

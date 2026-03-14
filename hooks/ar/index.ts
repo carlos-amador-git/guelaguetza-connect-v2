@@ -34,3 +34,7 @@ export type { DevicePerformanceResult } from './useDevicePerformance';
 // Sprint G2 — User Safety + Audio-First
 export { useMotionDetection } from './useMotionDetection';
 export { useAudioGuide } from './useAudioGuide';
+
+// Sprint 3.3 — Try-On with MediaPipe
+export { useTryOn } from './useTryOn';
+export type { UseTryOnReturn } from './useTryOn';

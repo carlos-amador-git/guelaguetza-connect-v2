@@ -24,6 +24,7 @@ import { useMotionDetection } from '../../hooks/ar/useMotionDetection';
 import { useAudioGuide } from '../../hooks/ar/useAudioGuide';
 import { ARPermissions } from './ARPermissions';
 import { SafeModeOverlay } from './SafeModeOverlay';
+import { QRScanner } from './QRScanner';
 
 // ============================================================================
 // CONSTANTS
@@ -441,6 +442,7 @@ export function ARHomeView({ onNavigate, onBack }: ARHomeViewProps) {
   const deviceId = useDeviceId();
   const [hasLocation, setHasLocation] = useState<boolean | null>(null); // null = permission overlay shown
   const [activeTab, setActiveTab] = useState<ActiveTab>('explorar');
+  const [qrScannerOpen, setQrScannerOpen] = useState(false);
 
   // ── Safety + Audio ────────────────────────────────────────────────────────
 
@@ -503,11 +505,32 @@ export function ARHomeView({ onNavigate, onBack }: ARHomeViewProps) {
     [onNavigate]
   );
 
+  const handleQRScan = useCallback(
+    (pointCodigo: string) => {
+      setQrScannerOpen(false);
+      // Navigate to AR_POINT_DETAIL passing the codigo so the detail view can
+      // fetch the point data. If the detail view accepts a codigo, pass it;
+      // otherwise the view will show the point from the nearby list.
+      onNavigate(ViewState.AR_POINT_DETAIL, { codigo: pointCodigo });
+    },
+    [onNavigate]
+  );
+
   // ── Render ─────────────────────────────────────────────────────────────────
 
   // Show permissions overlay until the user makes a choice
   if (hasLocation === null) {
     return <ARPermissions onReady={handlePermissionsReady} />;
+  }
+
+  // QR scanner modal (rendered outside the scrollable layout)
+  if (qrScannerOpen) {
+    return (
+      <QRScanner
+        onScan={handleQRScan}
+        onClose={() => setQrScannerOpen(false)}
+      />
+    );
   }
 
   const mapCenter: [number, number] = userLatLng
@@ -671,6 +694,22 @@ export function ARHomeView({ onNavigate, onBack }: ARHomeViewProps) {
               Explora sin ubicacion — distancias no disponibles
             </div>
           )}
+
+          {/* QR scan button — top-right corner of the map */}
+          <div className="absolute top-3 right-3 z-[1000]">
+            <button
+              onClick={() => setQrScannerOpen(true)}
+              aria-label="Escanear código QR de punto AR"
+              data-testid="qr-scan-map-button"
+              className="flex items-center gap-1.5 bg-white/90 backdrop-blur-sm shadow-lg
+                         rounded-full px-3 py-2 text-xs font-semibold text-gray-700
+                         hover:bg-white focus:outline-none focus:ring-2 focus:ring-red-500
+                         transition-colors"
+            >
+              <Scan className="w-4 h-4 text-red-600" aria-hidden="true" />
+              <span>Escanear QR</span>
+            </button>
+          </div>
           </SafeModeOverlay>
         </section>
 
