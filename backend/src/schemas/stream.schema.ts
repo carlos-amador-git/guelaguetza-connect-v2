@@ -23,6 +23,7 @@ export const CreateStreamSchema = z.object({
   thumbnailUrl: z.string().url().optional(),
   category: StreamCategoryEnum,
   scheduledAt: z.string().datetime().optional(),
+  embedUrl: z.string().url().optional(),
 });
 
 export const UpdateStreamSchema = CreateStreamSchema.partial();

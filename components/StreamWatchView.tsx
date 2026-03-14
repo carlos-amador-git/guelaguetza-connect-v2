@@ -137,9 +137,17 @@ export default function StreamWatchView({
 
   return (
     <div className="flex flex-col h-full bg-gray-900">
-      {/* Video Player */}
+      {/* Video Player / Embed */}
       <div className="relative bg-black aspect-video">
-        {stream.playbackUrl ? (
+        {stream.embedUrl ? (
+          <iframe
+            src={stream.embedUrl}
+            className="w-full h-full"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            title={stream.title}
+          />
+        ) : stream.playbackUrl ? (
           <video
             src={stream.playbackUrl}
             className="w-full h-full"

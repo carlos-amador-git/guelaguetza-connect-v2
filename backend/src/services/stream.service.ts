@@ -227,16 +227,15 @@ export class StreamService {
       throw new AppError('Este stream ya termino', 400);
     }
 
-    // In a real app, we would set up the streaming server here
-    // For now, we'll use a mock playback URL
-    const playbackUrl = `https://stream.guelaguetza.mx/${stream.streamKey}`;
+    // Use embedUrl if available (YouTube/Facebook Live embed), otherwise mock playback URL
+    const playbackUrl = stream.embedUrl ? null : `https://stream.guelaguetza.mx/${stream.streamKey}`;
 
     return this.prisma.liveStream.update({
       where: { id },
       data: {
         status: 'LIVE',
         startedAt: new Date(),
-        playbackUrl,
+        ...(playbackUrl ? { playbackUrl } : {}),
       },
       include: {
         user: {

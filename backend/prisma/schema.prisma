@@ -609,6 +609,7 @@ model LiveStream {
   streamKey    String         @unique @default(cuid())
   playbackUrl  String?
   vodUrl       String?
+  embedUrl     String?        // YouTube/Facebook Live embed URL
   createdAt    DateTime       @default(now())
 
   user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)

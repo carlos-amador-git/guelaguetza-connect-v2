@@ -21,6 +21,7 @@ export interface LiveStream {
   streamKey: string;
   playbackUrl: string | null;
   vodUrl: string | null;
+  embedUrl: string | null;
   createdAt: string;
   user: {
     id: string;
@@ -86,6 +87,7 @@ export async function getStreams(query: StreamQuery = {}) {
       streamKey: 'demo_key',
       playbackUrl: null,
       vodUrl: null,
+      embedUrl: (s as any).embedUrl || null,
       createdAt: s.startedAt,
       user: {
         ...s.host,
@@ -133,6 +135,7 @@ export async function getLiveStreams() {
       streamKey: 'demo_key',
       playbackUrl: null,
       vodUrl: null,
+      embedUrl: (s as any).embedUrl || null,
       createdAt: s.startedAt,
       user: {
         ...s.host,
