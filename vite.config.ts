@@ -2,7 +2,6 @@ import path from 'path';
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
-import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig(({ mode }) => {
     // env loaded for potential future server-side use; API keys must NOT be injected into the client bundle.
@@ -14,7 +13,6 @@ export default defineConfig(({ mode }) => {
         allowedHosts: true,
       },
       plugins: [
-        tailwindcss(),
         react(),
         VitePWA({
           registerType: 'autoUpdate',
