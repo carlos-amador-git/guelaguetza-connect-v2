@@ -41,7 +41,7 @@ export function ModelViewer({
     const script = document.createElement('script');
     script.type = 'module';
     script.src =
-      'https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js';
+      'https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js';
     script.onload = () => setIsLoaded(true);
     script.onerror = () => setError('Error al cargar el visor 3D');
     document.head.appendChild(script);

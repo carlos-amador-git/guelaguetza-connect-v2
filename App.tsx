@@ -25,14 +25,9 @@ import CommunityDetailView from './components/CommunityDetailView';
 import ExperiencesView from './components/ExperiencesView';
 import ExperienceDetailView from './components/ExperienceDetailView';
 import MyBookingsView from './components/MyBookingsView';
-import ARMapView from './components/ARMapView';
-import POIDetailView from './components/POIDetailView';
 import { ARPointDetailView } from './components/ar/ARPointDetailView';
 import { ARHomeView } from './components/ar/ARHomeView';
-import { VestimentasView } from './components/ar/VestimentasView';
-import { VestimentaDetailView } from './components/ar/VestimentaDetailView';
 import { QuestView } from './components/ar/QuestView';
-import { AlebrijeView } from './components/ar/AlebrijeView';
 import VitrinaArtesanias, { type VitrinaSection } from './components/ar/vitrina/VitrinaArtesanias';
 import VitrinaDetalle from './components/ar/vitrina/VitrinaDetalle';
 import TiendaView from './components/TiendaView';
@@ -115,8 +110,6 @@ const App: React.FC = () => {
   const [selectedArPointId, setSelectedArPointId] = useState<string | null>(null);
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [vitrinaSection, setVitrinaSection] = useState<VitrinaSection>('premium');
-  // AR module: selected Vestimenta ID
-  const [selectedVestimentaId, setSelectedVestimentaId] = useState<string | null>(null);
   // AR module: selected Quest ID
   const [selectedQuestId, setSelectedQuestId] = useState<string | null>(null);
 
@@ -166,7 +159,6 @@ const App: React.FC = () => {
     if (d?.productId) setSelectedProductId(d.productId as string);
     if (d?.streamId) setSelectedStreamId(d.streamId as string);
     if (d?.vitrinaSection) setVitrinaSection(d.vitrinaSection as VitrinaSection);
-    if (d?.vestimentaId) setSelectedVestimentaId(d.vestimentaId as string);
     if (d?.questId) setSelectedQuestId(d.questId as string);
 
     // AR module: store AR point ID and proximity data for ARPointDetailView
@@ -382,27 +374,6 @@ const App: React.FC = () => {
             onBack={() => setCurrentView(ViewState.HOME)}
           />
         );
-      // Sprint 3.1: Vestimentas Catalog
-      case ViewState.AR_VESTIMENTAS:
-        return (
-          <VestimentasView
-            onNavigate={handleNavigate}
-            onBack={() => setCurrentView(ViewState.AR_HOME)}
-          />
-        );
-      case ViewState.AR_VESTIMENTA_DETAIL:
-        return selectedVestimentaId ? (
-          <VestimentaDetailView
-            vestimentaId={selectedVestimentaId}
-            onNavigate={handleNavigate}
-            onBack={() => setCurrentView(ViewState.AR_VESTIMENTAS)}
-          />
-        ) : (
-          <VestimentasView
-            onNavigate={handleNavigate}
-            onBack={() => setCurrentView(ViewState.AR_HOME)}
-          />
-        );
       // Sprint 4.1: Quests
       case ViewState.AR_QUEST:
         return selectedQuestId ? (
@@ -415,14 +386,6 @@ const App: React.FC = () => {
           <ARHomeView
             onNavigate={handleNavigate}
             onBack={() => setCurrentView(ViewState.HOME)}
-          />
-        );
-      // Sprint 4.1: Alebrije
-      case ViewState.AR_ALEBRIJE:
-        return (
-          <AlebrijeView
-            onBack={() => setCurrentView(ViewState.AR_HOME)}
-            userId={user?.id ?? null}
           />
         );
       // AR Vitrina 3D
@@ -442,27 +405,6 @@ const App: React.FC = () => {
           <VitrinaDetalle
             itemId={selectedItemId ?? undefined}
             onBack={() => setCurrentView(ViewState.AR_VITRINA)}
-          />
-        );
-      // Phase 6: AR Map (legacy)
-      case ViewState.AR_MAP:
-        return (
-          <ARMapView
-            onNavigate={handleNavigate}
-            onBack={() => setCurrentView(ViewState.HOME)}
-          />
-        );
-      case ViewState.POI_DETAIL:
-        return selectedPoiId ? (
-          <POIDetailView
-            poiId={selectedPoiId}
-            onNavigate={handleNavigate}
-            onBack={() => setCurrentView(ViewState.AR_MAP)}
-          />
-        ) : (
-          <ARMapView
-            onNavigate={handleNavigate}
-            onBack={() => setCurrentView(ViewState.HOME)}
           />
         );
       case ViewState.SMART_MAP:
@@ -546,8 +488,6 @@ const App: React.FC = () => {
     ViewState.EXPERIENCES,
     ViewState.EXPERIENCE_DETAIL,
     ViewState.MY_BOOKINGS,
-    ViewState.AR_MAP,
-    ViewState.POI_DETAIL,
     ViewState.SMART_MAP,
     ViewState.TIENDA,
     ViewState.PRODUCT_DETAIL,
@@ -556,10 +496,7 @@ const App: React.FC = () => {
     // AR Module views
     ViewState.AR_HOME,
     ViewState.AR_POINT_DETAIL,
-    ViewState.AR_VESTIMENTAS,
-    ViewState.AR_VESTIMENTA_DETAIL,
     ViewState.AR_QUEST,
-    ViewState.AR_ALEBRIJE,
     ViewState.AR_VITRINA,
     ViewState.AR_VITRINA_DETALLE,
   ].includes(currentView);

@@ -2,20 +2,20 @@ import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, Eye, Download, X, MapPin, SlidersHorizontal } from 'lucide-react';
 import { ARTESANIAS } from './artesanias-data';
 
-// Ensure model-viewer web component is registered
+/**
+ * Waits for the model-viewer custom element to be registered before rendering.
+ * Uses customElements.whenDefined() instead of CDN script injection to avoid
+ * version conflicts with ModelViewer.tsx (which loads v3.4.0 as a fallback).
+ * Safari requires the element to be fully defined before instantiation.
+ */
 function useModelViewer() {
-  const [ready, setReady] = useState(false);
+  const [ready, setReady] = useState(
+    () => typeof customElements !== 'undefined' && !!customElements.get('model-viewer')
+  );
   useEffect(() => {
-    if (customElements.get('model-viewer')) {
-      setReady(true);
-      return;
-    }
-    const script = document.createElement('script');
-    script.type = 'module';
-    script.src = 'https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js';
-    script.onload = () => setReady(true);
-    document.head.appendChild(script);
-  }, []);
+    if (ready) return;
+    customElements.whenDefined('model-viewer').then(() => setReady(true));
+  }, [ready]);
   return ready;
 }
 
