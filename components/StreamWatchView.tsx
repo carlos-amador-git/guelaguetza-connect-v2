@@ -137,6 +137,26 @@ export default function StreamWatchView({
 
   return (
     <div className="flex flex-col h-full bg-gray-900">
+      {/* Top bar — always accessible, outside iframe */}
+      <div className="flex items-center justify-between px-3 py-2 bg-gray-800 border-b border-gray-700">
+        <button onClick={onBack} className="flex items-center gap-1 p-2 text-white hover:text-gray-300 transition-colors">
+          <ChevronLeft className="w-5 h-5" />
+          <span className="text-sm">Streams</span>
+        </button>
+        <div className="flex gap-2">
+          {isLive && (
+            <div className="flex items-center gap-1 px-2 py-1 bg-red-600 rounded text-white text-sm">
+              <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
+              EN VIVO
+            </div>
+          )}
+          <div className="flex items-center gap-1 px-2 py-1 bg-gray-700 rounded text-white text-sm">
+            <Users className="w-4 h-4" />
+            {viewerCount}
+          </div>
+        </div>
+      </div>
+
       {/* Video Player / Embed */}
       <div className="relative bg-black aspect-video">
         {stream.embedUrl ? (
@@ -180,25 +200,6 @@ export default function StreamWatchView({
             </div>
           </div>
         )}
-
-        {/* Controls overlay */}
-        <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/70 to-transparent flex justify-between items-start">
-          <button onClick={onBack} className="p-2 text-white">
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-          <div className="flex gap-2">
-            {isLive && (
-              <div className="flex items-center gap-1 px-2 py-1 bg-red-600 rounded text-white text-sm">
-                <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                EN VIVO
-              </div>
-            )}
-            <div className="flex items-center gap-1 px-2 py-1 bg-black/50 rounded text-white text-sm">
-              <Users className="w-4 h-4" />
-              {viewerCount}
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Stream Info */}

@@ -718,20 +718,20 @@ export function ARHomeView({ onNavigate, onBack }: ARHomeViewProps) {
           <div className="grid grid-cols-2 gap-3" role="list">
             <div role="listitem">
               <QuickActionCard
-                emoji="👘"
-                label="Probador Virtual"
-                sublabel="Pruebate trajes tipicos en AR"
-                color="#E63946"
-                onClick={() => onNavigate(ViewState.AR_VESTIMENTAS)}
+                emoji="🏺"
+                label="Artesanias 3D"
+                sublabel="Piezas artesanales en alta calidad"
+                color="#2A9D8F"
+                onClick={() => onNavigate(ViewState.AR_VITRINA, { vitrinaSection: 'premium' })}
               />
             </div>
             <div role="listitem">
               <QuickActionCard
                 emoji="🦌"
-                label="Crea tu Alebrije"
-                sublabel="Genera tu criatura con IA"
-                color="#F4A261"
-                onClick={() => onNavigate(ViewState.AR_ALEBRIJE)}
+                label="Vitrina de Alebrijes"
+                sublabel="Alebrijes generados con IA"
+                color="#7C3AED"
+                onClick={() => onNavigate(ViewState.AR_VITRINA, { vitrinaSection: 'trellis' })}
               />
             </div>
           </div>

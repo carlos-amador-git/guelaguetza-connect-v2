@@ -250,9 +250,12 @@ export const CATEGORY_LABELS: Record<ProductCategory, string> = {
 
 export function formatPrice(price: string | number): string {
   const numPrice = typeof price === 'string' ? parseFloat(price) : price;
+  const hasDecimals = numPrice % 1 !== 0;
   return new Intl.NumberFormat('es-MX', {
     style: 'currency',
     currency: 'MXN',
+    minimumFractionDigits: hasDecimals ? 2 : 0,
+    maximumFractionDigits: hasDecimals ? 2 : 0,
   }).format(numPrice);
 }
 

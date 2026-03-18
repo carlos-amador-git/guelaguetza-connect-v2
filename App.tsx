@@ -33,6 +33,8 @@ import { VestimentasView } from './components/ar/VestimentasView';
 import { VestimentaDetailView } from './components/ar/VestimentaDetailView';
 import { QuestView } from './components/ar/QuestView';
 import { AlebrijeView } from './components/ar/AlebrijeView';
+import VitrinaArtesanias, { type VitrinaSection } from './components/ar/vitrina/VitrinaArtesanias';
+import VitrinaDetalle from './components/ar/vitrina/VitrinaDetalle';
 import TiendaView from './components/TiendaView';
 import ProductDetailView from './components/ProductDetailView';
 import WishlistView from './components/WishlistView';
@@ -111,6 +113,8 @@ const App: React.FC = () => {
   const [selectedStreamId, setSelectedStreamId] = useState<string | null>(null);
   // AR module: selected AR point ID (numeric, stored as string)
   const [selectedArPointId, setSelectedArPointId] = useState<string | null>(null);
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  const [vitrinaSection, setVitrinaSection] = useState<VitrinaSection>('premium');
   // AR module: selected Vestimenta ID
   const [selectedVestimentaId, setSelectedVestimentaId] = useState<string | null>(null);
   // AR module: selected Quest ID
@@ -161,6 +165,7 @@ const App: React.FC = () => {
     if (d?.poiId) setSelectedPoiId(d.poiId as string);
     if (d?.productId) setSelectedProductId(d.productId as string);
     if (d?.streamId) setSelectedStreamId(d.streamId as string);
+    if (d?.vitrinaSection) setVitrinaSection(d.vitrinaSection as VitrinaSection);
     if (d?.vestimentaId) setSelectedVestimentaId(d.vestimentaId as string);
     if (d?.questId) setSelectedQuestId(d.questId as string);
 
@@ -420,6 +425,25 @@ const App: React.FC = () => {
             userId={user?.id ?? null}
           />
         );
+      // AR Vitrina 3D
+      case ViewState.AR_VITRINA:
+        return (
+          <VitrinaArtesanias
+            section={vitrinaSection}
+            onSelect={(item) => {
+              setSelectedItemId(item.id);
+              setCurrentView(ViewState.AR_VITRINA_DETALLE);
+            }}
+            onBack={() => setCurrentView(ViewState.AR_HOME)}
+          />
+        );
+      case ViewState.AR_VITRINA_DETALLE:
+        return (
+          <VitrinaDetalle
+            itemId={selectedItemId ?? undefined}
+            onBack={() => setCurrentView(ViewState.AR_VITRINA)}
+          />
+        );
       // Phase 6: AR Map (legacy)
       case ViewState.AR_MAP:
         return (
@@ -536,6 +560,8 @@ const App: React.FC = () => {
     ViewState.AR_VESTIMENTA_DETAIL,
     ViewState.AR_QUEST,
     ViewState.AR_ALEBRIJE,
+    ViewState.AR_VITRINA,
+    ViewState.AR_VITRINA_DETALLE,
   ].includes(currentView);
 
   // Show landing page if not authenticated or showLanding is true

@@ -12,9 +12,16 @@ declare module 'react' {
           poster?: string;
           alt?: string;
           'shadow-intensity'?: string;
+          'shadow-softness'?: string;
           'camera-controls'?: boolean;
+          'camera-orbit'?: string;
           'touch-action'?: string;
           'auto-rotate'?: boolean;
+          'auto-rotate-delay'?: string;
+          'interaction-prompt'?: string;
+          'environment-image'?: string;
+          'tone-mapping'?: string;
+          exposure?: string;
           ar?: boolean;
           'ar-modes'?: string;
           'ar-scale'?: string;

@@ -785,7 +785,7 @@ export const MOCK_STREAMS = [
     viewerCount: 1234,
     host: MOCK_USERS[1],
     startedAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-    embedUrl: null,
+    embedUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1',
   },
   {
     id: 'stream_2',
@@ -796,7 +796,7 @@ export const MOCK_STREAMS = [
     viewerCount: 567,
     host: MOCK_USERS[2],
     startedAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
-    embedUrl: null,
+    embedUrl: 'https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=1',
   },
   {
     id: 'stream_3',

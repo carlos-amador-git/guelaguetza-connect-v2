@@ -248,6 +248,7 @@ export async function getStream(id: string) {
       streamKey: 'demo_key',
       playbackUrl: null,
       vodUrl: null,
+      embedUrl: null,
       createdAt: new Date().toISOString(),
       user: {
         id: 'host_1',
