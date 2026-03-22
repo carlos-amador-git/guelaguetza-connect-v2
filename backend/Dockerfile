@@ -24,8 +24,7 @@ COPY . .
 
 RUN npx prisma generate
 
-RUN npx tsc --noEmit 2>&1 || true
-RUN npm run build
+RUN npx tsc --noEmit > /tmp/tsc_errors.txt 2>&1; cat /tmp/tsc_errors.txt; npm run build
 
 RUN npm prune --production
 
