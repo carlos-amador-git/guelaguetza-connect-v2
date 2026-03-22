@@ -1,4 +1,4 @@
-import { PrismaClient, RouteType, UserRole, ProductCategory, ProductStatus, StreamCategory, StreamStatus, POICategory, ExperienceCategory } from '@prisma/client';
+import { PrismaClient, RouteType, UserRole, ProductCategory, ProductStatus, StreamCategory, StreamStatus, POICategory, ExperienceCategory, EventCategory } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
@@ -24,6 +24,9 @@ async function main() {
   await prisma.productReview.deleteMany();
   await prisma.product.deleteMany();
   await prisma.sellerProfile.deleteMany();
+  await prisma.eventReminder.deleteMany();
+  await prisma.eventRSVP.deleteMany();
+  await prisma.event.deleteMany();
   // Original cleanup
   await prisma.activityLog.deleteMany();
   await prisma.communityPost.deleteMany();
@@ -411,6 +414,91 @@ async function main() {
         status: ProductStatus.ACTIVE,
         stock: 2,
         images: ['/images/textil_tapete_zapoteco.png'],
+      },
+    }),
+    // --- 7 productos adicionales ---
+    prisma.product.create({
+      data: {
+        sellerId: sellerProfile2.id,
+        name: 'Mezcal Madrecuishe Ancestral 750ml',
+        description: 'Mezcal ancestral de agave madrecuishe destilado en olla de barro. Sabor complejo con notas herbales y minerales. 47% alc.',
+        price: 1800,
+        category: ProductCategory.MEZCAL,
+        status: ProductStatus.ACTIVE,
+        stock: 8,
+        images: ['/images/product_mezcal.png'],
+      },
+    }),
+    prisma.product.create({
+      data: {
+        sellerId: sellerProfile1.id,
+        name: 'Alebrije Buho Mediano',
+        description: 'Buho tallado en madera de copal por artesanos de San Martin Tilcajete. Pintado a mano con motivos cosmicos mixteco-zapotecas.',
+        price: 1400,
+        category: ProductCategory.ARTESANIA,
+        status: ProductStatus.ACTIVE,
+        stock: 7,
+        images: ['/images/product_alebrije.png'],
+      },
+    }),
+    prisma.product.create({
+      data: {
+        sellerId: sellerProfile1.id,
+        name: 'Huipil Bordado a Mano',
+        description: 'Huipil tradicional bordado a mano por artesanas de San Antonino Castillo Velasco. Flores multicolor sobre manta de algodon.',
+        price: 5200,
+        category: ProductCategory.TEXTIL,
+        status: ProductStatus.ACTIVE,
+        stock: 2,
+        images: ['/images/textil_rebozo.png'],
+      },
+    }),
+    prisma.product.create({
+      data: {
+        sellerId: sellerProfile1.id,
+        name: 'Barro Negro - Calavera Decorativa',
+        description: 'Calavera de barro negro con detalles calados. Tecnica de San Bartolo Coyotepec. Ideal para Dia de Muertos o decoracion.',
+        price: 680,
+        category: ProductCategory.CERAMICA,
+        status: ProductStatus.ACTIVE,
+        stock: 15,
+        images: ['/images/product_barro_negro.png'],
+      },
+    }),
+    prisma.product.create({
+      data: {
+        sellerId: sellerProfile2.id,
+        name: 'Mole Negro Oaxaqueno 500g',
+        description: 'Pasta de mole negro preparada artesanalmente. Receta tradicional con mas de 30 ingredientes incluyendo chocolate, chile y especias.',
+        price: 250,
+        category: ProductCategory.GASTRONOMIA,
+        status: ProductStatus.ACTIVE,
+        stock: 40,
+        images: ['/images/gastro_tlayuda_dish.png'],
+      },
+    }),
+    prisma.product.create({
+      data: {
+        sellerId: sellerProfile1.id,
+        name: 'Collar de Filigrana Oaxaquena',
+        description: 'Collar de plata .925 con tecnica de filigrana. Diseno de mariposas entrelazadas, tradicion orfebre de Oaxaca.',
+        price: 2800,
+        category: ProductCategory.JOYERIA,
+        status: ProductStatus.ACTIVE,
+        stock: 4,
+        images: ['/images/product_joyeria.png'],
+      },
+    }),
+    prisma.product.create({
+      data: {
+        sellerId: sellerProfile2.id,
+        name: 'Chapulines Preparados 250g',
+        description: 'Chapulines tostados con ajo, limon y sal de gusano. Snack tradicional oaxaqueno, alto en proteina. Cosechados en temporada.',
+        price: 120,
+        category: ProductCategory.GASTRONOMIA,
+        status: ProductStatus.ACTIVE,
+        stock: 60,
+        images: ['/images/gastro_tlayuda_dish.png'],
       },
     }),
   ]);
@@ -823,6 +911,128 @@ async function main() {
   }
 
   console.log('Created time slots for all experiences');
+
+  // ============================================
+  // EVENTS SEED DATA
+  // ============================================
+
+  const now = new Date();
+  const events = await Promise.all([
+    prisma.event.create({
+      data: {
+        title: 'Lunes del Cerro - Primera Guelaguetza',
+        description: 'Presentacion de las delegaciones de las 8 regiones de Oaxaca con sus danzas, musica y vestimenta tradicional en el Auditorio Guelaguetza.',
+        imageUrl: '/images/poi_auditorio_guelaguetza.png',
+        location: 'Auditorio Guelaguetza, Cerro del Fortin',
+        latitude: 17.0712,
+        longitude: -96.7098,
+        startDate: new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000),
+        endDate: new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000 + 5 * 60 * 60 * 1000),
+        category: EventCategory.DANZA,
+        isOfficial: true,
+      },
+    }),
+    prisma.event.create({
+      data: {
+        title: 'Lunes del Cerro - Segunda Guelaguetza',
+        description: 'Segunda jornada del festival con nuevas delegaciones. Danza de la Pluma, Flor de Pina y mas tradiciones.',
+        imageUrl: '/images/dance_pluma.png',
+        location: 'Auditorio Guelaguetza, Cerro del Fortin',
+        latitude: 17.0712,
+        longitude: -96.7098,
+        startDate: new Date(now.getTime() + 9 * 24 * 60 * 60 * 1000),
+        endDate: new Date(now.getTime() + 9 * 24 * 60 * 60 * 1000 + 5 * 60 * 60 * 1000),
+        category: EventCategory.DANZA,
+        isOfficial: true,
+      },
+    }),
+    prisma.event.create({
+      data: {
+        title: 'Feria del Mezcal 2026',
+        description: 'Degustacion de mezcales artesanales de todo Oaxaca. Mas de 100 marcas, musica en vivo y gastronomia.',
+        imageUrl: '/images/product_mezcal.png',
+        location: 'Centro de Convenciones (CCCO)',
+        latitude: 17.0823,
+        longitude: -96.6956,
+        startDate: new Date(now.getTime() + 1 * 24 * 60 * 60 * 1000),
+        endDate: new Date(now.getTime() + 10 * 24 * 60 * 60 * 1000),
+        category: EventCategory.GASTRONOMIA,
+        isOfficial: true,
+      },
+    }),
+    prisma.event.create({
+      data: {
+        title: 'Desfile de Delegaciones',
+        description: 'Colorido desfile por las calles del centro historico. Las delegaciones marchan con sus trajes tipicos acompanadas de bandas de musica.',
+        imageUrl: '/images/dance_flor_de_pina.png',
+        location: 'Centro Historico de Oaxaca',
+        latitude: 17.0612,
+        longitude: -96.7256,
+        startDate: new Date(now.getTime() + 1 * 24 * 60 * 60 * 1000),
+        endDate: new Date(now.getTime() + 1 * 24 * 60 * 60 * 1000 + 3 * 60 * 60 * 1000),
+        category: EventCategory.DESFILE,
+        isOfficial: true,
+      },
+    }),
+    prisma.event.create({
+      data: {
+        title: 'Noche de Rábanos',
+        description: 'Exposicion de figuras talladas en rabanos gigantes. Tradicion oaxaquena desde 1897.',
+        imageUrl: '/images/poi_santo_domingo.png',
+        location: 'Zocalo de Oaxaca',
+        latitude: 17.0612,
+        longitude: -96.7256,
+        startDate: new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000),
+        endDate: new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000),
+        category: EventCategory.ARTESANIA,
+        isOfficial: true,
+      },
+    }),
+    prisma.event.create({
+      data: {
+        title: 'Concierto de Marimba y Banda de Viento',
+        description: 'Musica tradicional oaxaquena en vivo. Marimba, banda de viento y chilenas.',
+        imageUrl: '/images/poi_auditorio_guelaguetza.png',
+        location: 'Plaza de la Danza',
+        latitude: 17.0598,
+        longitude: -96.7234,
+        startDate: new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000),
+        endDate: new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000 + 3 * 60 * 60 * 1000),
+        category: EventCategory.MUSICA,
+        isOfficial: true,
+      },
+    }),
+    prisma.event.create({
+      data: {
+        title: 'Ceremonia de la Diosa Centéotl',
+        description: 'Eleccion de la Diosa Centeotl, representante de la fertilidad y el maiz. Ceremonia con danzas prehispanicas.',
+        imageUrl: '/images/dance_tehuana.png',
+        location: 'Auditorio Guelaguetza',
+        latitude: 17.0712,
+        longitude: -96.7098,
+        startDate: new Date(now.getTime() + 4 * 24 * 60 * 60 * 1000),
+        endDate: new Date(now.getTime() + 4 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000),
+        category: EventCategory.CEREMONIA,
+        isOfficial: true,
+      },
+    }),
+    prisma.event.create({
+      data: {
+        title: 'Taller de Barro Negro en San Bartolo',
+        description: 'Taller abierto en los talleres de San Bartolo Coyotepec. Aprende la tecnica ancestral del barro negro.',
+        imageUrl: '/images/product_barro_negro.png',
+        location: 'San Bartolo Coyotepec',
+        latitude: 16.9612,
+        longitude: -96.7234,
+        startDate: new Date(now.getTime() + 6 * 24 * 60 * 60 * 1000),
+        endDate: new Date(now.getTime() + 6 * 24 * 60 * 60 * 1000 + 5 * 60 * 60 * 1000),
+        category: EventCategory.ARTESANIA,
+        isOfficial: false,
+      },
+    }),
+  ]);
+
+  console.log('Created', events.length, 'events');
 
   console.log('Seeding completed!');
 }

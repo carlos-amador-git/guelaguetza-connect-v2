@@ -3,7 +3,7 @@
 ## Setup Inicial (Primera Vez)
 
 ```bash
-# 1. Levantar base de datos
+# 1. Levantar base de datos again
 npm run test:db:up
 
 # 2. Esperar healthcheck (5 segundos)
