@@ -168,15 +168,28 @@ function QuickActionCard({ emoji, label, sublabel, color, onClick }: QuickAction
   return (
     <button
       onClick={onClick}
-      className="flex flex-col items-start gap-1 p-4 bg-white rounded-xl shadow-sm
-                 border border-gray-100 hover:shadow-md hover:-translate-y-0.5
+      className="flex flex-col items-start gap-2 p-5 bg-white rounded-2xl shadow-lg 
+                 border-2 border-transparent hover:border-purple-400 hover:shadow-xl 
                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500
-                 active:scale-95 transition-all duration-150 w-full text-left"
-      style={{ borderTop: `4px solid ${color}` }}
+                 active:scale-95 transition-all duration-200 w-full text-left"
+      style={{ borderTop: `4px solid ${color}`, background: 'linear-gradient(135deg, white 0%, #faf5ff 100%)' }}
     >
-      <span className="text-2xl" role="img" aria-hidden="true">{emoji}</span>
-      <span className="font-semibold text-gray-900 text-sm leading-tight">{label}</span>
-      <span className="text-xs text-gray-500">{sublabel}</span>
+      <div className="flex items-center justify-between w-full">
+        <span className="text-3xl" role="img" aria-hidden="true">{emoji}</span>
+        <span className="text-xs font-bold text-white bg-purple-600 px-2 py-1 rounded-full">
+          3D
+        </span>
+      </div>
+      <div className="w-full">
+        <span className="font-bold text-gray-900 text-base leading-tight block">{label}</span>
+        <span className="text-sm text-gray-500 mt-1 block">{sublabel}</span>
+      </div>
+      <div className="mt-2 flex items-center gap-1 text-purple-600 text-xs font-semibold">
+        <span>Toca para ver</span>
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+        </svg>
+      </div>
     </button>
   );
 }
@@ -538,7 +551,23 @@ export function ARHomeView({ onNavigate, onBack }: ARHomeViewProps) {
     : OAXACA_CENTER;
 
   return (
-    <div className="flex flex-col h-full bg-gray-50 overflow-hidden" data-testid="ar-home-view">
+    <div className="flex flex-col h-full bg-gradient-to-b from-purple-50 to-gray-50 overflow-hidden" data-testid="ar-home-view">
+      {/* Banner destacado */}
+      <div className="mx-4 mt-4 bg-gradient-to-r from-purple-600 via-violet-500 to-purple-600 rounded-2xl p-4 shadow-lg">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-white font-bold text-lg">🎨 Vitrina Digital 3D</h2>
+            <p className="text-purple-100 text-sm">Explora artesanías y alebrijes en realidad aumentada</p>
+          </div>
+          <button
+            onClick={() => onNavigate(ViewState.AR_VITRINA, { vitrinaSection: 'trellis' })}
+            className="bg-white text-purple-700 px-4 py-2 rounded-xl font-bold text-sm shadow-md active:scale-95 transition-transform"
+          >
+            Ver Alebrijes →
+          </button>
+        </div>
+      </div>
+      
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <header className="bg-white shadow-sm z-10 shrink-0">
         <div className="flex items-center justify-between px-4 pt-8 pb-4 md:pt-5">
