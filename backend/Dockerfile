@@ -11,6 +11,9 @@ RUN apk add --no-cache \
     wget \
     dumb-init
 
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
+
 COPY package*.json ./
 COPY prisma ./prisma/
 
@@ -24,16 +27,10 @@ RUN npm run build
 
 RUN npm prune --production
 
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001
-
-COPY --from=0 --chown=nodejs:nodejs /app/node_modules ./node_modules
-COPY --from=0 --chown=nodejs:nodejs /app/dist ./dist
-COPY --from=0 --chown=nodejs:nodejs /app/prisma ./prisma
-COPY --from=0 --chown=nodejs:nodejs /app/package*.json ./
-
 COPY backend/scripts/docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+RUN chown -R nodejs:nodejs /app
 
 USER nodejs
 
