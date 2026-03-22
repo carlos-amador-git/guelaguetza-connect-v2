@@ -38,8 +38,9 @@ services:
       DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/guelaguetza_db
       REDIS_URL: redis://redis:6379
       JWT_SECRET: ${JWT_SECRET}
+      COOKIE_SECRET: ${COOKIE_SECRET:-${JWT_SECRET}}
       CORS_ORIGINS: ${CORS_ORIGINS:-https://mdconsultoria-ti.org,http://mdconsultoria-ti.org}
-      AUTO_SEED: "true"
+      AUTO_SEED: "false"
       ENABLE_PAYMENTS: "false"
       ENABLE_NOTIFICATIONS: "false"
       ENABLE_ANALYTICS: "false"
