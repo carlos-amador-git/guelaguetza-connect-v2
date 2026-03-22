@@ -23,7 +23,7 @@ COPY . .
 
 RUN npx prisma generate
 
-RUN npm run build 2>&1 | tee /tmp/build.log || (cat /tmp/build.log && exit 1) || (cat dist/*.js 2>/dev/null || true && exit 1)
+RUN npm run build || (cat dist/*.js 2>/dev/null || true && exit 1)
 
 RUN npm prune --production
 
