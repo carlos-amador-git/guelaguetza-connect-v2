@@ -3,8 +3,6 @@ FROM node:20-alpine
 LABEL maintainer="Guelaguetza Connect <dev@guelaguetzaconnect.com>"
 LABEL description="Guelaguetza Connect Backend API"
 
-WORKDIR /app
-
 RUN apk add --no-cache \
     openssl \
     libc6-compat \
@@ -15,25 +13,26 @@ RUN apk add --no-cache \
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001
 
-COPY package*.json ./
-COPY prisma ./prisma/
+WORKDIR /app
+RUN chown nodejs:nodejs /app
+
+COPY scripts/docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+USER nodejs
+
+COPY --chown=nodejs:nodejs package*.json ./
+COPY --chown=nodejs:nodejs prisma ./prisma/
 
 RUN npm ci
 
-COPY . .
+COPY --chown=nodejs:nodejs . .
 
 RUN npx prisma generate
 
 RUN npx tsc || true
 
-RUN npm prune --production
-
-COPY scripts/docker-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-
-RUN chown -R nodejs:nodejs /app
-
-USER nodejs
+RUN npm prune --omit=dev
 
 EXPOSE 3001
 
