@@ -24,7 +24,7 @@ COPY . .
 
 RUN npx prisma generate
 
-RUN npm run build
+RUN npm run build 2>&1; echo "BUILD EXIT CODE: $?"
 
 RUN npm prune --production
 
