@@ -1,7 +1,7 @@
 // Direct Messages Service - API calls and WebSocket connection
 
-const API_BASE = (import.meta as { env: { VITE_API_URL?: string } }).env.VITE_API_URL || 'http://localhost:3000/api';
-const WS_BASE = (import.meta as { env: { VITE_WS_URL?: string } }).env.VITE_WS_URL || 'ws://localhost:3000/api';
+const API_BASE = (import.meta as { env: { VITE_API_URL?: string } }).env.VITE_API_URL || 'http://localhost:3001/api';
+const WS_BASE = ((import.meta as { env: { VITE_API_URL?: string } }).env.VITE_API_URL || 'http://localhost:3001').replace(/^http/, 'ws') + '/api';
 
 export interface Participant {
   id: string;
