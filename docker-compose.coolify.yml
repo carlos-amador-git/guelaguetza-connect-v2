@@ -61,7 +61,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.frontend
-      target: production
       args:
         VITE_API_URL: ""
     restart: always
