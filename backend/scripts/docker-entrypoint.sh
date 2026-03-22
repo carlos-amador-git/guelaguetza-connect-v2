@@ -26,16 +26,15 @@ wait_for_db() {
     MAX_RETRIES=30
     RETRY_COUNT=0
     
-    until nc -z postgres 5432 > /dev/null 2>&1 || [ $RETRY_COUNT -eq $MAX_RETRIES ]; do
+    while ! nc -z postgres 5432 > /dev/null 2>&1; do
         RETRY_COUNT=$((RETRY_COUNT + 1))
+        if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+            echo "${RED}❌ Could not connect to database after $MAX_RETRIES attempts${NC}"
+            exit 1
+        fi
         echo "   Attempt $RETRY_COUNT/$MAX_RETRIES..."
         sleep 2
     done
-    
-    if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
-        echo "${RED}❌ Could not connect to database after $MAX_RETRIES attempts${NC}"
-        exit 1
-    fi
     
     echo "${GREEN}✅ PostgreSQL is ready!${NC}"
 }
@@ -49,15 +48,17 @@ wait_for_redis() {
         MAX_RETRIES=30
         RETRY_COUNT=0
         
-        until nc -z redis 6379 > /dev/null 2>&1 || [ $RETRY_COUNT -eq $MAX_RETRIES ]; do
+        while ! nc -z redis 6379 > /dev/null 2>&1; do
             RETRY_COUNT=$((RETRY_COUNT + 1))
+            if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+                echo "${YELLOW}⚠️  Could not connect to Redis, continuing anyway...${NC}"
+                break
+            fi
             echo "   Attempt $RETRY_COUNT/$MAX_RETRIES..."
             sleep 1
         done
         
-        if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
-            echo "${YELLOW}⚠️  Could not connect to Redis, continuing anyway...${NC}"
-        else
+        if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
             echo "${GREEN}✅ Redis is ready!${NC}"
         fi
     fi
