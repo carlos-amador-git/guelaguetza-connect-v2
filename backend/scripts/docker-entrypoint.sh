@@ -85,7 +85,7 @@ seed_database() {
     if [ "$AUTO_SEED" = "true" ]; then
         echo "${YELLOW}🌱 Seeding database...${NC}"
         
-        if npm run db:seed; then
+        if node dist-seed/prisma/seed.js; then
             echo "${GREEN}✅ Database seeded successfully!${NC}"
         else
             echo "${YELLOW}⚠️  Seed failed or already exists, continuing...${NC}"

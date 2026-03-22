@@ -31,6 +31,7 @@ COPY --chown=nodejs:nodejs . .
 RUN npx prisma generate
 
 RUN npx tsc || true
+RUN npx tsc --outDir dist-seed --rootDir . --skipLibCheck --esModuleInterop --module NodeNext --moduleResolution NodeNext --target ES2022 --resolveJsonModule --declaration false prisma/seed.ts 2>/dev/null || true
 
 RUN npm prune --omit=dev
 

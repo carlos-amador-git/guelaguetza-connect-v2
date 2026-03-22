@@ -39,7 +39,7 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       COOKIE_SECRET: ${COOKIE_SECRET:-${JWT_SECRET}}
       CORS_ORIGINS: ${CORS_ORIGINS:-https://mdconsultoria-ti.org,http://mdconsultoria-ti.org}
-      AUTO_SEED: "false"
+      AUTO_SEED: "true"
       ENABLE_PAYMENTS: "false"
       ENABLE_NOTIFICATIONS: "false"
       ENABLE_ANALYTICS: "false"
