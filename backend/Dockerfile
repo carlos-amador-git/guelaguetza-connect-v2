@@ -30,9 +30,7 @@ COPY --chown=nodejs:nodejs . .
 
 RUN npx prisma generate
 
-RUN npx tsc || true
-RUN npx tsc --outDir dist-seed --rootDir . --skipLibCheck --esModuleInterop --module NodeNext --moduleResolution NodeNext --target ES2022 --resolveJsonModule prisma/seed.ts 2>&1; \
-    echo "Seed JS exists:" && ls dist-seed/prisma/seed.js && echo "SEED OK" || echo "SEED MISSING"
+RUN npm run build
 
 RUN npm prune --omit=dev
 
